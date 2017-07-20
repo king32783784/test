@@ -1,0 +1,461 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. LTP－Case list</title>
+    
+    <link rel="stylesheet" href="static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="static/translations.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="" href="index.html" />
+    <link rel="prev" title="Ltp-case说明" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="index.html" title="Ltp-case说明"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html"></a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ltp-case-list">
+<h1>1. LTP－Case list<a class="headerlink" href="#ltp-case-list" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.1. 主要模块<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>case主要分为”commands&#8221;、“kdump&#8221;、&#8221;kernel&#8221;、&#8221;misc&#8221;、&#8221;network&#8221;、&#8221;open_posix_testsuite&#8221;、&#8221;realtime&#8221;、&#8221;lib&#8221;等部分，主要内容如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%" />
+<col width="95%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">分类</th>
+<th class="head">包含内容</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>commands</td>
+<td>ade、cpio、df、eject、gzip、logrotate、mail、mkfs、sshd、tar、unzip、
+which、at、cron、du、fileutils、insmod、lsmod、mkswap、su tmp-tools、wc</td>
+</tr>
+<tr class="row-odd"><td>kernel</td>
+<td>connectors、controllers、firmware、hotplug、input、ipc、logging、mce-test、module、power_management、sched、syscalls、tracing、containers、device-drivers、fs、include、io、lib、mem、numa、pty、security、times</td>
+</tr>
+<tr class="row-even"><td>misc</td>
+<td>crash、f00f、math</td>
+</tr>
+<tr class="row-odd"><td>open_posix</td>
+<td>functional、tools、bin、conformance、stress</td>
+</tr>
+<tr class="row-even"><td>network</td>
+<td>busy_poll、dctcp、iptables、netstress、nfsv4、rpc、stress、tcp_fstopen、virt、can、dhcp iproute、lib6、multicast、nfs、sockets、tcp_cmds、traceroute、xinetd</td>
+</tr>
+<tr class="row-odd"><td>realtime</td>
+<td>perf、profiles、stress</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="commands">
+<h2>1.2. commands部分<a class="headerlink" href="#commands" title="永久链接至标题">¶</a></h2>
+<p>commands包含用例:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">case</th>
+<th class="head">包含用例</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ade</td>
+<td>ar、file、ld、ldd、nm、objdump、size</td>
+</tr>
+<tr class="row-odd"><td>at</td>
+<td>at</td>
+</tr>
+<tr class="row-even"><td>pio</td>
+<td>cpio</td>
+</tr>
+<tr class="row-odd"><td>cron</td>
+<td>cron</td>
+</tr>
+<tr class="row-even"><td>cp</td>
+<td>ln、mkdir、mv</td>
+</tr>
+<tr class="row-odd"><td>gzip</td>
+<td>gzip</td>
+</tr>
+<tr class="row-even"><td>insmod</td>
+<td>insmod</td>
+</tr>
+<tr class="row-odd"><td>logrotate</td>
+<td>logrotate</td>
+</tr>
+<tr class="row-even"><td>lsmod</td>
+<td>lsmod</td>
+</tr>
+<tr class="row-odd"><td>mail</td>
+<td>mail</td>
+</tr>
+<tr class="row-even"><td>mkfs</td>
+<td>mkfs</td>
+</tr>
+<tr class="row-odd"><td>mkswap</td>
+<td>mkswap</td>
+</tr>
+<tr class="row-even"><td>sssd</td>
+<td>sssd</td>
+</tr>
+<tr class="row-odd"><td>su</td>
+<td>su</td>
+</tr>
+<tr class="row-even"><td>tar</td>
+<td>tar</td>
+</tr>
+<tr class="row-odd"><td>tpm-tools</td>
+<td>tmp、tpmtoken</td>
+</tr>
+<tr class="row-even"><td>unzip</td>
+<td>unzip</td>
+</tr>
+<tr class="row-odd"><td>wc</td>
+<td>wc</td>
+</tr>
+<tr class="row-even"><td>which</td>
+<td>which</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="kernel">
+<h2>1.3. kernel部分<a class="headerlink" href="#kernel" title="永久链接至标题">¶</a></h2>
+<p>主要case包括:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="1%" />
+<col width="99%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">case</th>
+<th class="head">包含用例</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>connectors</td>
+<td>connector,pec</td>
+</tr>
+<tr class="row-odd"><td>containers</td>
+<td>libclone,mountns,mqns,netns,pidns,share,sysvipc,userns,utsname</td>
+</tr>
+<tr class="row-even"><td>controllers</td>
+<td>cgroup,cgroup_xattr,cpuctl,cpuset,io-throttle,memcg,pids,cgroup_fg,cpuacct,cpuctl_fj,freezer,libcontrollers,memctl</td>
+</tr>
+<tr class="row-odd"><td>device-drivers</td>
+<td>acpi,base,cpufreq,drm,locking,misc_modules,pci,tbio,usb,zram,agp,block,dev_sim_framework,nls,rcu,rtc,uaccess,v4l</td>
+</tr>
+<tr class="row-even"><td>firmware</td>
+<td>fw_load_kernel,fw_load_user,</td>
+</tr>
+<tr class="row-odd"><td>fs</td>
+<td>acl,dmapi,ext4-new-features,fs_blnd,fs_inod,fs_perms,fsstress,ftest,iso9660,linktest,mongo,proc,racer,stram,acls,doio,fs-bench,fs_di,fs_main,fs_readonly,fsx-linux,inode,lftest,openfile,quota_remount,scsi</td>
+</tr>
+<tr class="row-even"><td>hotplug</td>
+<td>cpu_hotplug,memory_hotplug</td>
+</tr>
+<tr class="row-odd"><td>input</td>
+<td>input</td>
+</tr>
+<tr class="row-even"><td>io</td>
+<td>aio,direct_io,disktest,ltp-aiodio,stress_cd,stress_floppy,writetest</td>
+</tr>
+<tr class="row-odd"><td>ipc</td>
+<td>pipeio,semaphore</td>
+</tr>
+<tr class="row-even"><td>logging</td>
+<td>kmsg</td>
+</tr>
+<tr class="row-odd"><td>mem</td>
+<td>cpuset,mem,mtest01,mtest06,oom,shmt,thp,vma,hugetlb,ksm,mmapstress,mtest05,mtest07,page,swapping,tunable,vmtests</td>
+</tr>
+<tr class="row-even"><td>moudle</td>
+<td>create_module,delete_module,query_module</td>
+</tr>
+<tr class="row-odd"><td>numa</td>
+<td>numa</td>
+</tr>
+<tr class="row-even"><td>power_management</td>
+<td>pm_ilb_test,runpwtests01-06,runpwtests_exelusive01-06,pm_cpu_consolidation,pm_include,pm_sched_domain</td>
+</tr>
+<tr class="row-odd"><td>pty</td>
+<td>hangup,ptem,pty</td>
+</tr>
+<tr class="row-even"><td>sched</td>
+<td>cfs-scheduler,clisrv,hypertherading,nptl,process_stress,pthreads,sched_stress,tool</td>
+</tr>
+<tr class="row-odd"><td>security</td>
+<td>cap_bound,filecaps,integrity,mmc_security,prot_hsymlinks,securbits,smack,tomoyo</td>
+</tr>
+<tr class="row-even"><td>syscalls</td>
+<td>abort,accept,accept4,access,acct,add_key,adjtimex,alarm,asyncio,bdflush,bind,brk,cacheflush,capget,capset,chdir,chmod,chown,chroot,clock_getres,clock_nanosleep,clock_nanosleep2,clone,close,cma,confstr,connect,creat,dup,dup2,dup3,epoll,epoll2,epoll_create1,epoll_ctl,epoll_pwait,epoll_wait,eventfd,eventfd2,execl,execle,execlp,execv,execve,execvp,exit,exit_group,faccessat,fadvise,fallocate,fanotify,fchdir,fchmod,fchmodat,fchown,fchownat,fcntl,fdatasync,flock,fmtmsg,fork,fpathconf,fstat,fstatat,fstatfs,fsync,ftruncate,futex,futimesat,getcontext,getcpu,getcwd,getdents,getdomainname,getdtablesize,getegid,geteuid,getgid,getgroups,gethostbyname_r,gethostid,gethostname,getitimer,get_mempolicy,getpagesize,getpeername,getpgid,getpgrp,getpid,getppid,getpriority,getrandom,getresgid,getresuid,getrlimit,get_robust_list,getrusage,getsid,getsockname,getsockopt,gettid,gettimeofday,getuid,getxattr,inotify,inotify_init,io_cancel,ioctl,io_destroy,io_getevents,ioperm,iopl,io_setup,io_submit,ipc,kcmp,keyctl,kill,lchown,lgetxattr,link,linkat,listen,llistxattr,llseek,lseek,lstat,madvise,Makefile,mallopt,mbind,memcmp,memcpy,memmap,memset,migrate_pages,mincore,mkdir,mkdirat,mknod,mknodat,mlock,mlockall,mmap,modify_ldt,mount,move_pages,mprotect,mq_notify,mq_open,mq_timedreceive,mq_timedsend,mq_unlink,mremap,msync,munlock,munlockall,munmap,nanosleep,newuname,nftw,nice,open,openat,paging,pathconf,pause,perf_event_open,personality,pipe,pipe2,poll,ppoll,prctl,pread,preadv,profil,pselect,ptrace,pwrite,pwritev,quotactl,read,readahead,readdir,readlink,readlinkat,readv,reboot,recv,recvfrom,recvmsg,remap_file_pages,removexattr,rename,renameat,renameat2,request_key,rmdir,rt_sigaction,rt_sigprocmask,rt_sigqueueinfo,rt_sigsuspend,rt_sigtimedwait,sbrk,sched_getaffinity,sched_getattr,sched_getparam,sched_get_priority_max,sched_get_priority_min,sched_getscheduler,sched_rr_get_interval,sched_setaffinity,sched_setattr,sched_setparam,sched_setscheduler,sched_yield,select,send,sendfile,sendmsg,sendto,setdomainname,setegid,setfsgid,setfsuid,setgid,setgroups,sethostname,setitimer,setns,setpgid,setpgrp,setpriority,setregid,setresgid,setresuid,setreuid,setrlimit,set_robust_list,setsid,setsockopt,set_thread_area,set_tid_address,settimeofday,setuid,setxattr,sgetmask,sigaction,sigaltstack,sighold,signal,signalfd,signalfd4,sigpending,sigprocmask,sigrelse,sigsuspend,sigtimedwait,sigwait,sigwaitinfo,socket,socketcall,socketpair,sockioctl,splice,ssetmask,stat,statfs,statvfs,stime,string,swapoff,swapon,switch,symlink,symlinkat,sync,sync_file_range,syscall,sysconf,sysctl,sysfs,sysinfo,syslog,tee,time,timerfd,timer_getoverrun,timer_gettime,times,tkill,truncate,ulimit,umask,umount,umount2,uname,unlink,unlinkat,unshare,ustat,utils,utime,utimensat,utimes,vfork,vhangup,vmsplice,wait,wait4,waitid,waitpid,write,writev</td>
+</tr>
+<tr class="row-odd"><td>timers</td>
+<td>clock_gettime,clock_settime,leapsec,timer_create,timer_delete,timer_settime</td>
+</tr>
+<tr class="row-even"><td>tracing</td>
+<td>ftrace</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="misc">
+<h2>1.4. misc部分<a class="headerlink" href="#misc" title="永久链接至标题">¶</a></h2>
+<p>主要用例包括：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">case</th>
+<th class="head">包含子case</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>crash</td>
+<td>crash</td>
+</tr>
+<tr class="row-odd"><td>f00f</td>
+<td>foof</td>
+</tr>
+<tr class="row-even"><td>math</td>
+<td>abs、atof、float、fptests、nextafter</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="network">
+<h2>1.5. network部分<a class="headerlink" href="#network" title="永久链接至标题">¶</a></h2>
+<p>主要用例包括：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">case</th>
+<th class="head">包含子case</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>can</td>
+<td>filter-test</td>
+</tr>
+<tr class="row-odd"><td>dctcp</td>
+<td>dctcp</td>
+</tr>
+<tr class="row-even"><td>dhcp</td>
+<td>dhcp_tests,dhcp_lib,,dnsmasq_tests</td>
+</tr>
+<tr class="row-odd"><td>iproute</td>
+<td>ip_tests</td>
+</tr>
+<tr class="row-even"><td>iptables</td>
+<td>iptables_tests</td>
+</tr>
+<tr class="row-odd"><td>lib6</td>
+<td>asapi,getaddrinfo,in6,</td>
+</tr>
+<tr class="row-even"><td>multicast</td>
+<td>mc_cmds,mc_commo,mc_gethost,mc_member,mc_opts</td>
+</tr>
+<tr class="row-odd"><td>netstress</td>
+<td>netstress</td>
+</tr>
+<tr class="row-even"><td>nfs</td>
+<td>fsx-linux,nfslock01,nfsstat01,nfs_stress</td>
+</tr>
+<tr class="row-odd"><td>nfsv4</td>
+<td>acl,locks</td>
+</tr>
+<tr class="row-even"><td>rpc</td>
+<td>basic_tests,rpc-tirpc</td>
+</tr>
+<tr class="row-odd"><td>sockets</td>
+<td>socket</td>
+</tr>
+<tr class="row-even"><td>stress</td>
+<td>broken_ip,dns,ftp,http,icmp,interface,,ipsec,multicast,ns-tools,route,ssh,tcp,udp</td>
+</tr>
+<tr class="row-odd"><td>tcp_cmds</td>
+<td>arping,echo,ftp,netstat,rcp,rsh,sendfile,tcpdump,trackpath,clockdiff,finger,host,ipneigh,ping,rdist,rlogin,rwho,ssh,telnet</td>
+</tr>
+<tr class="row-even"><td>tcp_fastopen</td>
+<td>tcp_fastopen</td>
+</tr>
+<tr class="row-odd"><td>traceroute</td>
+<td>traceroute</td>
+</tr>
+<tr class="row-even"><td>virt</td>
+<td>gre01,ipvlan,macvlan,macvtap,vlan,vxlan</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="open-posix-testsuite">
+<h2>1.6. open_posix_testsuite部分<a class="headerlink" href="#open-posix-testsuite" title="永久链接至标题">¶</a></h2>
+<p>主要用例包括:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">case</th>
+<th class="head">包含子case</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bin</td>
+<td>run-all-posix-option-group-tests</td>
+</tr>
+<tr class="row-odd"><td>conformance</td>
+<td>behavior definitions interfaces</td>
+</tr>
+<tr class="row-even"><td>functional</td>
+<td>mqueues semaphores threads timers</td>
+</tr>
+<tr class="row-odd"><td>stress</td>
+<td>mqueues semaphores signals threads timers</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="realtime">
+<h2>1.7. realtime部分<a class="headerlink" href="#realtime" title="永久链接至标题">¶</a></h2>
+<p>主要用例包括:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%" />
+<col width="95%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">case</th>
+<th class="head">包含子case</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>func</td>
+<td>async_handler hrtimer-prio matrix_mult periodic_cpu_load pi-tests prio-wake rt-migrate sched_jitter thrad_clock gtod_latency measurement pi_perf prio-preempt pthread_kill_latency sched_football sched_letency</td>
+</tr>
+<tr class="row-odd"><td>m4</td>
+<td>m4</td>
+</tr>
+<tr class="row-even"><td>perf</td>
+<td>latency</td>
+</tr>
+<tr class="row-odd"><td>stress</td>
+<td>pi-tests</td>
+</tr>
+</tbody>
+</table>
+<p>接下来会深入分析每个case的具体测试目的及内容。ltp测试用例主要采用shell和Ｃ编写。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/home.gif" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">內容目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. LTP－Case list</a><ul>
+<li><a class="reference internal" href="#id1">1.1. 主要模块</a></li>
+<li><a class="reference internal" href="#commands">1.2. commands部分</a></li>
+<li><a class="reference internal" href="#kernel">1.3. kernel部分</a></li>
+<li><a class="reference internal" href="#misc">1.4. misc部分</a></li>
+<li><a class="reference internal" href="#network">1.5. network部分</a></li>
+<li><a class="reference internal" href="#open-posix-testsuite">1.6. open_posix_testsuite部分</a></li>
+<li><a class="reference internal" href="#realtime">1.7. realtime部分</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一个主题</h4>
+  <p class="topless"><a href="index.html"
+                        title="上一章">Ltp-case说明</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="soures/ltp用例列表.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="转向" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="index.html" title="Ltp-case说明"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html"></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, 李鹏.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6 创建。
+    </div>
+  </body>
+</html>

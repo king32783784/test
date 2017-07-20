@@ -1,0 +1,299 @@
+LTP－kernel-syscalls-abort
+===========================
+
+从本文开始，开始分析kernel部分的测试用例，该部分测试用例大部分为Ｃ语言编写，因此会穿插加入一定的Ｃ语言或unix环境编程的知识。
+
+abort
+------------
+
+设计说明
+
+**测试策略**
+
+Fork child. Child出现abort,检查返回状态
+
+**限制**
+
+Core file大小的限制必须大于０
+
+**abort**
+
+函数名: abort
+
+功 能: 异常终止一个进程
+
+用 法: void abort(void);
+
+abort()是使异常程序终止，同时发送SIGABRT信号给调用进程。
+
+    #include <stdlib.h>
+    void abort(void);
+    该函数不返回
+    
+此函数将SIGABRT信号发送给调用进程（进程不应忽略此信号).ISO C规定，调用abort将向主机环境递送一个未成功终止的通知，其方法是调用raise(SIGABRT)函数。
+ISO C要求若捕捉此信号而且相应信号处理程序返回，abort仍不会返回其调用者。如果捕捉到此信号，则信号处理程序不能返回的唯一方法是它调用exit、_exit、_Exit、longjmp或sigloogjmp.POSIX.1也说明
+abort并不理会进程对此信号的阻塞和忽略。
+
+让进程捕捉SIGABRT的意图是：在进程终止之前由其执行所需的清理操作。如果进程并不在信号处理程序中终止自己，POSIX.1声明当信号处理程序返回时，abort终止该进程。
+
+ISO C针对此函数的规范将下列问题留由实现决定：　是否要冲洗输出流以及是否删除临时文件。POSIX.1的要求更进一步，要求如果abort调用终止进程，则它对所有打开标准I/O流的效果应当与进程终止前对每个流调用fclose相同。
+
+    系统V早期的版本中，abort函数产生SIGIOT信号。更进一步，进程忽略此信号，或者捕捉它并从信号处理程序返回都是可能的，在返回情况下，abort返回到它的调用者。
+    4.3BSD产生SIGILL信号。在此之前，该函数解除对此信号的阻塞，将其配置恢复为SIG_DFL (终止并构造core文件)。这阻止一个进程忽略或捕捉此信号。
+    SVR4在产生此信号之前关闭所有I/O流。在另一方面，4.3+BSD则不做此操作。对于保护性的程序设计，如果希望刷新标准I/O流，则在调用abort之前要做这种操作。在err_dump函数中实现了这一点
+    因为大多数UNIX tmpfile(临时文件)的实现在创建该文件之后立即调用unlink，所以ANSI C关于临时文件的警告通常与我们无关。
+
+编译运行一下，看一下执行情况片段：
+
+    execve("./test.o", ["./test.o"], [/* 97 vars */]) = 0
+    
+    open("NOSUCHF.ILE", O_RDONLY)           = -1 ENOENT (No such file or directory)
+    
+    dup(2)                                  = 3
+    
+    fcntl(3, F_GETFL)                       = 0x8402 (flags O_RDWR|O_APPEND|O_LARGEFILE)
+    
+    fstat(3, {st_mode=S_IFCHR|0600, st_rdev=makedev(136, 3), ...}) = 0
+    
+    mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fd18aa86000
+    
+    write(3, "Couldn't open file: No such file"..., 46Couldn't open file: No such file or directory
+    
+    ) = 46
+    
+    close(3)                                = 0
+    
+    munmap(0x7fd18aa86000, 4096)            = 0
+    
+    rt_sigprocmask(SIG_UNBLOCK, [ABRT], NULL, 8) = 0
+    
+    gettid()                                = 18489
+    
+    tgkill(18489, 18489, SIGABRT)           = 0
+    
+    SIGABRT {si_signo=SIGABRT, si_code=SI_TKILL, si_pid=18489, si_uid=0} ---
+    
+    +++ killed by SIGABRT +++ 
+    
+    已放弃
+        
+**abort测试代码说明**
+
+代码大体结构
+
+    |-   macro                                                                                                           
+    ||     NUM                                                                                                     
+    ||     MIN_RLIMIT_CORE                                                                                                                           
+    |                                                                                                                         
+    |-   variable                                                                                                                            
+    ||     TCID                                                                                                           
+    ||     TST_TOTAL                                                                                                                 
+    |                                                                                                      
+    |-   function                                                                                                    
+    ||     main                                                                                         
+    ||     setup                                                              
+    ||     cleanup                                                                 
+    ||     do_child                                                                                    
+    ||     instress
+
+先看一下头文件：
+
+    #include <sys/types.h>
+    #include <sys/wait.h>
+    #include <errno.h>
+    #include <signal.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <sys/resource.h>
+    
+    #include "test.h"
+    #include "safe_macros.h"
+    
+执行情况：
+
+    abort01     0  TINFO  :  Adjusting RLIMIT_CORE to 1048576                                                                                            
+    abort01     1  TPASS  :  abort dumped core                                                                                                           
+    abort01     2  TPASS  :  abort raised SIGIOT                                                                                                         
+    abort01     3  TPASS  :  abort dumped core                                                                                                           
+    abort01     4  TPASS  :  abort raised SIGIOT                                                                                                         
+    abort01     5  TPASS  :  abort dumped core                                                                                                           
+    abort01     6  TPASS  :  abort raised SIGIOT 
+
+程序后台执行片段
+
+    chdir("/tmp/aboeHLyFk")                 = 0
+    clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb05157a9d0) = 19587
+    wait4(-1, [{WIFSIGNALED(s) && WTERMSIG(s) == SIGABRT && WCOREDUMP(s)}], 0, NULL) = 19587
+    SIGCHLD {si_signo=SIGCHLD, si_code=CLD_DUMPED, si_pid=19587, si_uid=0, si_status=SIGABRT, si_utime=0, si_stime=0} ---
+    wait4(-1, 0x7ffd43788f30, 0, NULL)      = -1 ECHILD (No child processes)
+    write(1, "abort01     1  TPASS  :  abort d"..., 43abort01     1  TPASS  :  abort dumped core
+    ) = 43
+    write(1, "abort01     2  TPASS  :  abort r"..., 45abort01     2  TPASS  :  abort raised SIGIOT
+    ) = 45
+    clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb05157a9d0) = 19588
+    wait4(-1, [{WIFSIGNALED(s) && WTERMSIG(s) == SIGABRT && WCOREDUMP(s)}], 0, NULL) = 19588
+    SIGCHLD {si_signo=SIGCHLD, si_code=CLD_DUMPED, si_pid=19588, si_uid=0, si_status=SIGABRT, si_utime=0, si_stime=0} ---
+    wait4(-1, 0x7ffd43788f30, 0, NULL)      = -1 ECHILD (No child processes)  
+    write(1, "abort01     3  TPASS  :  abort d"..., 43abort01     3  TPASS  :  abort dumped core
+    ) = 43
+    write(1, "abort01     4  TPASS  :  abort r"..., 45abort01     4  TPASS  :  abort raised SIGIOT
+    ) = 45
+    clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb05157a9d0) = 19589
+    wait4(-1, [{WIFSIGNALED(s) && WTERMSIG(s) == SIGABRT && WCOREDUMP(s)}], 0, NULL) = 19589
+    SIGCHLD {si_signo=SIGCHLD, si_code=CLD_DUMPED, si_pid=19589, si_uid=0, si_status=SIGABRT, si_utime=0, si_stime=0} ---
+    wait4(-1, 0x7ffd43788f30, 0, NULL)      = -1 ECHILD (No child processes)
+    write(1, "abort01     5  TPASS  :  abort d"..., 43abort01     5  TPASS  :  abort dumped core
+    ) = 43
+    write(1, "abort01     6  TPASS  :  abort r"..., 45abort01     6  TPASS  :  abort raised SIGIOT
+    ) = 45
+    unlink("core")
+    
+从测试log来看，abort01主要进行abort"dumped core"、和"raised SIGIOT"两种测试，并且测试了３遍。０为setup打印信息。
+    
+    #define NUM 3 /*定义fork进程的数量*/
+    char *TCID;         /* tescase的名字*/
+    int TST_TOTAL;          /* testcases数量 */
+
+主要函数
+
+    static void setup(void);
+    static void cleanup(void);                                                                                            
+    static void do_child();                                                                                               
+    static int instress();
+    int main(int argc, char *argv[])
+    
+分别分析这几个函数
+
+**setup**
+
+    #define MIN_RLIMIT_CORE (1024 * 1024)
+    static void setup(void)
+    {
+        struct rlimit rlim;
+        SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &rlim);
+        
+        if (rlim.rlim_cur < MIN_RLIMIT_CORE) {
+            test_resm(TINFO, "Adjusting RLIMIT_CORE to %i", MIN_RLIMIT_CORE);
+            rlim.rlim_cur = MIN_RLIMIT_CORE;
+            SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &rlim);
+        }
+        tst_tmpdir()
+    }
+    
+setup函数的目的是为了调整RLIMIT_CORE的大小。在Linux系统中，Resouce limit指在一个进程的执行过程中，它所能得到的资源的限制，比如进程的core file的最大值，虚拟内存的最大值等。Resouce limit的大小可以直接影响进程的执行状况。其有两个最重要的概念：soft limit 和 hard limit。
+
+    struct rlimit {
+    rlim_t rlim_cur;
+    rlim_t rlim_max;
+    };
+
+是指内核所能支持的资源上限。比如对于RLIMIT_NOFILE(一个进程能打开的最大文件 数，内核默认是1024)，soft limit最大也只能达到1024。对于RLIMIT_CORE(core文件的大小，内核不做限制)，soft limit最大能是unlimited。hard limit在资源中只是作为soft limit的上限。当你设置hard limit后，你以后设置的soft limit只能小于hard limit。要说明的是，hard limit只针对非特权进程，也就是进程的有效用户ID(effective user ID)不是0的进程。具有特权级别的进程(具有属性CAP_SYS_RESOURCE)，soft limit则只有内核上限。
+
+tst_tmpdir函数说明一下，该函数用来为ltp测试程序创建临时目录，目录名case名称＋随机字母。
+
+**cleanup函数**
+
+    static void cleanup(void)
+    {
+        unlink("core")
+        tst_rmdir();
+    }
+    
+该函数比较简单，用来清理产生的临时文件和软连接。可以做下试验，将main函数中的该函数注释掉，会在tmp下看到产生的core文件。
+
+**do_child函数**
+
+    static void do_child(void)
+    {
+        abort()
+        fprintf(stderr, "\tchild - abort failed.\n");
+        exit(1);
+    }
+
+abort的调用，进程退出。
+    
+**instress函数**
+
+    static int instress(void)
+    {
+        test_resm(TINFO,
+            "System resources may be too low; fork(), select() etc are likely to fail.");
+        return 1;
+    }
+    
+系统资源比较低的情况，　出现fork()等调用失败时的处理。也是为兼容UCLINUK测试（如嵌入式系统）。
+
+**main函数**
+控制测试流程和主要的测试代码，以下将重点介绍一些代码片段。
+
+    #ifdef WCOREDUMP
+        int core;
+        core = 0;
+    #endif 
+WCOREDUMP(status)
+如果孩子进程产生核心转储文件则返回真。这个宏只应该在 WIFSIGNALED 返回真时调用。这个没有在 POSIX.1-2001 里指定并且在一些 UNIX 实现(如 AIX、SunOS)里也没有提供。只在 #ifdef WCOREDUMP ... #endif 内部使用。
+
+    #ifdef UCLINUX
+        maybe_run_child(&do_child, "");  /* UCLINUX的情况　*/
+    #endif
+
+        setup(); /*调用setup函数*/
+
+        for (i = 0; i < NUM; i++) {   /*连续创建３个进程调用do_child函数*/
+            kidpid = FORK_OR_VFORK();
+            if (kidpid == 0) {
+    #ifdef UCLINUX
+                if (self_exec(argv[0], "")) {
+                    if (!instress()) {
+                        perror("fork failed");
+                        exit(1);
+                    }
+                }
+    #else
+                do_child();　　//调用do_child()函数
+                
+    #endif
+            }  
+                    }
+        if (kidpid < 0)
+            if (!instress())
+                tst_brkm(TBROK | TERRNO, cleanup,
+                     "fork failed");
+        count = 0;
+        while ((child = wait(&status)) > 0)
+            count++;
+        if (count != 1) {
+            tst_brkm(TBROK, cleanup,
+                 "wrong # children waited on; got %d, expected 1",
+                 count);
+        }
+    #ifdef WCOREDUMP
+            core = WCOREDUMP(status);//WCOFEDUMP情况
+    #endif
+            sig = WTERMSIG(status);
+
+        }
+        if (WIFEXITED(status))
+            ex = WEXITSTATUS(status);
+
+    #ifdef WCOREDUMP
+        if (core == 0) {
+            tst_brkm(TFAIL, cleanup,
+                 "Child did not dump core; exit code = %d, "
+                 "signal = %d", ex, sig);
+        } else if (core != -1) {
+            tst_resm(TPASS, "abort dumped core");　//core值等于０，则没有正常产生core文件，如果core不等于０且不等于-1，说明正常产生了core文件
+        }
+    #endif
+        if (sig == SIGIOT) {
+            tst_resm(TPASS, "abort raised SIGIOT");　　//发出的信号如果为SIGIOT说明信号触发正常
+        } else {
+            tst_brkm(TFAIL, cleanup,
+                 "Child did not raise SIGIOT (%d); exit code = %d, "
+                 "signal = %d", SIGIOT, ex, sig);
+        }
+
+    }
+
+            
