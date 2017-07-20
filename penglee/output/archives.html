@@ -1,0 +1,1165 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="description" content="生活不止眼前的苟且，还有诗和远方 &lt;a href=&#34;pages/aboutme.html&#34;&gt;More...&lt;/a&gt;" />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="DOCKER基础技术：LINUX CGROUP(转载）"/>
+    <meta property="og:url" content="./2017/03/03/docker/"/>
+    <meta property="og:description" content="前面，我们介绍了Linux Namespace，但是Namespace解决的问题主要是环境隔离的问题，这只是虚拟化中最最基础的一步，我们还需要解决对计算机资源使用上的隔离。也就是说，虽然你通过Namespace把我Jail到一个特定的环境中去了，但是我在其中的进程使用用CPU、内存、磁盘等这些计算资源其实还是可以随心所欲的。所以，我们希望对进程进行资源利用上的限制或控制。这就是Linux CGroup出来了的原因。 Linux CGroup全称Linux Control Group， 是Linux内核的一个功能，用来限制，控制与分离一个进程组群的资源（如CPU、内存、磁盘输入输出等）。这个项目最早是由Google的工程师在2006年发起（主要是Paul Menage和Rohit Seth），最早的名称为进程容器（process containers）。在2007年时，因为在Linux内核中，容器（container）这个名词太过广泛，为避免混乱，被重命名为cgroup，并且被合并到2.6.24版的内核中去。然后，其它开始了他的发展。 Linux CGroupCgroup 可​​​让​​​您​​​为 ..."/>
+    <meta property="article:published_time" content="2017-03-03" />
+    <meta property="article:section" content="Docker专题" />
+        <meta property="article:tag" content="docker" />
+        <meta property="article:author" content="陈皓" />
+        <meta property="og:image"
+              content="./favicon.png"/>
+
+    <title>最新文章 - 路漫求索</title>
+
+        <link rel="stylesheet" href="./theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="./theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="./theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="./theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="./feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="./archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=./2017/03/03/docker/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=./2017/03/03/docker/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="./">
+<img src="./sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse ">
+                        <li class="">
+                            <a class="hide-overflow" href="./2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="./2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="./2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="./2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="./2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="./archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=./2017/03/03/docker/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=./2017/03/03/docker/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="./pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="./pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="./category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="./category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<div class="row">
+    <div class="col-lg-9">
+        <header class="page-header">
+            <h1>文章列表</h1>
+        </header>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-9">
+            <article>
+                <h4>
+                    <time datetime="2017-08-19T00:00:00+08:00"> 2017-08-19 六</time>
+                    <a href="./2017/08/19/Multue/">Multue测试工具介绍</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-06-17T00:00:00+08:00"> 2017-06-17 六</time>
+                    <a href="./2017/06/17/网络/">网络速率统计的几个示例</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-04-01T00:00:00+08:00"> 2017-04-01 六</time>
+                    <a href="./2017/04/01/Robot/">Robot Framework 用户手册(三)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-31T00:00:00+08:00"> 2017-03-31 五</time>
+                    <a href="./2017/03/31/Robot/">Robot Framework 用户手册(二)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-26T00:00:00+08:00"> 2017-03-26 日</time>
+                    <a href="./2017/03/26/Robot/">Robot Framework 用户手册(一)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-24T00:00:00+08:00"> 2017-03-24 五</time>
+                    <a href="./2017/03/24/Robot/">Robot Framework快速入门</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-22T00:00:00+08:00"> 2017-03-22 三</time>
+                    <a href="./2017/03/22/itest/">Itest测试工具介绍</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-11T00:00:00+08:00"> 2017-03-11 六</time>
+                    <a href="./2017/03/11/测试/">测试的行业危机 <转></a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-10T00:00:00+08:00"> 2017-03-10 五</time>
+                    <a href="./2017/03/10/测试/">测试分类<转></a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-03-03T00:00:00+08:00"> 2017-03-03 五</time>
+                    <a href="./2017/03/03/docker/">DOCKER基础技术：LINUX CGROUP(转载）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-02-23T00:00:00+08:00"> 2017-02-23 四</time>
+                    <a href="./2017/02/23/python/">位操作</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-02-20T00:00:00+08:00"> 2017-02-20 一</time>
+                    <a href="./2017/02/20/python/">python实现awk域简单例子</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-02-13T00:00:00+08:00"> 2017-02-13 一</time>
+                    <a href="./2017/02/13/python/">类常用内置方法(二）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-01-23T00:00:00+08:00"> 2017-01-23 一</time>
+                    <a href="./2017/01/23/python/">类常用内置方法</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2017-01-15T00:00:00+08:00"> 2017-01-15 日</time>
+                    <a href="./2017/01/15/编程语言-Python/">python metaclass(下）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-12-30T00:00:00+08:00"> 2016-12-30 五</time>
+                    <a href="./2016/12/30/其他/">技术人员的发展之路</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-12-27T00:00:00+08:00"> 2016-12-27 二</time>
+                    <a href="./2016/12/27/编程语言-Python/">python shelve</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-12-25T00:00:00+08:00"> 2016-12-25 日</time>
+                    <a href="./2016/12/25/python/">sqlite3 - SQLite数据库DB-API 2.0接口</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-12-24T00:00:00+08:00"> 2016-12-24 六</time>
+                    <a href="./2016/12/24/python/">python数据存储</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-12-01T00:00:00+08:00"> 2016-12-01 四</time>
+                    <a href="./2016/12/01/mongodb/">Mongodb-linux安装</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-11-15T00:00:00+08:00"> 2016-11-15 二</time>
+                    <a href="./2016/11/15/python/">pyqt基本操作(三）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-11-14T00:00:00+08:00"> 2016-11-14 一</time>
+                    <a href="./2016/11/14/python/">pyqt基本操作(二）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-11-13T00:00:00+08:00"> 2016-11-13 日</time>
+                    <a href="./2016/11/13/python/">pyqt基本操作</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-11-12T00:00:00+08:00"> 2016-11-12 六</time>
+                    <a href="./2016/11/12/自动化测试/">Avocado-编写Avocado测试</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-11-03T00:00:00+08:00"> 2016-11-03 四</time>
+                    <a href="./2016/11/03/自动化测试/">Avocado-入门</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-11-01T00:00:00+08:00"> 2016-11-01 二</time>
+                    <a href="./2016/11/01/自动化测试/">Avocado User’s Guide</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-10-03T00:00:00+08:00"> 2016-10-03 一</time>
+                    <a href="./2016/10/03/编程语言-Python/">python metaclass(上）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-09-01T00:00:00+08:00"> 2016-09-01 四</time>
+                    <a href="./2016/09/01/bei-jing-zhe-die-hao-jing-fang/">北京折叠－郝景芳</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-08-12T00:00:00+08:00"> 2016-08-12 五</time>
+                    <a href="./2016/08/12/Docker/">Docker基础技术：Linux Namespace（下）<转></a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-08-11T00:00:00+08:00"> 2016-08-11 四</time>
+                    <a href="./2016/08/11/Docker/">Docker基础技术：Linux Namespace（上）<转></a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-08-11T00:00:00+08:00"> 2016-08-11 四</time>
+                    <a href="./2016/08/11/Performance/">如何做性能测试<转></a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-08-05T00:00:00+08:00"> 2016-08-05 五</time>
+                    <a href="./2016/08/05/LTP/">LTP－kernel-syscalls-accept()</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-08-02T00:00:00+08:00"> 2016-08-02 二</time>
+                    <a href="./2016/08/02/LTP/">LTP－kernel-syscalls-abort</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-08-01T00:00:00+08:00"> 2016-08-01 一</time>
+                    <a href="./2016/08/01/LTP/">LTP－kernel-syscalls</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-06-03T00:00:00+08:00"> 2016-06-03 五</time>
+                    <a href="./2016/06/03/LTP/">LTP－Command-file</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-06-02T00:00:00+08:00"> 2016-06-02 四</time>
+                    <a href="./2016/06/02/LTP/">LTP－Command</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-06-01T00:00:00+08:00"> 2016-06-01 三</time>
+                    <a href="./2016/06/01/LTP/">LTP－Case list</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-03-11T00:00:00+08:00"> 2016-03-11 五</time>
+                    <a href="./2016/03/11/python-howtosyi/">Python-HOWTOS(一）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-01-01T00:00:00+08:00"> 2016-01-01 五</time>
+                    <a href="./2016/01/01/effective-python/">Python-tips01</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2016-01-01T00:00:00+08:00"> 2016-01-01 五</time>
+                    <a href="./2016/01/01/python/">PyUnit(一）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-12-04T00:00:00+08:00"> 2015-12-04 五</time>
+                    <a href="./2015/12/04/python/">leetcode - Number Complement</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-12-03T00:00:00+08:00"> 2015-12-03 四</time>
+                    <a href="./2015/12/03/python/">leetcode - Palindrome Number & Hamming Distance</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-12-02T00:00:00+08:00"> 2015-12-02 三</time>
+                    <a href="./2015/12/02/python/">leetcode - Reverse Integer</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-12-01T00:00:00+08:00"> 2015-12-01 二</time>
+                    <a href="./2015/12/01/python/">leetcode - Two Sum</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-11-01T00:00:00+08:00"> 2015-11-01 日</time>
+                    <a href="./2015/11/01/autotest/">Autotest-client Package(1)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-22T00:00:00+08:00"> 2015-08-22 六</time>
+                    <a href="./2015/08/22/autotest/">Autotest-Autotest Remote (Autoserv)(三）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-21T00:00:00+08:00"> 2015-08-21 五</time>
+                    <a href="./2015/08/21/autotest/">Autotest-Autotest Remote (Autoserv)(二）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-20T00:00:00+08:00"> 2015-08-20 四</time>
+                    <a href="./2015/08/20/autotest/">Autotest-Autotest Remote (Autoserv)（一）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-19T00:00:00+08:00"> 2015-08-19 三</time>
+                    <a href="./2015/08/19/autotest/">Autotest-others</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-18T00:00:00+08:00"> 2015-08-18 二</time>
+                    <a href="./2015/08/18/autotest/">Autotest-Linux distribution detection</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-17T00:00:00+08:00"> 2015-08-17 一</time>
+                    <a href="./2015/08/17/autotest/">Autotest-Using and developing job profilers</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-16T00:00:00+08:00"> 2015-08-16 日</time>
+                    <a href="./2015/08/16/autotest/">Autotest-add test</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-15T00:00:00+08:00"> 2015-08-15 六</time>
+                    <a href="./2015/08/15/autotest/">Autotest-Control file specification</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-14T00:00:00+08:00"> 2015-08-14 五</time>
+                    <a href="./2015/08/14/autotest/">Autotest-client control</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-13T00:00:00+08:00"> 2015-08-13 四</time>
+                    <a href="./2015/08/13/autotest02/">Autotest-Local</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-08-12T00:00:00+08:00"> 2015-08-12 三</time>
+                    <a href="./2015/08/12/Autotest01/">Autotest-summary</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-02-03T00:00:00+08:00"> 2015-02-03 二</time>
+                    <a href="./2015/02/03/selenium/">selenium-expected_conditions源码分析</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-02-01T00:00:00+08:00"> 2015-02-01 日</time>
+                    <a href="./2015/02/01/selenium/">selenium-Sample(五）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-26T00:00:00+08:00"> 2015-01-26 一</time>
+                    <a href="./2015/01/26/selenium/">selenium-Sample(四）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-25T00:00:00+08:00"> 2015-01-25 日</time>
+                    <a href="./2015/01/25/selenium/">selenium-Sample(三）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-24T00:00:00+08:00"> 2015-01-24 六</time>
+                    <a href="./2015/01/24/selenium/">selenium-Sample(二）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-23T00:00:00+08:00"> 2015-01-23 五</time>
+                    <a href="./2015/01/23/selenium/">selenium-Sample(一）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-22T00:00:00+08:00"> 2015-01-22 四</time>
+                    <a href="./2015/01/22/selenium/">selenium-常见问题</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-21T00:00:00+08:00"> 2015-01-21 三</time>
+                    <a href="./2015/01/21/selenium/">selenium-Remote WebDriver</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-20T00:00:00+08:00"> 2015-01-20 二</time>
+                    <a href="./2015/01/20/selenium/">selenium-API-2</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-19T00:00:00+08:00"> 2015-01-19 一</time>
+                    <a href="./2015/01/19/selenium/">selenium-API</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-18T00:00:00+08:00"> 2015-01-18 日</time>
+                    <a href="./2015/01/18/selenium/">selenium-页面对象</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-17T00:00:00+08:00"> 2015-01-17 六</time>
+                    <a href="./2015/01/17/selenium/">selenium-等待</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-16T00:00:00+08:00"> 2015-01-16 五</time>
+                    <a href="./2015/01/16/selenium/">selenium-元素定位</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-15T00:00:00+08:00"> 2015-01-15 四</time>
+                    <a href="./2015/01/15/selenium/">selenium-常用方法</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-14T00:00:00+08:00"> 2015-01-14 三</time>
+                    <a href="./2015/01/14/selenium/">selenium-入门</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-13T00:00:00+08:00"> 2015-01-13 二</time>
+                    <a href="./2015/01/13/selenium/">selenium-基本介绍</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2015-01-12T00:00:00+08:00"> 2015-01-12 一</time>
+                    <a href="./2015/01/12/自动化测试/">selenium-浏览器性能测试</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-10-17T00:00:00+08:00"> 2014-10-17 五</time>
+                    <a href="./2014/10/17/风险控制/">测试风险识别</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-10-11T00:00:00+08:00"> 2014-10-11 六</time>
+                    <a href="./2014/10/11/测试/">测试建模</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-10-10T00:00:00+08:00"> 2014-10-10 五</time>
+                    <a href="./2014/10/10/linux/">Spec2006使用说明</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-09-15T00:00:00+08:00"> 2014-09-15 一</time>
+                    <a href="./2014/09/15/linux/">SpecJvm2008使用说明</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-09-12T00:00:00+08:00"> 2014-09-12 五</time>
+                    <a href="./2014/09/12/ltp/">Linux Test Project(一)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-06-01T00:00:00+08:00"> 2014-06-01 日</time>
+                    <a href="./2014/06/01/http/">http协议</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-31T00:00:00+08:00"> 2014-05-31 六</time>
+                    <a href="./2014/05/31/python/">Python-Tips(十三)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-28T00:00:00+08:00"> 2014-05-28 三</time>
+                    <a href="./2014/05/28/python/">Python-Tips(十二)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-27T00:00:00+08:00"> 2014-05-27 二</time>
+                    <a href="./2014/05/27/python/">Python-Tips(十一)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-26T00:00:00+08:00"> 2014-05-26 一</time>
+                    <a href="./2014/05/26/python-打包/">Python-Tips(十)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-24T00:00:00+08:00"> 2014-05-24 六</time>
+                    <a href="./2014/05/24/python/">Python-Tips(九)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-22T00:00:00+08:00"> 2014-05-22 四</time>
+                    <a href="./2014/05/22/python/">Python-Tips(八)</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-18T00:00:00+08:00"> 2014-05-18 日</time>
+                    <a href="./2014/05/18/python/">Python-Tips(七）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-13T00:00:00+08:00"> 2014-05-13 二</time>
+                    <a href="./2014/05/13/python/">Python-Tips(七）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-10T00:00:00+08:00"> 2014-05-10 六</time>
+                    <a href="./2014/05/10/python/">Python-Tips(六）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-07T00:00:00+08:00"> 2014-05-07 三</time>
+                    <a href="./2014/05/07/python/">Python-Tips(五）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-06T00:00:00+08:00"> 2014-05-06 二</time>
+                    <a href="./2014/05/06/python/">Python-Tips(四）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-05T00:00:00+08:00"> 2014-05-05 一</time>
+                    <a href="./2014/05/05/python/">Python-Tips(三）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-03T00:00:00+08:00"> 2014-05-03 六</time>
+                    <a href="./2014/05/03/python/">Python-Tips(二）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-05-01T00:00:00+08:00"> 2014-05-01 四</time>
+                    <a href="./2014/05/01/python/">Python-Tips(一）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2014-03-01T00:00:00+08:00"> 2014-03-01 六</time>
+                    <a href="./2014/03/01/stablity/">Reboot test脚本</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-11-01T00:00:00+08:00"> 2013-11-01 五</time>
+                    <a href="./2013/11/01/patch/">diff 和 patch</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-10-13T00:00:00+08:00"> 2013-10-13 日</time>
+                    <a href="./2013/10/13/rpm/">RPM打包与SPEC分析（二）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-10-09T00:00:00+08:00"> 2013-10-09 三</time>
+                    <a href="./2013/10/09/rpm/">RPM打包与SPEC分析（一）</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-08-29T00:00:00+08:00"> 2013-08-29 四</time>
+                    <a href="./2013/08/29/pmon/">PMON启动信息详解</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-08-01T00:00:00+08:00"> 2013-08-01 四</time>
+                    <a href="./2013/08/01/Makefile/">Makefile中文手册</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-07-01T00:00:00+08:00"> 2013-07-01 一</time>
+                    <a href="./2013/07/01/sort/">快速排序</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-06-12T00:00:00+08:00"> 2013-06-12 三</time>
+                    <a href="./2013/06/12/linpack/">高性能计算机系统浮点性能测试</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2013-05-27T00:00:00+08:00"> 2013-05-27 一</time>
+                    <a href="./2013/05/27/C/">通过printf函数简单实现解析不定参数表</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2012-01-01T00:00:00+08:00"> 2012-01-01 日</time>
+                    <a href="./2012/01/01/other/">转载：程序员技术练级攻略</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2011-11-01T00:00:00+08:00"> 2011-11-01 二</time>
+                    <a href="./2011/11/01/Tool/">wireshark使用指南</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2011-08-15T00:00:00+08:00"> 2011-08-15 一</time>
+                    <a href="./2011/08/15/C/">C-宏定义</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2011-07-11T00:00:00+08:00"> 2011-07-11 一</time>
+                    <a href="./2011/07/11/C/">C-结构体声明</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2011-01-01T00:00:00+08:00"> 2011-01-01 六</time>
+                    <a href="./2011/01/01/cmds/">常用shell命令</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2009-10-12T00:00:00+08:00"> 2009-10-12 一</time>
+                    <a href="./2009/10/12/UNIX/">信号</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2009-10-10T00:00:00+08:00"> 2009-10-10 六</time>
+                    <a href="./2009/10/10/UNIX/">原子操作</a>
+                </h4>
+            </article>
+            <article>
+                <h4>
+                    <time datetime="2009-10-01T00:00:00+08:00"> 2009-10-01 四</time>
+                    <a href="./2009/10/01/排序/">排序-希尔排序法</a>
+                </h4>
+            </article>
+    </div>
+</div>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="./theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="./theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="./theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "./theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="./theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+<script>
+    function FadeInOnScroll(ObjectList){
+        ObjectList.each(function(i) {
+            var bottom_of_object = $(this).position().top + $(this).outerHeight();
+            var bottom_of_window = $(window).scrollTop() + $(window).height();
+
+            if( bottom_of_window > bottom_of_object ){
+                $(this).fadeTo(750,1);
+            }
+        });
+    }
+
+    articles = $("article").fadeTo(0, 0.05);
+    FadeInOnScroll(articles)
+
+    $(window).scroll(function() {
+        FadeInOnScroll(articles)
+    });
+</script>
+</body>
+</html>

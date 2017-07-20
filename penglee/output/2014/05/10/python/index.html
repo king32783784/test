@@ -1,0 +1,723 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-Tips" />
+        <meta name="description" content="Tips 21 重构 前面将了测试驱动开发，但就算尽全力编写的单元测试，仍然会遇到错误。仍然会有考虑不全面的测试用例。 比如前面的实现的转换数字的程序，如果输入空字符，会触发InvalidRomanNumeralError例外。 在出现错误后，应该在修复前写出一个导致该失败情形的测试用例。 class FromRomanBadInput(unittest.TestCase): def testBlank(self): &#39;&#39;&#39;from_roman should fail with blank string&#39;&#39;&#39; self.assertRaises(roman2.InvalidRomanNumeralError, roman2.form_roman, &#39;&#39;) 执行测试用例会失败，现在可以修复这个bug。 if not s: raise InvalidRomanNumberalError(&#39;Input can not be blank&#39;) 然后测试成功 正常情况下，罗马数字中任何一个字符在同一行中不得重复出现三次以上，但通过一行4个Ｍ字符来代表4000,这样就可以把数字范围才能够１..3999转为１..4999 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(六）"/>
+    <meta property="og:url" content="../../../../2014/05/10/python/"/>
+    <meta property="og:description" content="Tips 21 重构 前面将了测试驱动开发，但就算尽全力编写的单元测试，仍然会遇到错误。仍然会有考虑不全面的测试用例。 比如前面的实现的转换数字的程序，如果输入空字符，会触发InvalidRomanNumeralError例外。 在出现错误后，应该在修复前写出一个导致该失败情形的测试用例。 class FromRomanBadInput(unittest.TestCase): def testBlank(self): &#39;&#39;&#39;from_roman should fail with blank string&#39;&#39;&#39; self.assertRaises(roman2.InvalidRomanNumeralError, roman2.form_roman, &#39;&#39;) 执行测试用例会失败，现在可以修复这个bug。 if not s: raise InvalidRomanNumberalError(&#39;Input can not be blank&#39;) 然后测试成功 正常情况下，罗马数字中任何一个字符在同一行中不得重复出现三次以上，但通过一行4个Ｍ字符来代表4000,这样就可以把数字范围才能够１..3999转为１..4999 ..."/>
+    <meta property="article:published_time" content="2014-05-10" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-Tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(六） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/10/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/10/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/10/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/10/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/10/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(六）">
+                            Python-Tips(六）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-10T00:00:00+08:00"> 2014-05-10 六</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-Tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-21">Tips 21</h3>
+<p><strong>重构</strong></p>
+<p>前面将了测试驱动开发，但就算尽全力编写的单元测试，仍然会遇到错误。仍然会有考虑不全面的测试用例。
+比如前面的实现的转换数字的程序，如果输入空字符，会触发InvalidRomanNumeralError例外。
+在出现错误后，应该在修复前写出一个导致该失败情形的测试用例。</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">FromRomanBadInput</span><span class="p">(</span><span class="nx">unittest</span><span class="p">.</span><span class="nx">TestCase</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">testBlank</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="s1">'''from_roman should fail with blank string'''</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">assertRaises</span><span class="p">(</span><span class="nx">roman2</span><span class="p">.</span><span class="nx">InvalidRomanNumeralError</span><span class="p">,</span> <span class="nx">roman2</span><span class="p">.</span><span class="nx">form_roman</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+</pre></div>
+<p>执行测试用例会失败，现在可以修复这个bug。</p>
+<div class="highlight"><pre><span></span>if not s:
+    raise InvalidRomanNumberalError('Input can not be blank')
+</pre></div>
+<p>然后测试成功</p>
+<p>正常情况下，罗马数字中任何一个字符在同一行中不得重复出现三次以上，但通过一行4个Ｍ字符来代表4000,这样就可以把数字范围才能够１..3999转为１..4999．先修改测试用例
+增加 (4000, 'MMMM'), (4500, 'MMMMD'),(4888, 'MMMMDCCCLXXXVIII), (4999, 'MMMMCMXCIX')
+过大值测试由4000转为5000,太多重复数字测试'MMMM'被定为符合要求的罗马数字，所以'MMMM'改为'MMMMM',范围测试的１-3999,改为１-4999
+测试失败
+因为一些新需求导致失败的测试用例，现在就需要对实现进行修改。
+首先判断是否合法的罗马数字的匹配规则要修改
+M{0,4}对4000+数字的支持
+对数字判断的范围改为(0&lt;n&lt;5000)
+到底这样修改，符合要求吗？光说不行啊，还得测试才能确保。测试最终通过，说明我们的修改是有效的</p>
+<p>需求变了，实现跟着变了，但改变实现后，影响之前的功能吗？新功能实现成功吗？完整的单元测试的好处就是明确的告诉你修改是否成功，是否对之前的功能有影响。</p>
+<p>重构是修改可运行的代码，使其表现更好。更佳可以是性能更好，占用内存更少，占用更少的空间，更加简洁、增加更多功能，代码可读性更高。如果代码存在完整的单元测试的前提下，你才能毫无顾忌的去修改去重构，不然心里没底啊。</p>
+<p>原来代码中的正则表达式看起来可读性不高，可以用个查询表替换，但是替换之后功能会不会有影响？别怕，我们已经实现了相应的单元测试。</p>
+<p>现在可以大胆去修改实现</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">OutOfRangeError</span><span class="p">(</span><span class="nx">ValueError</span><span class="p">)</span><span class="o">:</span> <span class="nx">pass</span>
+<span class="kr">class</span> <span class="nx">NotIntegerError</span><span class="p">(</span><span class="nx">ValueError</span><span class="p">)</span><span class="o">:</span> <span class="nx">pass</span>
+<span class="kr">class</span> <span class="nx">InvalidRomanNumeralError</span><span class="p">(</span><span class="nx">ValueError</span><span class="p">)</span><span class="o">:</span> <span class="nx">pass</span>
+
+<span class="nx">roman_numeral_map</span> <span class="o">=</span> <span class="p">((</span><span class="s1">'M'</span><span class="p">,</span>  <span class="mi">1000</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'CM'</span><span class="p">,</span> <span class="mi">900</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'D'</span><span class="p">,</span>  <span class="mi">500</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'CD'</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'C'</span><span class="p">,</span>  <span class="mi">100</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'XC'</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'L'</span><span class="p">,</span>  <span class="mi">50</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'XL'</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'X'</span><span class="p">,</span>  <span class="mi">10</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'IX'</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'V'</span><span class="p">,</span>  <span class="mi">5</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'IV'</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">'I'</span><span class="p">,</span>  <span class="mi">1</span><span class="p">))</span>
+
+<span class="nx">to_roman_table</span> <span class="o">=</span> <span class="p">[</span> <span class="nx">None</span> <span class="p">]</span>
+<span class="nx">from_roman_table</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="nx">def</span> <span class="nx">to_roman</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span><span class="o">:</span>
+    <span class="s1">'''convert integer to Roman numeral'''</span>
+    <span class="k">if</span> <span class="nx">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="nx">n</span> <span class="o">&lt;</span> <span class="mi">5000</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">raise</span> <span class="nx">OutOfRangeError</span><span class="p">(</span><span class="s1">'number out of range (must be 1..4999)'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="kr">int</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="o">!=</span> <span class="nx">n</span>:
+        <span class="kt">raise</span> <span class="nx">NotIntegerError</span><span class="p">(</span><span class="s1">'non-integers can not be converted'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">to_roman_table</span><span class="p">[</span><span class="nx">n</span><span class="p">]</span>
+
+<span class="nx">def</span> <span class="nx">from_roman</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="o">:</span>
+    <span class="s1">'''convert Roman numeral to integer'''</span>
+    <span class="k">if</span> <span class="nx">not</span> <span class="nx">isinstance</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="nx">str</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">raise</span> <span class="nx">InvalidRomanNumeralError</span><span class="p">(</span><span class="s1">'Input must be a string'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">not</span> <span class="nx">s</span>:
+        <span class="kt">raise</span> <span class="nx">InvalidRomanNumeralError</span><span class="p">(</span><span class="s1">'Input can not be blank'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">s</span> <span class="nx">not</span> <span class="k">in</span> <span class="nx">from_roman_table</span>:
+        <span class="kt">raise</span> <span class="nx">InvalidRomanNumeralError</span><span class="p">(</span><span class="s1">'Invalid Roman numeral: {0}'</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">s</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nx">from_roman_table</span><span class="p">[</span><span class="nx">s</span><span class="p">]</span>
+
+<span class="nx">def</span> <span class="nx">build_lookup_tables</span><span class="p">()</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">to_roman</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">result</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="k">for</span> <span class="nx">numeral</span><span class="p">,</span> <span class="nx">integer</span> <span class="k">in</span> <span class="nx">roman_numeral_map</span>:
+            <span class="kt">if</span> <span class="nx">n</span> <span class="o">&gt;=</span> <span class="nx">integer</span>:
+                <span class="kt">result</span> <span class="o">=</span> <span class="nx">numeral</span>
+                <span class="nx">n</span> <span class="o">-=</span> <span class="nx">integer</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="nx">n</span> <span class="o">&gt;</span> <span class="nx">0</span>:
+            <span class="kt">result</span> <span class="o">+=</span> <span class="nx">to_roman_table</span><span class="p">[</span><span class="nx">n</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nx">result</span>
+
+    <span class="k">for</span> <span class="nx">integer</span> <span class="k">in</span> <span class="nx">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">roman_numeral</span> <span class="o">=</span> <span class="nx">to_roman</span><span class="p">(</span><span class="nx">integer</span><span class="p">)</span>
+        <span class="nx">to_roman_table</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">roman_numeral</span><span class="p">)</span> <span class="err">#</span> <span class="mi">1</span><span class="o">-</span><span class="mi">5000</span><span class="err">的罗马数字列表</span>
+        <span class="nx">from_roman_table</span><span class="p">[</span><span class="nx">roman_numeral</span><span class="p">]</span> <span class="o">=</span> <span class="nx">integer</span><span class="err">　＃</span> <span class="mi">1</span><span class="o">-</span><span class="mi">5000</span><span class="err">罗马数字和阿拉伯数字的字典</span>
+
+<span class="nx">build_lookup_tables</span><span class="p">()</span>
+</pre></div>
+<p>修改完成好，再次执行单元测试，测试通过，说明虽然实现变了，但功能依旧能保证。</p>
+<p>单元测试是一个威力巨大的概念，如果实施的好，可以降低维护成本，提高项目的灵活性。但编写良好的测试用例非常艰难。很多语言都有自己的单元测试框架，但框架直接的共同点：</p>
+<ul>
+<li>设计测试用例是具体、自动且独立的工作</li>
+<li>在编写被测代码之前编写测试用例（测试驱动开发）</li>
+<li>编写用于检查好输入并验证正确结果的测试</li>
+<li>编写用于检查坏输入并做出正确失败响应的测试</li>
+<li>编写并更新测试用例反映新需求</li>
+<li>重构以提升性能、可扩展性、可读性、可维护性及补充特性</li>
+</ul></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(六）">Python-Tips(六）</a><ul><li><a class="toc-href" href="#tips-21" title="Tips 21">Tips 21</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

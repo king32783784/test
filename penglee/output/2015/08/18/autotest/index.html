@@ -1,0 +1,1073 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="autotest" />
+        <meta name="description" content="linux发行版检测 Autotest有个功能,就是让测试清晰了解到它运行在什么样的发行版上. 这个功能是由probe类群的实现和注册实现的. 这些probe类可以检查运行的系统的信息,比如发行版的release文件,二进制信息(如包管理)等. 快速检查发行版 autotest.client.shared.distro 模块提供一些APIS,最简单的就是使用detect(). 它的用法简单命了: from autotest.client.shared import distro detected_distro = distro.detect() 这样就可以返回发行版检测的结果,但是不太适用于UNKNOWN_DISIRO. name version release arch 例如: &gt;&gt;&gt;detected_distro = distro.detect() &gt;&gt;&gt;print detected_distro.name redhat 未知发行版 当检测机制不能检测到发行版,仍会返回一个LinuxDistro实例,但是它的name,version等信息比较特殊. autotest.clientshared.distro.UNKNOWN_DISIRO ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Autotest-Linux distribution detection"/>
+    <meta property="og:url" content="../../../../2015/08/18/autotest/"/>
+    <meta property="og:description" content="linux发行版检测 Autotest有个功能,就是让测试清晰了解到它运行在什么样的发行版上. 这个功能是由probe类群的实现和注册实现的. 这些probe类可以检查运行的系统的信息,比如发行版的release文件,二进制信息(如包管理)等. 快速检查发行版 autotest.client.shared.distro 模块提供一些APIS,最简单的就是使用detect(). 它的用法简单命了: from autotest.client.shared import distro detected_distro = distro.detect() 这样就可以返回发行版检测的结果,但是不太适用于UNKNOWN_DISIRO. name version release arch 例如: &gt;&gt;&gt;detected_distro = distro.detect() &gt;&gt;&gt;print detected_distro.name redhat 未知发行版 当检测机制不能检测到发行版,仍会返回一个LinuxDistro实例,但是它的name,version等信息比较特殊. autotest.clientshared.distro.UNKNOWN_DISIRO ..."/>
+    <meta property="article:published_time" content="2015-08-18" />
+    <meta property="article:section" content="自动化测试-Autotest" />
+        <meta property="article:tag" content="autotest" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Autotest-Linux distribution detection - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/08/18/autotest/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/08/18/autotest/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/08/18/autotest/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/08/18/autotest/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2015/08/18/autotest/"
+                           rel="bookmark"
+                           title="Permalink to Autotest-Linux distribution detection">
+                            Autotest-Linux distribution detection
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2015-08-18T00:00:00+08:00"> 2015-08-18 二</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">自动化测试-Autotest</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/autotest.html">autotest</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p><img class="img-responsive" height="280" src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/autotestlogo.png?raw=true" width="480"/></p>
+<h2 id="linuxfa-xing-ban-jian-ce">linux发行版检测</h2>
+<p>Autotest有个功能,就是让测试清晰了解到它运行在什么样的发行版上.
+这个功能是由probe类群的实现和注册实现的.
+这些probe类可以检查运行的系统的信息,比如发行版的release文件,二进制信息(如包管理)等.</p>
+<h3 id="kuai-su-jian-cha-fa-xing-ban">快速检查发行版</h3>
+<p>autotest.client.shared.distro 模块提供一些APIS,最简单的就是使用detect().
+它的用法简单命了:</p>
+<div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">autotest.client.shared</span> <span class="kn">import</span> <span class="n">distro</span>
+    <span class="n">detected_distro</span> <span class="o">=</span> <span class="n">distro</span><span class="o">.</span><span class="n">detect</span><span class="p">()</span>
+</pre></div>
+<p>这样就可以返回发行版检测的结果,但是不太适用于<strong>UNKNOWN_DISIRO</strong>.</p>
+<ul>
+<li>name</li>
+<li>version</li>
+<li>release</li>
+<li>arch</li>
+</ul>
+<p>例如:</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt;detected_distro = distro.detect()
+&gt;&gt;&gt;print detected_distro.name
+redhat
+</pre></div>
+<h3 id="wei-zhi-fa-xing-ban">未知发行版</h3>
+<p>当检测机制不能检测到发行版,仍会返回一个LinuxDistro实例,但是它的name,version等信息比较特殊.</p>
+<div class="highlight"><pre><span></span> autotest.clientshared.distro.UNKNOWN_DISIRO
+ =&lt;LinuxDistro: name=unnknown, version=0, realease=0, arch=unknown&gt;
+</pre></div>
+<p>意味着,这个发行版不能找到对应的匹配信息.</p>
+<h3 id="bian-xie-yi-ge-fa-xing-ban-probe">编写一个发行版probe</h3>
+<p>为目标发行版编写一个probe最简单的方式就是使用现有的Probe类的功能.
+如果,不打算采用Probe的话,也应该尽量继承probe类,或则提供类似的接口.</p>
+<h4 id="jian-cha-fa-xing-ban-de-ming-zi">检查发行版的名字</h4>
+<p>最简单的探针就是查看存在的文件并返回发行版的名字.</p>
+<div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">ReadHatProbe</span><span class="p">(</span><span class="n">Probe</span><span class="p">):</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/redhat-realease'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'redhat'</span>
+</pre></div>
+<p>如果要使用probe,需要先注册:</p>
+<div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">autotest.client.shared</span> <span class="kn">import</span> <span class="n">distro</span>
+    <span class="n">distro</span><span class="o">.</span><span class="n">register_probe</span><span class="p">(</span><span class="n">RedHatProbe</span><span class="p">)</span>
+</pre></div>
+<p>这是一个有效的例子，但只有发行版的名字,通常你的目标应该是更多的信息，如版本号。</p>
+<h4 id="zhen-ce-fa-xing-ban-de-ming-zi-he-ban-ben">侦测发行版的名字和版本</h4>
+<p>如果,你需要侦测发行版的版本信息,可以使用Probe类的 Probe.CHECK_VERSION_REGEX</p>
+<div class="highlight"><pre><span></span>Probe.CHECK_VERSION_REGEX=None
+</pre></div>
+<h4 id="zhu-ce-zi-ji-de-probes">注册自己的probes</h4>
+<p>Autotest不仅仅可以使用自带的probes,而且可以添加自己的probes用于系统的侦测.
+注册的简单方式就剩调用register_probe():</p>
+<div class="highlight"><pre><span></span>autotest.client.shared.distro.register_probe(probe_class)
+</pre></div>
+<p>注意,要注册的自己的probes必须是probe的子类.</p>
+<h3 id="apican-kao_1">API参考</h3>
+<p><strong>LinuxDistro</strong></p>
+<p>class autotest.client.shared.distro.LinuxDistro(name, version, release, arch) <a href="#linuxdistro">源码</a></p>
+<p>收集linux发行版信息的简单方式.</p>
+<p><strong>Probe</strong></p>
+<p>class autotest.client.shared.distro.Probe  <a href="#Probe">源码</a></p>
+<p>CHECK_FILE=None</p>
+<p>CHECK_FILE_CONTAINS=None</p>
+<p>CHECK_FILE_DISTRO_NAME =None</p>
+<p>CHECK_VERSION_REGEX = None</p>
+<p>Check_name_for_file()</p>
+<p>check_name_for_file_contains()</p>
+<p>check_release()</p>
+<p>check_version()</p>
+<p>get_distro()</p>
+<p>name_for_file()</p>
+<p>name_for_file_contains()</p>
+<p>release()</p>
+<p>version()</p>
+<p><strong>register</strong>_<strong>probe()</strong></p>
+<p>autotest.client.shared.distro.register_probe(probe_class) <a href="#register_probe">源码</a></p>
+<p>注册probe</p>
+<p><strong>detect()</strong></p>
+<p>autotest.client.shared.distro.detect() <a href="#detect">源码</a></p>
+<p>尝试检测这台机器上的Linux发行版本</p>
+<p><strong>Source code for autotest.client.shared.distro</strong></p>
+<div class="highlight"><pre><span></span>    <span class="sd">"""</span>
+<span class="sd">    This module provides the client facilities to detect the Linux Distribution</span>
+<span class="sd">    it's running under.</span>
+
+<span class="sd">    This is a replacement for the get_os_vendor() function from the utils modules.</span>
+<span class="sd">    """</span>
+
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">platform</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+
+
+    <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'LinuxDistro'</span><span class="p">,</span>
+               <span class="s1">'UNKNOWN_DISTRO_NAME'</span><span class="p">,</span>
+               <span class="s1">'UNKNOWN_DISTRO_VERSION'</span><span class="p">,</span>
+               <span class="s1">'UNKNOWN_DISTRO_RELEASE'</span><span class="p">,</span>
+               <span class="s1">'UNKNOWN_DISTRO_ARCH'</span><span class="p">,</span>
+               <span class="s1">'Probe'</span><span class="p">,</span>
+               <span class="s1">'register_probe'</span><span class="p">,</span>
+               <span class="s1">'detect'</span><span class="p">]</span>
+    <span class="c1"># [__all__用法]()</span>
+
+    <span class="c1"># pylint: disable=R0903</span>
+</pre></div>
+<p><strong>LinuxDistro</strong> <span id="linuxdistro">:</span></p>
+<div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">LinuxDistro</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">'''</span>
+<span class="sd">        Simple collection of infomation for a Linux Distribution</span>
+<span class="sd">        '''</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">arch</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">            Initalizes a new Linux Distro</span>
+<span class="sd">            :param name: 一个简单的区别于其他发型版的名字</span>
+<span class="sd">            :type name : 字符</span>
+<span class="sd">            :parm vesion:发行版的主版本.</span>
+<span class="sd">            :type vesion: 字符</span>
+<span class="sd">            :param release: 发行版的发型号或子版本.</span>
+<span class="sd">            :type vesion:字符</span>
+<span class="sd">            :parm arch: 发行版的平台架构信息,如interl/amd 32bit/64bit</span>
+<span class="sd">            :type arch: 字符</span>
+<span class="sd">            '''</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">release</span> <span class="o">=</span> <span class="n">release</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arch</span> <span class="o">=</span> <span class="n">arch</span>
+
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># [Difference between __str__ and __repr__ in Python](http://stackoverflow.com/questions/1436703/difference-between-str-and-repr-in-python)</span>
+            <span class="k">return</span> <span class="s1">'&lt;LinuxDistro: name=</span><span class="si">%s</span><span class="s1">, version=</span><span class="si">%s</span><span class="s1">, release=</span><span class="si">%s</span><span class="s1">, arch=</span><span class="si">%s</span><span class="s1">&gt;'</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
+
+
+    <span class="n">UNKNOWN_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'unknown'</span>
+    <span class="n">UNKNOWN_DISTRO_VERSION</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">UNKNOWN_DISTRO_RELEASE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">UNKNOWN_DISTRO_ARCH</span> <span class="o">=</span> <span class="s1">'unknown'</span>   <span class="c1"># 定义未知发行版默认信息</span>
+
+    <span class="c1">#: 未知发行版,反馈以下信息</span>
+    <span class="n">UNKNOWN_DISTRO</span> <span class="o">=</span> <span class="n">LinuxDistro</span><span class="p">(</span><span class="n">UNKNOWN_DISTRO_NAME</span><span class="p">,</span>
+                                 <span class="n">UNKNOWN_DISTRO_VERSION</span><span class="p">,</span>
+                                 <span class="n">UNKNOWN_DISTRO_RELEASE</span><span class="p">,</span>
+                                 <span class="n">UNKNOWN_DISTRO_ARCH</span><span class="p">)</span>
+</pre></div>
+<p><strong>Probe</strong> <span id="Probe">:</span></p>
+<div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">probe</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+        <span class="sd">'''</span>
+<span class="sd">        探测机器信息并且确认是否存在的发行版</span>
+<span class="sd">        '''</span>
+        <span class="c1">#:指定运行机器上发行版中的文件.</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1">#:设置指向文件的检查内容,默认为None,只检查是否存在</span>
+        <span class="n">CHECK_FILE_CONTAINS</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1">#:如果文件指定,指定发行版名字</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1">#:指定发行版版本</span>
+        <span class="n">CHECK_VERSION_REGEX</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">check_name_for_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+            <span class="sd">'''</span>
+<span class="sd">            查找一个文件并返回distro.确认是否指定了特定文件</span>
+<span class="sd">            '''</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">def</span> <span class="nf">name_for_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">            获取distro名称,如果"CHECK_FILE"设置并且存在</span>
+<span class="sd">            '''</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_name_for_file</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE_DISTRO_NAME</span>
+
+        <span class="k">def</span> <span class="nf">check_name_for_file_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">            该类查找text并返回distro.</span>
+<span class="sd">            The conditions that must be true include the file that identifies the</span>
+<span class="sd">            distro file being set (:attr:`CHECK_FILE`), the text to look for</span>
+<span class="sd">            inside the distro file (:attr:`CHECK_FILE_CONTAINS`) and the name</span>
+<span class="sd">            of the distro to be returned (:attr:`CHECK_FILE_DISTRO_NAME`)</span>
+<span class="sd">            '''</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE_CONTAINS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">def</span> <span class="nf">name_for_file_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">             获取distro如果CHECK_FILE指定并且有效</span>
+<span class="sd">            '''</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_name_for_file_contains</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exits</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE_CONTAINS</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE_DISTRO_NAME</span>
+
+        <span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">             检查在文件中是否找到regex并返回distro</span>
+<span class="sd">            '''</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_VERSION_REGEX</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                 <span class="k">return</span> <span class="bp">False</span>
+
+             <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">def</span> <span class="nf">_get_version_match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">            返回匹配备注文件中的版本信息</span>
+<span class="sd">            '''</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_version</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span><span class="p">):</span>
+                    <span class="n">version_file_content</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CHECK_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">None</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_VERSION_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">version_file_content</span><span class="p">)</span>
+
+         <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+             <span class="sd">'''</span>
+<span class="sd">             返回distro的版本信息</span>
+<span class="sd">             '''</span>
+             <span class="n">version</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO_VERSION</span>
+             <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_version_match</span><span class="p">()</span>
+             <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                 <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                     <span class="n">version</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+             <span class="k">return</span> <span class="n">version</span>
+
+        <span class="k">def</span> <span class="nf">check_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">            检查是否存在符合条件的版本号</span>
+<span class="sd">            '''</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">check_version</span><span class="p">()</span> <span class="ow">and</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">CHECK_VERSION_REGEX</span><span class="o">.</span><span class="n">groups</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">             返回 distro的版本号</span>
+<span class="sd">            '''</span>
+             <span class="n">release</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO_RELEASE</span>
+             <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_version_match</span><span class="p">()</span>
+             <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                 <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                     <span class="n">release</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+             <span class="k">return</span> <span class="n">release</span>
+
+        <span class="k">def</span> <span class="nf">get_distro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">'''</span>
+<span class="sd">            返回 class:'LinuxDistro' probe detected</span>
+<span class="sd">            '''</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO_VERSION</span>
+            <span class="n">release</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO_RELEASE</span>
+            <span class="n">arch</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO_ARCH</span>
+
+            <span class="n">distro</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_name_for_file</span><span class="p">():</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_for_file</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_name_for_file_contains</span><span class="p">():</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_for_file_contains</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_version</span><span class="p">():</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_release</span><span class="p">():</span>
+                <span class="n">release</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># 实在想不到比这更好的方式</span>
+            <span class="n">arch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="c1"># 名字是首先要侦测的.它可以告诉我们是哪个发行版.</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">distro</span> <span class="o">=</span> <span class="n">LinuxDistro</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">arch</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">distro</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO</span>
+
+            <span class="k">return</span> <span class="n">distro</span>
+
+    <span class="k">class</span> <span class="nc">StdLibProbe</span><span class="p">(</span><span class="n">Probe</span><span class="p">):</span>
+        <span class="sd">'''</span>
+<span class="sd">         Probe是使用python库内建的probe.</span>
+<span class="sd">         这个Probe得分比较低,作为备用probe.</span>
+<span class="sd">        '''</span>
+
+        <span class="k">def</span> <span class="nf">get_distro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO_VERSION</span>
+            <span class="n">realease</span> <span class="o">=</span> <span class="n">UNKONWN_DISTRO_RELEASE</span>
+            <span class="n">arch</span> <span class="o">=</span> <span class="n">UNKONWN_DISTRO_ARCH</span>
+
+            <span class="n">d_name</span><span class="p">,</span> <span class="n">d_version_release</span><span class="p">,</span> <span class="n">d_codename</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">dist</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">d_name</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">d_name</span>
+
+            <span class="k">if</span> <span class="s1">'.'</span> <span class="ow">in</span> <span class="n">d_version_release</span><span class="p">:</span>
+                <span class="n">d_version</span><span class="p">,</span> <span class="n">d_release</span> <span class="o">=</span> <span class="n">d_version_release</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">d_version</span>
+                <span class="n">release</span> <span class="o">=</span> <span class="n">d_release</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">d_version_release</span>
+
+             <span class="n">arch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span>
+
+             <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                 <span class="n">distro</span> <span class="o">=</span> <span class="n">LinuxDistro</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">arch</span><span class="p">)</span>
+             <span class="k">else</span><span class="p">:</span>
+                 <span class="n">distro</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO</span>
+
+             <span class="k">return</span> <span class="n">distro</span>
+
+    <span class="k">class</span> <span class="nc">RedHatProbe</span><span class="p">(</span><span class="n">Probe</span><span class="p">)</span>
+
+        <span class="sd">'''</span>
+<span class="sd">        红帽发行版版本检查</span>
+<span class="sd">        '''</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/redhat=release'</span>
+        <span class="n">CHECK_FILE_CONTAINS</span> <span class="o">=</span> <span class="s1">'Red Hat'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'redhat'</span>
+        <span class="n">CHECK_VERSION_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s1">'Red Hat Enterprise Linux Server release(\d{1,2})\.(\d{1,2}).*'</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">CentosProbe</span><span class="p">(</span><span class="n">RedHatProbe</span><span class="p">):</span>
+        <span class="sd">'''</span>
+<span class="sd">        Centos系统检测</span>
+<span class="sd">        '''</span>
+
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/redhat-release'</span>
+        <span class="n">CHECK_FILE_CONTAINS</span> <span class="o">=</span> <span class="s1">'CentOS'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'centos'</span>
+        <span class="n">CHECK_VERSION_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'CentOS release(\d{1,2})\.(\d{1,2}).*'</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">FedoraProbe</span><span class="p">(</span><span class="n">RedHatProbe</span><span class="p">):</span>
+
+        <span class="sd">'''</span>
+<span class="sd">        Probe with version checks for Fedora systems</span>
+<span class="sd">        '''</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/fedora-release'</span>
+        <span class="n">CHECK_FILE_CONTAINS</span> <span class="o">=</span> <span class="s1">'Fedora'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'fedora'</span>
+        <span class="n">CHECK_VERSION_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Fedora release (\d{1,2}).*'</span><span class="p">)</span>
+
+
+    <span class="k">class</span> <span class="nc">DebianProbe</span><span class="p">(</span><span class="n">Probe</span><span class="p">):</span>
+
+        <span class="sd">'''</span>
+<span class="sd">        Simple probe with file checks for Debian systems</span>
+<span class="sd">        '''</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/debian-version'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'debian'</span>
+
+
+    <span class="k">class</span> <span class="nc">UbuntuProbe</span><span class="p">(</span><span class="n">Probe</span><span class="p">):</span>
+
+        <span class="sd">'''</span>
+<span class="sd">        Simple probe with file checks for Ubuntu systems</span>
+<span class="sd">        '''</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/os-release'</span>
+        <span class="n">CHECK_FILE_CONTAINS</span> <span class="o">=</span> <span class="s1">'Ubuntu'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'ubuntu'</span>
+        <span class="n">CHECK_VERSION_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'VERSION_ID="(\d+.\d+)"'</span><span class="p">)</span>
+
+
+    <span class="k">class</span> <span class="nc">SuseProbe</span><span class="p">(</span><span class="n">Probe</span><span class="p">):</span>
+        <span class="n">CHECK_FILE</span> <span class="o">=</span> <span class="s1">'/etc/SuSE-release'</span>
+        <span class="n">CHECK_FILE_DISTRO_NAME</span> <span class="o">=</span> <span class="s1">'sles'</span>
+        <span class="n">CHECK_VERSION_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'SUSE.*\nVERSION = (.*)\nPATCHLEVEL = (.*)'</span><span class="p">)</span>
+
+
+    <span class="c1">#: 已注册probes列表</span>
+    <span class="n">REGISTERED_PROBES</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+<p><strong>register_probe</strong> <span id="register_probe">:</span></p>
+<div class="highlight"><pre><span></span>    <span class="n">register_probe</span><span class="p">():</span>
+        <span class="k">def</span> <span class="nf">register_probe</span><span class="p">(</span><span class="n">probe_class</span><span class="p">):</span> 
+        <span class="sd">'''</span>
+<span class="sd">        注册probe</span>
+<span class="sd">        '''</span>
+        <span class="k">if</span> <span class="n">probe_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">REGISTERED_PROBES</span><span class="p">:</span>
+            <span class="n">REGISTERED_PROBES</span><span class="o">.</span><span class="n">appen</span><span class="p">(</span><span class="n">probe_class</span><span class="p">)</span>
+
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">RedHatProbe</span><span class="p">)</span>
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">CentosProbe</span><span class="p">)</span>
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">FedoraProbe</span><span class="p">)</span>
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">DebianProbe</span><span class="p">)</span>
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">UbuntuProbe</span><span class="p">)</span>
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">SuseProbe</span><span class="p">)</span>
+    <span class="n">register_probe</span><span class="p">(</span><span class="n">StdLibProbe</span><span class="p">)</span>
+</pre></div>
+<p><strong>detect</strong> <span id="detect">:</span></p>
+<div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">detect</span><span class="p">():</span>
+        <span class="sd">'''</span>
+<span class="sd">        尝试在机器上侦测发行版</span>
+<span class="sd">　　    '''</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">probe_class</span> <span class="ow">in</span> <span class="n">REGISTERED_PROBES</span><span class="p">:</span>
+            <span class="n">probe_instance</span> <span class="o">=</span> <span class="n">probe_class</span><span class="p">()</span>
+            <span class="n">didtro_result</span> <span class="o">=</span> <span class="n">probe_instance</span><span class="o">.</span><span class="n">get_distro</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">distro_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">UNKNOWN_DISTRO</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">distro_result</span><span class="p">,</span> <span class="n">probe_instance</span><span class="p">))</span>
+
+        <span class="n">results</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">distro</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">distro</span> <span class="o">=</span> <span class="n">UNKNOWN_DISTRO</span>
+        <span class="k">return</span> <span class="n">dostro</span>
+
+    <span class="k">class</span> <span class="nc">Spec</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">'''</span>
+<span class="sd">        发行版最低发行要求</span>
+<span class="sd">　　　　 '''</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">min_version</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>     <span class="n">min_release</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_version</span> <span class="o">=</span> <span class="n">min_version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_release</span> <span class="o">=</span> <span class="n">min_release</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arch</span> <span class="o">=</span> <span class="n">arch</span>
+</pre></div>
+<p>Top<a href="">^</a></p>
+<p>上一篇<a href="https://king32783784.github.io/2015/08/17/autotest/">Autotest：Autotest-Using and developing job profilers</a>
+下一篇<a href="https://king32783784.github.io/2015/08/19/autotest/">Autotest:Autotest-others&gt;&gt;&gt;</a></p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Autotest-Linux distribution detection">Autotest-Linux distribution detection</a><ul><li><a class="toc-href" href="#linuxfa-xing-ban-jian-ce" title="linux发行版检测">linux发行版检测</a><ul><li><a class="toc-href" href="#kuai-su-jian-cha-fa-xing-ban" title="快速检查发行版">快速检查发行版</a></li><li><a class="toc-href" href="#wei-zhi-fa-xing-ban" title="未知发行版">未知发行版</a></li><li><a class="toc-href" href="#bian-xie-yi-ge-fa-xing-ban-probe" title="编写一个发行版probe">编写一个发行版probe</a><ul><li><a class="toc-href" href="#jian-cha-fa-xing-ban-de-ming-zi" title="检查发行版的名字">检查发行版的名字</a></li><li><a class="toc-href" href="#zhen-ce-fa-xing-ban-de-ming-zi-he-ban-ben" title="侦测发行版的名字和版本">侦测发行版的名字和版本</a></li><li><a class="toc-href" href="#zhu-ce-zi-ji-de-probes" title="注册自己的probes">注册自己的probes</a></li></ul></li><li><a class="toc-href" href="#apican-kao_1" title="API参考">API参考</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

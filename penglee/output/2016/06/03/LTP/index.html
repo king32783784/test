@@ -1,0 +1,821 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="LTP" />
+        <meta name="description" content="file file 用例主要用于测试file命令。 file命令介绍 file命令可以通过查看文件内容来找出特定类型的文件，在UNIX/ Linux系统中，文件类型并不是由文件扩展名来决定的(windows中却正是这么做的),file命令的目的是从多个文件中收集文件类型统计信息。 file --help Usage: file [OPTION...] [FILE...] Determine type of FILEs. --help display this help and exit -v, --version output version information and exit -m, --magic-file LIST use LIST as a colon-separated list of magic number files -z, --uncompress try to ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="LTP－Command-file"/>
+    <meta property="og:url" content="../../../../2016/06/03/LTP/"/>
+    <meta property="og:description" content="file file 用例主要用于测试file命令。 file命令介绍 file命令可以通过查看文件内容来找出特定类型的文件，在UNIX/ Linux系统中，文件类型并不是由文件扩展名来决定的(windows中却正是这么做的),file命令的目的是从多个文件中收集文件类型统计信息。 file --help Usage: file [OPTION...] [FILE...] Determine type of FILEs. --help display this help and exit -v, --version output version information and exit -m, --magic-file LIST use LIST as a colon-separated list of magic number files -z, --uncompress try to ..."/>
+    <meta property="article:published_time" content="2016-06-03" />
+    <meta property="article:section" content="自动化测试-LTP" />
+        <meta property="article:tag" content="LTP" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>LTP－Command-file - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/06/03/LTP/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/06/03/LTP/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/06/03/LTP/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/06/03/LTP/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2016/06/03/LTP/"
+                           rel="bookmark"
+                           title="Permalink to LTP－Command-file">
+                            LTP－Command-file
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2016-06-03T00:00:00+08:00"> 2016-06-03 五</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">自动化测试-LTP</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/ltp.html">LTP</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h4 id="file">file</h4>
+<p>file　用例主要用于测试file命令。</p>
+<h5 id="fileming-ling-jie-shao">file命令介绍</h5>
+<p>file命令可以通过查看文件内容来找出特定类型的文件，在UNIX/ Linux系统中，文件类型并不是由文件扩展名来决定的(windows中却正是这么做的),file命令的目的是从多个文件中收集文件类型统计信息。</p>
+<div class="highlight"><pre><span></span>file --help
+
+Usage: file [OPTION...] [FILE...]
+Determine type of FILEs.
+
+  --help                 display this help and exit
+-v, --version              output version information and exit
+-m, --magic-file LIST      use LIST as a colon-separated list of magic
+                           number files
+-z, --uncompress           try to look inside compressed files
+-Z, --uncompress-noreport  only print the contents of compressed files
+-b, --brief                do not prepend filenames to output lines
+-c, --checking-printout    print the parsed form of the magic file, use in
+                           conjunction with -m to debug a new magic file
+                           before installing it
+-e, --exclude TEST         exclude TEST from the list of test to be
+                           performed for file. Valid tests are:
+                           apptype, ascii, cdf, compress, elf, encoding,
+                           soft, tar, text, tokens
+-f, --files-from FILE      read the filenames to be examined from FILE
+-F, --separator STRING     use string as separator instead of `:'
+-i, --mime                 output MIME type strings (--mime-type and
+                           --mime-encoding)
+  --apple                output the Apple CREATOR/TYPE
+  --extension            output a slash-separated list of extnsions
+  --mime-type            output the MIME type
+  --mime-encoding        output the MIME encoding
+-k, --keep-going           don't stop at the first match
+-l, --list                 list magic strength
+-L, --dereference          follow symlinks (default)
+-h, --no-dereference       don't follow symlinks
+-n, --no-buffer            do not buffer output
+-N, --no-pad               do not pad output
+-0, --print0               terminate filenames with ASCII NUL
+-p, --preserve-date        preserve access times on files
+-P, --parameter            set file engine parameter limits
+                           indir        15 recursion limit for indirection
+                           name         30 use limit for name/use magic
+                           elf_notes   256 max ELF notes processed
+                           elf_phnum   128 max ELF prog sections processed
+                           elf_shnum 32768 max ELF sections processed
+-r, --raw                  don't translate unprintable chars to \ooo
+-s, --special-files        treat special (block/char devices) files as
+                         ordinary ones
+-C, --compile              compile file specified by -m
+-d, --debug                print debugging messages
+</pre></div>
+<p>必要参数</p>
+<div class="highlight"><pre><span></span>-b 文件名不显示
+-c 显示详细处理信息
+-L 操作对象为符号链接所指向的对象
+-z 压缩文件的处理
+-C 列出magic.mgc的输出
+-n 将结果输出到标准输出
+-f&lt;文件名&gt; 指定文件名
+-m&lt;文件名&gt; 指定魔法数字名
+</pre></div>
+<p>选择参数</p>
+<div class="highlight"><pre><span></span>--help 显示帮助信息
+ -v 显示版本信息
+</pre></div>
+<p>实例：</p>
+<p>1.查看所有文件类型 file *
+2.2.查看具体某一文件的类型：file filename
+3.-b参数，打印出不包含文件名的文件类型信息:
+4.-z 参数，可以获取用gzip、zip压缩过的文件的类型
+5.-n参数，将信息标准输出</p>
+<p>言归正传，file_test.sh 脚本主要验证是否支持多种文件格式，比如tar tar.gz rpm c ascii elf等。</p>
+<h5 id="yong-li-she-zhi">用例设置：</h5>
+<p>Test01：测试文件命令是否识别ASCII文本文件</p>
+<div class="highlight"><pre><span></span>1）将文本写入已知文件
+2）使用'file'命令获取已知文件的类型
+例如：文件xyz.txt
+3）grep为关键字“ASCII文本”的输出
+'file'命令
+4）如果上述步骤成功，则将测试声明为PASS,否则为fail
+</pre></div>
+<p>Test02：测试文件命令是否能识别bash shell脚本</p>
+<div class="highlight"><pre><span></span>1）将一个小shell脚本写入一个已知文件
+2）使用'file'命令获取已知文件的类型
+例如：文件xyz.sh
+3）从'file'命令的输出中Grep关键字“Bourne-Again shell脚本”
+
+4）如果上述步骤成功，则将测试声明为PASS,否则为fail
+</pre></div>
+<p>Test03：测试文件命令是否能识别bash shell脚本</p>
+<div class="highlight"><pre><span></span>使用Korn shell脚本执行类似的测试（如Test02）
+</pre></div>
+<p>Test04：测试文件命令是否可以识别C shell脚本</p>
+<div class="highlight"><pre><span></span>使用C shell脚本执行类似的测试（如Test02）
+</pre></div>
+<p>Test05：测试文件命令是否可以识别C程序文本
+     使用test2类似方法测试c程序文本</p>
+<p>Test06：测试文件命令是否可以识别ELF二进制可执行文件</p>
+<div class="highlight"><pre><span></span>1）使用readelf确定主机是大端还是小端,并分别为字符串“MSB”或“LSB”分配TEST_ARCH
+2）将小C程序写入已知的“.c”文件
+3）使用“cc” Ex：cc xyz xyz.c
+4）使用file命令获取对象文件的类型
+5）在file输出中，grep ELF .*-bit $TEST_ARCH executable, .* 字符。
+6）如果上述命令成功，则将测试声明为PASS
+</pre></div>
+<p>Test07：测试文件命令是否可以识别tar文件</p>
+<div class="highlight"><pre><span></span>1）将文本写入三个不同的文件
+ 2）使用“tar”命令存档文件
+例如：tar -cf ...
+3）使用“file”命令获取归档文件的类型
+例如：文件xyz.tar
+4）grep从上面的'file'命令的输出的中匹配字符串“tar”
+5）声明测试为PASS，如果上面的步骤成功，否则声明测试为FAIL
+</pre></div>
+<p>Test08：测试文件命令是否可以tar zip文件</p>
+<div class="highlight"><pre><span></span>1）将文本写入三个不同的文件
+2）使用“tar”命令存档文件
+  例如：tar -cf ...
+3）使用'gzip'命令来压缩tar文件
+ 例如：gzip -f xyz.tar
+4）使用“file”命令获取归档文件的类型
+   例如：文件xyz.tar.gz
+5）grep从上面的文件commnand字符串“gzip压缩数据，。*”
+6）声明测试为PASS，如果上面的步骤成功，否则声明测试为FAIL
+</pre></div>
+<h5 id="dai-ma-pian-duan">代码片段</h5>
+<p>测试file命令能识别出ASCII文本文件。</p>
+<div class="highlight"><pre><span></span>export TCID=file01
+export TST_COUNT=1
+
+$LTPBIN/tst_resm TINFO "TEST #1:file command recogizes ASCII text files" # log信息
+
+cat &gt; $LTPTMP/test_file.txt &lt;&lt;EOF
+this is a text file
+to test file command
+EOF                          # 制作txt文本文件
+
+##执行file命令并检查输出。
+
+file $LTPTMP/test_file.txt &gt; $LTPTMP/file.out 2&gt;&amp;1
+
+if [ $? -eq 0 ]  # 判断返回值是否为０，验证file命令执行是否成功
+then
+    grep -q "ASCII text" $LTPTMP/file.out # 匹配输出类型是否整齐
+    if [ $? -eq 0 ]
+    then
+        $LTPBIN/test_resm TPASS "file: Recognised ASCII file correctly"
+        rm -f $LTPTMP/test_file.txt
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
+            "file: Failed to recognise ASCII file correctlyi. Reason:"
+        TFAILCNT=$(( $TFAILCNT+1 )) #error code＋１
+    fi
+else
+     $LTPBIN/tst_res TFAIL $LTPTMP/file.out  \
+            "file: failed to recognize ASCII file correctly\t\t"
+     TFAILCNT=$(( $TFAILCNT+1 ))
+fi
+</pre></div>
+<h1 id="test-2_2">TEST #2</h1>
+<h1 id="ce-shi-shi-fou-shi-bie-shelljiao-ben">测试是否识别shell脚本</h1>
+<div class="highlight"><pre><span></span>export TCID=file02
+export TST_COUNT=2
+
+$LTPBIN/tst_resm TINFO "TEST #2: file command recognizes bash shell scripts"
+
+cat &gt; $LTPTMP/bash_script.sh &lt;&lt;EOF
+#! /bin/bash
+
+echo "this is a shell script"
+echo "used to test file command"
+
+EOF
+
+file $LTPTMP/bash_script.sh &gt; $LTPTMP/file.out 2&gt;&amp;1
+
+if [ $? -eq 0 ]
+then
+    grep -q "Bourne-Again shell script" $LTPTMP/file.out
+    if [ $? -eq 0 ]
+    then
+        $LTPBIN/tst_resm TPASS "file: Recognised bash shell script correctly"
+        rm -f $LTPTMP/bash_script.sh
+    else
+        $LTPBIN/tst_res TFAIL $LTPTMP/file.out \
+            "file: Failed to recognise bash shell script. Reason"
+        TFAILCNT=$(( $TFAILCNT+1 ))
+    fi
+else
+    $LTPBIN/tst_resm TFAIL "file: Failed to recognize bash shell script"
+    TFAILCNT=$(( $TFAILCNT+1 ))
+fi
+</pre></div>
+<p>其他测试代码同上面类似，不再一一分析。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="LTP－Command-file">LTP－Command-file</a><ul><li><a class="toc-href" href="#file" title="file">file</a><ul><li><a class="toc-href" href="#fileming-ling-jie-shao" title="file命令介绍">file命令介绍</a></li><li><a class="toc-href" href="#yong-li-she-zhi" title="用例设置：">用例设置：</a></li><li><a class="toc-href" href="#dai-ma-pian-duan" title="代码片段">代码片段</a></li></ul></li><li><a class="toc-href" href="#test-2_2" title="TEST #2">TEST #2</a></li><li><a class="toc-href" href="#ce-shi-shi-fou-shi-bie-shelljiao-ben" title="测试是否识别shell脚本">测试是否识别shell脚本</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

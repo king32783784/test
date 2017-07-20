@@ -1,0 +1,782 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="web" />
+        <meta name="description" content="前言 协议指计算机通信网络中两台计算机之前通信共同遵守的约定或规则。http协议就是通信协议的一种，它允许将超文本标记语言(html)文档从web服务器传送到客户端的浏览器。 Web服务器、浏览器、代理服务器 打开浏览器，输入URL，就能看到指定的网页。后台是怎么实现的呢？ 当我们输入URL后，浏览器通过网络给web服务发送了一个Request, web服务器接收到Request后，进行响应，生成Response,然后返回给浏览器，浏览器解析Response中的HTML，然后展示出来。我们就看到了指定网页 现在这个过程基本上都要经过代理服务器，如CDN反向代理。 代理服务器就是网络信息的中转站，是为了提高访问速度、突破限制（GWV）、私藏身份。 URL URL(Uniform Resource Locator)地址用于描述一个网络上的资源，基本格式如下： schema://host[:port#]/path/.../[?query-string][#anchor] scheme 指定底层使用的协议（如：http https ftp smb) host ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="http协议"/>
+    <meta property="og:url" content="../../../../2014/06/01/http/"/>
+    <meta property="og:description" content="前言 协议指计算机通信网络中两台计算机之前通信共同遵守的约定或规则。http协议就是通信协议的一种，它允许将超文本标记语言(html)文档从web服务器传送到客户端的浏览器。 Web服务器、浏览器、代理服务器 打开浏览器，输入URL，就能看到指定的网页。后台是怎么实现的呢？ 当我们输入URL后，浏览器通过网络给web服务发送了一个Request, web服务器接收到Request后，进行响应，生成Response,然后返回给浏览器，浏览器解析Response中的HTML，然后展示出来。我们就看到了指定网页 现在这个过程基本上都要经过代理服务器，如CDN反向代理。 代理服务器就是网络信息的中转站，是为了提高访问速度、突破限制（GWV）、私藏身份。 URL URL(Uniform Resource Locator)地址用于描述一个网络上的资源，基本格式如下： schema://host[:port#]/path/.../[?query-string][#anchor] scheme 指定底层使用的协议（如：http https ftp smb) host ..."/>
+    <meta property="article:published_time" content="2014-06-01" />
+    <meta property="article:section" content="Web" />
+        <meta property="article:tag" content="web" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>http协议 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/06/01/http/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/06/01/http/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/06/01/http/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/06/01/http/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/06/01/http/"
+                           rel="bookmark"
+                           title="Permalink to http协议">
+                            http协议
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-06-01T00:00:00+08:00"> 2014-06-01 日</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/web.html">Web</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/web.html">web</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="qian-yan">前言</h3>
+<p>协议指计算机通信网络中两台计算机之前通信共同遵守的约定或规则。http协议就是通信协议的一种，它允许将超文本标记语言(html)文档从web服务器传送到客户端的浏览器。</p>
+<h3 id="webfu-wu-qi-liu-lan-qi-dai-li-fu-wu-qi">Web服务器、浏览器、代理服务器</h3>
+<p>打开浏览器，输入URL，就能看到指定的网页。后台是怎么实现的呢？
+当我们输入URL后，浏览器通过网络给web服务发送了一个Request, web服务器接收到Request后，进行响应，生成Response,然后返回给浏览器，浏览器解析Response中的HTML，然后展示出来。我们就看到了指定网页
+现在这个过程基本上都要经过代理服务器，如CDN反向代理。
+代理服务器就是网络信息的中转站，是为了提高访问速度、突破限制（GWV）、私藏身份。</p>
+<h3 id="url">URL</h3>
+<p>URL(Uniform Resource Locator)地址用于描述一个网络上的资源，基本格式如下：</p>
+<div class="highlight"><pre><span></span>schema://host[:port#]/path/.../[?query-string][#anchor]
+</pre></div>
+<ul>
+<li>scheme   指定底层使用的协议（如：http https ftp smb)</li>
+<li>host     HTTP服务器的ip地址或域名（www.vimlinux.com)</li>
+<li>port#    HTTP服务器的默认端口是80， 这种情况下可以省略，如果使用了其他端口，需要指明如8080</li>
+<li>path     访问资源的路径</li>
+<li>query-string 发送给http服务器的数据</li>
+<li>anchor   锚点</li>
+</ul>
+<p>URL例子：</p>
+<div class="highlight"><pre><span></span>http://www.vimlinux.com/sj/test/test.aspx?name=sviergn&amp;x=true#stuff
+
+Schema:                 http
+host:                   www.mywebsite.com
+path:                   /sj/test/test.aspx
+Query String:           name=sviergn&amp;x=true
+anchor:                 stuff
+</pre></div>
+<h3 id="httpxie-yi-shi-wu-zhuang-tai-de">HTTP协议是无状态的</h3>
+<p>http协议是无状态的，同一个客户端的多次请求直接是没有对应关系的，http服务器并不知道多次请求来自同一客户端,为了解决这个问题，web程序引入了cookie机制来维护状态。</p>
+<p>现在的html不再是单纯的文本，而是包含图片、js等，所以浏览器再获取一个完整网页时，一般需要发送多次Request.
+第一次浏览器会接收到一个框架，分析之后发现还有好多文件，然后再次request,等所有文件下载成功后，就显示出来了（显示时，其实一下大的文件仍在加载）</p>
+<h3 id="httpxiao-xi-de-jie-gou">HTTP消息的结构</h3>
+<p>Request消息分为3个部分，第一部分叫Request line,第二部分叫Request header, 第三部分是body, header和body之间有个空行。</p>
+<p>如
+    METHOD /path-to-resource HTTP/Version-number
+    Header-Name-1: value
+    Header-Name-2: value</p>
+<div class="highlight"><pre><span></span>Optional request body
+</pre></div>
+<p>第一行中的Method表示请求方法，比如"POST", "GET", path-to-resource表示请求的资源， Http/Version-number表示协议的版本号
+ 当使用的是"GET"方法的时候，body是为空的
+ 比如我们打开这个网站首页的的request如下：</p>
+<div class="highlight"><pre><span></span>GET http://www.cnblogs.com/ HTTP/1.1
+Host: www.cnblogs.com
+</pre></div>
+<h3 id="get-he-postfang-fa-de-qu-bie">Get 和 Post方法的区别</h3>
+<p>Http协议定义了很多与服务器交互的方法，最基本的４种，分别为GET,POST,PUT,DELETE.一个URL地址用于描述一个网络上的资源，而HTTP中的GET,POST,PUT,DELETE就对应这个资源的查，改，增，删4个操作。最常见的就是GET和POST了。GET一般用于获取／查询资源信息，而POST一般用于更新资源信息。</p>
+<p>区别在于：</p>
+<ul>
+<li>
+<p>GET提交的数据会放在URL之后，以?分割URL和传输数据，参数之间以&amp;相连，如EditPosts.aspx?name=test1&amp;id=123456. POST方法是把提交的数据放在HTTP包的Body中。</p>
+</li>
+<li>
+<p>GET提交的数据大小有限制（浏览器对URL的长度有限制),而POST方法提交的数据没有限制。</p>
+</li>
+<li>GET方式需要使用Request.QueryString来取得变量的值，而POST方式通过Request.Form来获取变量的值</li>
+<li>GET方式提交数据，会带来安全问题，比如一个登录页面，通过GET方式提交数据时，用户名和密码将出现在URL上，如果页面可以被缓存或则其他人可以访问这台机器，就可以从历史记录获得该用户的账号和密码。</li>
+</ul>
+<h3 id="zhuang-tai-ma">状态码</h3>
+<p>Response消息中的第一行叫状态行，由HTTP协议版本号，状态码，状态消息三部分组成。
+状态码用来告诉http客户端，http服务器是否产生了预期的Response.
+http/1.1定义了５类状态码，状态码由三位数字组成，第一个数字定义了响应的类别。</p>
+<ul>
+<li>1xx 提示信息- 表示请求已被成功接收，继续处理</li>
+<li>2xx 成功－表示请求已被成功接收，理解，接受</li>
+<li>3xx 重定向－要完成请求必须进行更进一步的处理</li>
+<li>4xx 客户端错误－请求有语法错误或请求无法实现</li>
+<li>5xx 服务器端错误－服务器未能实现合法的请求</li>
+</ul>
+<p>常见的状态码：</p>
+<ul>
+<li>200 OK : 表明请求被成功完成，所请求的资源发送回客户端</li>
+<li>302 Found: 重定向，新的URL会在response中的Location返回，浏览器会自动使用新的URL发出新的Request</li>
+<li>304 Not Modified　代表缓存未过期，可以继续使用</li>
+<li>400 Bad Request 客户端请求与语法错误，不能被服务器所理解</li>
+<li>403 Forbidden 服务器收到请求，但拒绝提供服务</li>
+<li>404 Not Found 请求资源不存在</li>
+<li>500 Internal Server Error 服务器发送了不可预期的错误</li>
+<li>503 Server Unavailable 服务器当前不能处理客户端请求，一段时间后恢复</li>
+</ul>
+<h3 id="http-request-header">HTTP Request Header</h3>
+<p>header有很多。
+<strong>Cache</strong></p>
+<p>If-Modified-Since</p>
+<p>把浏览器端缓存页面的最后修改时间发送给服务器，服务器会把这个时间和服务器文件的最后修改时间进行比对，如果时间一致，就返回304(本地缓存没过期），直接使用本地缓存文件。如果时间不一致，就会返回200和新的文件内容。客户端接收到后，会更新本地的缓存。</p>
+<p>IF-None-Match</p>
+<p>If-None-Match和ETag一起工作，工作原理是在HTTP Response中添加ETag信息。当用户再次请求资源时，将在HTTP Request中加入If-None-Match信息(ETag的值）。如果服务器验证资源的ETag没有改变（该资源没有更新),将返回一个304状态告诉客户端使用本地缓存文件。否则将返回200状态码和新的资源及ETag.</p>
+<p>Pragma</p>
+<p>防止页面被缓存，在HTTP/1.1，它和Cache-Control:no-cache作用一样。注意：在HTTP/1.0版本中，只实现了Pragema:no-cache,没有实现Cache-Control</p>
+<p>Cache-Control</p>
+<p>用来指定Response-Request遵循的缓存机制。各个指令含义如下：</p>
+<ul>
+<li>Cache-Control:Public 可以被任何缓存所缓存</li>
+<li>Cache-Control:Private 内容只缓存到私有缓存中</li>
+<li>Cache-Control: no-cache 所有内容不会被缓存</li>
+</ul>
+<p><strong>Client</strong></p>
+<p>Accept</p>
+<p>浏览器可接受的媒体类型。例如Accept:text/html 代表浏览器接受服务器返回的类型为text/html.如果服务器无法返回text/html类型的数据，服务器应该返回一个406错误（non acceptable)
+通配符*代表任意类型</p>
+<p>Accept-Encoding:</p>
+<p>浏览器声明自己接受的压缩算法，是否支持压缩，支持什么类型的（gzip,deflate)
+例如 Accept-Encoding: gzip, deflate</p>
+<p>Accept-Language:</p>
+<p>浏览器声明自己接受的语言</p>
+<p>User-Agent</p>
+<p>客户端使用的操作系统和浏览器版本信息</p>
+<p>Accept-Charset</p>
+<p>浏览器声明自己接受的字符集类型</p>
+<p><strong>Cookie/Login</strong></p>
+<p>Cookie</p>
+<p>包含cookie值</p>
+<p><strong>Entity</strong></p>
+<p>Content-Length</p>
+<p>表明发送给HTTP服务器数据的长度</p>
+<p><strong>Miscellaneous</strong></p>
+<p>Referer:</p>
+<p>提供Request的上下文信息</p>
+<p><strong>Transport</strong> </p>
+<p>Connection</p>
+<p>Connection:keep-alive 当一个网页加载完成后，客户端与服务端之间用于传输HTTP数据的TCP连接保持，如果客户端再次访问服务端，仍继续使用这一条连接。</p>
+<p>Connection:close 代表一个Request完成后，客户端和服务器之间用于传输HTTP数据的TCP连接会关闭，当客户端再次发送Request,需要重新建立TCP连接。</p>
+<p>Host</p>
+<p>请求报头主要用于指定被请求资源的Internet主机和端口号，它通常从HTTP URL中提取出来的。</p>
+<h3 id="http-response-header">HTTP Response Header</h3>
+<p><strong>Cache</strong></p>
+<p>Date: 生成消息的具体时间和日期
+Expires: 浏览器会在指定过期时间内使用本地缓存
+Vary:  Accept-Encoding</p>
+<p><strong>Cookie/Login</strong></p>
+<p>P3P: 用于跨域设置Cookie,解决iframe跨域访问cookie的问题
+Set-Cookie: 用于把cookie发送到客户端浏览器，每一个写入cookie都会生成一个Set-Cookie</p>
+<p><strong>Entity</strong></p>
+<p>ETag: 和If-None-Match配合使用</p>
+<p>Last-Modified: 用于指示资源的最后修改日期和时间</p>
+<p>Content-Type: 表明服务端响应的对象类型和字符集
+例如：
+    Content-Type: text/html; charset=utf-8
+    Content-Type:text/html;charset=GB2312
+    Content-Type: image/jpeg</p>
+<p>Content-Length:指明实体正文的长度，以字节方式存储的十进制数字表示。在数据下行的过程中，Content-Length的方式预先在服务器中缓存数据，然后把数据一起发给客户端。</p>
+<p>Content-Encoding: 表明返回数据的压缩算法</p>
+<p>Content-Language: 表明返回数据的语言</p>
+<p><strong>Miscellaneous</strong></p>
+<p>Server:指明HTTP服务器的软件信息</p>
+<p>X-AspNet-Version:header表明net版本</p>
+<p><strong>Transport</strong></p>
+<p>connection:
+例如：　Connection: keep-alive   当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的连接</p>
+<p>例如：  Connection: close  代表一个Request完成后，客户端和服务器之间用于传输HTTP数据的TCP连接会关闭， 当客户端再次发送Request，需要重新建立TCP连接。</p>
+<p><strong>Location</strong></p>
+<p>Location</p>
+<p>作用：用于重定向一个新的位置, 包含新的URL地址</p>
+<p>实例请看304状态实例</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="http协议">http协议</a><ul><li><a class="toc-href" href="#qian-yan" title="前言">前言</a></li><li><a class="toc-href" href="#webfu-wu-qi-liu-lan-qi-dai-li-fu-wu-qi" title="Web服务器、浏览器、代理服务器">Web服务器、浏览器、代理服务器</a></li><li><a class="toc-href" href="#url" title="URL">URL</a></li><li><a class="toc-href" href="#httpxie-yi-shi-wu-zhuang-tai-de" title="HTTP协议是无状态的">HTTP协议是无状态的</a></li><li><a class="toc-href" href="#httpxiao-xi-de-jie-gou" title="HTTP消息的结构">HTTP消息的结构</a></li><li><a class="toc-href" href="#get-he-postfang-fa-de-qu-bie" title="Get 和 Post方法的区别">Get 和 Post方法的区别</a></li><li><a class="toc-href" href="#zhuang-tai-ma" title="状态码">状态码</a></li><li><a class="toc-href" href="#http-request-header" title="HTTP Request Header">HTTP Request Header</a></li><li><a class="toc-href" href="#http-response-header" title="HTTP Response Header">HTTP Response Header</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

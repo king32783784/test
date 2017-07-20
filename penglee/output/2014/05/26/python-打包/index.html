@@ -1,0 +1,732 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-tips" />
+        <meta name="description" content="Tips 26 脚本、库、框架或应用程序编写完成后，如果想与别人共享，这时就需要进行打包。 python3自带Distutils的打包框架，它包含了许多功能：构建工具（开发者使用),安装工具(用户使用),数据包格式(为搜索引擎准备)等，它集成了python安装包索引 (&#34;PyPI&#34;),一个开源python类库的中央资料库。这些Distutils的不同功能以setup 脚本为中心，一般被命名为setup.py。 Distutils试图尽可能的自动完成全部打包工作，但仍然有些部分需要人为操作。 选择一种许可协议，如GPL 使用PyPI分来系统对软件进行分类 撰写readme文件,用户一般从这里了解你的软件 目录结构 要进行python软件的打包，必须先将文件和目录安排好。例如httplib2的目录树如下： httplib2/ # 创建根目录来保存所有的目录和文件，以python模块的名字命名 +--README.txt # 为了适应window用户，readme文件包含.txt扩展名 +--setup.py # Distutils安装脚本命名为setup.py +--httplib2/ # 如果你的python软件只包含一个单一的.py文件，可以放在根目录 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(十)"/>
+    <meta property="og:url" content="../../../../2014/05/26/python-打包/"/>
+    <meta property="og:description" content="Tips 26 脚本、库、框架或应用程序编写完成后，如果想与别人共享，这时就需要进行打包。 python3自带Distutils的打包框架，它包含了许多功能：构建工具（开发者使用),安装工具(用户使用),数据包格式(为搜索引擎准备)等，它集成了python安装包索引 (&#34;PyPI&#34;),一个开源python类库的中央资料库。这些Distutils的不同功能以setup 脚本为中心，一般被命名为setup.py。 Distutils试图尽可能的自动完成全部打包工作，但仍然有些部分需要人为操作。 选择一种许可协议，如GPL 使用PyPI分来系统对软件进行分类 撰写readme文件,用户一般从这里了解你的软件 目录结构 要进行python软件的打包，必须先将文件和目录安排好。例如httplib2的目录树如下： httplib2/ # 创建根目录来保存所有的目录和文件，以python模块的名字命名 +--README.txt # 为了适应window用户，readme文件包含.txt扩展名 +--setup.py # Distutils安装脚本命名为setup.py +--httplib2/ # 如果你的python软件只包含一个单一的.py文件，可以放在根目录 ..."/>
+    <meta property="article:published_time" content="2014-05-26" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(十) - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/26/python-打包/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/26/python-打包/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/26/python-打包/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/26/python-打包/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/26/python-打包/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(十)">
+                            Python-Tips(十)
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-26T00:00:00+08:00"> 2014-05-26 一</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-26">Tips 26</h3>
+<p>脚本、库、框架或应用程序编写完成后，如果想与别人共享，这时就需要进行打包。</p>
+<p>python3自带Distutils的打包框架，它包含了许多功能：构建工具（开发者使用),安装工具(用户使用),数据包格式(为搜索引擎准备)等，它集成了python安装包索引
+("PyPI"),一个开源python类库的中央资料库。这些Distutils的不同功能以setup 脚本为中心，一般被命名为setup.py。</p>
+<p>Distutils试图尽可能的自动完成全部打包工作，但仍然有些部分需要人为操作。</p>
+<ul>
+<li>选择一种许可协议，如GPL</li>
+<li>使用PyPI分来系统对软件进行分类</li>
+<li>撰写readme文件,用户一般从这里了解你的软件</li>
+</ul>
+<h4 id="mu-lu-jie-gou">目录结构</h4>
+<p>要进行python软件的打包，必须先将文件和目录安排好。例如httplib2的目录树如下：</p>
+<div class="highlight"><pre><span></span>httplib2/   # 创建根目录来保存所有的目录和文件，以python模块的名字命名
++--README.txt　# 为了适应window用户，readme文件包含.txt扩展名
++--setup.py　　# Distutils安装脚本命名为setup.py
++--httplib2/　# 如果你的python软件只包含一个单一的.py文件，可以放在根目录，此处httplib2包含多个文件，这样可以在根目录下放置httplib2目录，在httplib2目录下，包含一个__init__.py的文件的httplib2目录。
+    +--__init__.py
+    +--iri2uri.py
+</pre></div>
+<h4 id="an-zhuang-jiao-ben-bian-xie">安装脚本编写</h4>
+<p>Distutils安装脚本是一份python脚本。
+每个Distutils安装脚本的第一行总是：</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+</pre></div>
+<p>该行导入setup()函数，是Distutils的主入口点。setup()方法可以有几十个参数。为了使每个参与者都能清除，必须对每个参数使用命名参数。如果尝试以非命名变量调用setup()方法，安装脚本会崩溃。
+下面的命名变量是必需的：</p>
+<ul>
+<li>name, 安装包名称</li>
+<li>version, 安装包的版本</li>
+<li>author, 您的全名</li>
+<li>author_email, 您的邮件地址</li>
+<li>
+<p>url, 项目主页
+以下内容，不是必须的，但建议尽量包含：</p>
+</li>
+<li>
+<p>description, 在线的项目摘要</p>
+</li>
+<li>long_description 以rsStructuredTextformat格式编写的多行字符串。</li>
+<li>classfilers, 特别格式化字符串</li>
+</ul>
+<h4 id="bao-fen-lei">包分类</h4>
+<p>Python包索引("PyPI")包含成千上万的Python库。正确的分类数据将让人脉更容易找到你的包。PyPI让你以类别的形式浏览包。可以通过传递classifiers参数给Distutils的setup()方法来给你的软件分类。classifers参数是一个字符串列表。这些字符串不是任意格式，都应该来自PyPI上的列表。虽然分类是可选的，但最好至少包括以下分类：</p>
+<ul>
+<li>编程语言。应该包括"Programming Language :: Python"和"Programming Language :: Python :: 3"。如果你不包括这些，你的包将不会出现在兼容Python3的库列表中。</li>
+<li>许可证。当评价一个第三方库时，这是要需找的第一个东西</li>
+<li>操作系统。要描述软件适用的操作系统平台</li>
+</ul>
+<p>还建议包括以下分类：</p>
+<ul>
+<li>开发状态。软件产品适合beta发布么，还是alpha，还是Pre-alpha</li>
+<li>目标用户。最常见的选项：Developers、End Users/Destop、Science/Research和Systm Administrators</li>
+<li>框架。如果你的软件是Django或Zope这样大型框架的插件，需要包含适当的框架分类</li>
+<li>主题。选择相关的主题</li>
+</ul>
+<p>下面是Django分类的例子。</p>
+<div class="highlight"><pre><span></span><span class="n">Programming</span> <span class="n">Language</span> <span class="p">::</span> <span class="n">Python</span>
+<span class="n">License</span> <span class="p">::</span> <span class="n">OSI</span> <span class="n">Approved</span> <span class="p">::</span> <span class="n">BSD</span> <span class="n">License</span>
+<span class="n">Operating</span> <span class="n">System</span> <span class="p">::</span> <span class="n">OS</span> <span class="n">Independent</span>
+<span class="n">Development</span> <span class="n">Status</span><span class="err">　</span><span class="p">::</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">Production</span><span class="o">/</span><span class="n">Stable</span>
+<span class="n">Environment</span> <span class="p">::</span> <span class="n">Web</span> <span class="n">Environment</span>
+<span class="n">Framework</span> <span class="p">::</span> <span class="n">Django</span>
+<span class="n">Intended</span> <span class="n">Audience</span> <span class="p">::</span> <span class="n">Developers</span>
+<span class="n">Topic</span> <span class="p">::</span> <span class="n">Internet</span> <span class="p">::</span> <span class="n">WWW</span><span class="o">/</span><span class="n">HTTP</span>
+<span class="n">Topic</span> <span class="p">::</span> <span class="n">Internet</span> <span class="p">::</span> <span class="n">WWW</span><span class="o">/</span><span class="n">HTTP</span> <span class="p">::</span> <span class="n">Dynamic</span> <span class="n">Content</span>
+<span class="n">Topic</span> <span class="p">::</span> <span class="n">Internet</span> <span class="p">::</span> <span class="n">WWW</span><span class="o">/</span><span class="n">HTTP</span> <span class="p">::</span> <span class="n">WSGI</span>
+<span class="n">Topic</span> <span class="p">::</span> <span class="n">Software</span> <span class="n">Development</span> <span class="p">::</span> <span class="n">Libraries</span> <span class="p">::</span> <span class="n">Python</span>
+<span class="n">Modules</span>
+</pre></div>
+<h4 id="tong-guo-qing-dan-zhi-ding-fu-jia-wen-jian">通过清单指定附加文件</h4>
+<p>默认情况下，Distutils将把下列文件包含在你的发布包中：</p>
+<ul>
+<li>README.txt</li>
+<li>setup.py</li>
+<li>列在packages参数中的多模块文件所需的.py文件</li>
+<li>在py_modules参数中列出的单独.py文件</li>
+</ul>
+<p>如果还希望包含COPYING.txt许可文件或含有图像与HTML文件的如docs目录，也就是让Distutils在构建发行包时包含一些额外的文件和目录，需要创建一个manifestfile.
+清单文件是一个名为MANIFEST.in的文本文件。将它放置在项目的根目录下，同README.txt和setup.py一起。清单文件不是python脚本，是文本文件，其中包含一系列Distutils定义格式的命令。清单命令允许你包含或排除特定的文件和目录。
+例如chardet项目的全部清单文件：</p>
+<div class="highlight"><pre><span></span>include COPYING.txt # 包含COPYING.txt文件
+recursive-include docs *.html *.css *.png *.gif　# recursive-include命令需要一个目录名和至少一个文件名。这里使用了通配符。
+</pre></div>
+<p>所有的清单命令都将保持项目目录中所有的目录结构。</p>
+<p>清单文件有自己独特的格式。</p>
+<h4 id="jian-cha-an-zhuang-jiao-ben-de-cuo-wu">检查安装脚本的错误</h4>
+<p>Distutils带有一个内置的验证命令，它检查是否所有必须的元数据都体现在你的安装脚本中。</p>
+<h4 id="chuang-jian-fa-bu-yuan">创建发布源</h4>
+<p>Distutils支持构建多种类型的发布包。至少，应该建立一个"源代码分发", 其中包含源代码，你的Distutils安装脚本，"readme"文件和你想要包含其他文件。</p>
+<p>python中包含更多的打包框架：</p>
+<p>比如偏重安装：</p>
+<ul>
+<li>Setuptools</li>
+<li>Pip</li>
+<li>Distribute</li>
+</ul>
+<p>以下框架重在测试和部署：</p>
+<ul>
+<li>virtualenv</li>
+<li>zc.buildout</li>
+<li>Paver</li>
+<li>Fabric</li>
+<li>py2exe</li>
+</ul>
+<p>具体的项目中，可以根据需要，选择对应的打包方式。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(十)">Python-Tips(十)</a><ul><li><a class="toc-href" href="#tips-26" title="Tips 26">Tips 26</a><ul><li><a class="toc-href" href="#mu-lu-jie-gou" title="目录结构">目录结构</a></li><li><a class="toc-href" href="#an-zhuang-jiao-ben-bian-xie" title="安装脚本编写">安装脚本编写</a></li><li><a class="toc-href" href="#bao-fen-lei" title="包分类">包分类</a></li><li><a class="toc-href" href="#tong-guo-qing-dan-zhi-ding-fu-jia-wen-jian" title="通过清单指定附加文件">通过清单指定附加文件</a></li><li><a class="toc-href" href="#jian-cha-an-zhuang-jiao-ben-de-cuo-wu" title="检查安装脚本的错误">检查安装脚本的错误</a></li><li><a class="toc-href" href="#chuang-jian-fa-bu-yuan" title="创建发布源">创建发布源</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

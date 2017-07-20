@@ -1,0 +1,696 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="python-howtos" />
+        <meta name="description" content="Python HOWTOS 是一些单一的、特定的主题并试图覆盖python大部分内容，参考linux howto形成的集合，部分内容比python库包含更多的内容。 目前，包括这些topic. 将python2代码移植到python3 移植扩展模块到python3 Curses编程 Descriptor 使用方法 函数式编程方法 Logging使用方法 Logging Cookbook 正则表达式使用方法 Socket编程方法 排序使用方法 Unicode使用方法 如何通过urllib包获取网络资源 Argparse教程 IP地址模块介绍 参数解析方法 CPython中DTrace和SystemTap使用 将python2代码移植到python3 Python3是python的未来，与此同时，Python2仍然在使用，使用这两个主流版本的python开发项目是件好事。本指南将帮助我们如何更好的使用python2&amp;3.如果想查看扩展模块级的信息，可以查看移植扩展模块到python3[].如果想了解python3的出现原因，可以查看Nick Coghlan&#39;sPython 3 Q&amp;A. 简要说明 为了使你的项目兼容python2/3，基本步骤是： 1.只担心支持python2 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-HOWTOS(一）"/>
+    <meta property="og:url" content="../../../../2016/03/11/python-howtosyi/"/>
+    <meta property="og:description" content="Python HOWTOS 是一些单一的、特定的主题并试图覆盖python大部分内容，参考linux howto形成的集合，部分内容比python库包含更多的内容。 目前，包括这些topic. 将python2代码移植到python3 移植扩展模块到python3 Curses编程 Descriptor 使用方法 函数式编程方法 Logging使用方法 Logging Cookbook 正则表达式使用方法 Socket编程方法 排序使用方法 Unicode使用方法 如何通过urllib包获取网络资源 Argparse教程 IP地址模块介绍 参数解析方法 CPython中DTrace和SystemTap使用 将python2代码移植到python3 Python3是python的未来，与此同时，Python2仍然在使用，使用这两个主流版本的python开发项目是件好事。本指南将帮助我们如何更好的使用python2&amp;3.如果想查看扩展模块级的信息，可以查看移植扩展模块到python3[].如果想了解python3的出现原因，可以查看Nick Coghlan&#39;sPython 3 Q&amp;A. 简要说明 为了使你的项目兼容python2/3，基本步骤是： 1.只担心支持python2 ..."/>
+    <meta property="article:published_time" content="2016-03-11" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="python-howtos" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-HOWTOS(一） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/03/11/python-howtosyi/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/03/11/python-howtosyi/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/03/11/python-howtosyi/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/03/11/python-howtosyi/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2016/03/11/python-howtosyi/"
+                           rel="bookmark"
+                           title="Permalink to Python-HOWTOS(一）">
+                            Python-HOWTOS(一）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2016-03-11T00:00:00+08:00"> 2016-03-11 五</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-howtos.html">python-howtos</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p>Python HOWTOS 是一些单一的、特定的主题并试图覆盖python大部分内容，参考linux howto形成的集合，部分内容比python库包含更多的内容。
+目前，包括这些topic.</p>
+<ul>
+<li>将python2代码移植到python3</li>
+<li>移植扩展模块到python3</li>
+<li>Curses编程</li>
+<li>Descriptor 使用方法</li>
+<li>函数式编程方法</li>
+<li>Logging使用方法</li>
+<li>Logging Cookbook</li>
+<li>正则表达式使用方法</li>
+<li>Socket编程方法</li>
+<li>排序使用方法</li>
+<li>Unicode使用方法</li>
+<li>如何通过urllib包获取网络资源</li>
+<li>Argparse教程</li>
+<li>IP地址模块介绍</li>
+<li>参数解析方法</li>
+<li>CPython中DTrace和SystemTap使用</li>
+</ul>
+<h3 id="jiang-python2dai-ma-yi-zhi-dao-python3">将python2代码移植到python3</h3>
+<p>Python3是python的未来，与此同时，Python2仍然在使用，使用这两个主流版本的python开发项目是件好事。本指南将帮助我们如何更好的使用python2&amp;3.如果想查看扩展模块级的信息，可以查看移植扩展模块到python3[].如果想了解python3的出现原因，可以查看Nick Coghlan's<a href="https://ncoghlan-devs-python-notes.readthedocs.io/en/latest/python3/questions_and_answers.html">Python 3 Q&amp;A</a>.</p>
+<h4 id="jian-yao-shuo-ming">简要说明</h4>
+<p>为了使你的项目兼容python2/3，基本步骤是：</p>
+<ul>
+<li>1.只担心支持python2.7</li>
+<li>2.确保测试覆盖，（<a href="https://pypi.python.org/pypi/coverage">coverage.py</a>；pip install coverage)</li>
+<li>3.学习python2&amp;3的不同</li>
+<li>4.使用<a href="https://python-modernize.readthedocs.org/en/latest/">Modernize</a>或<a href="python-future.org/automatic_conversion.html">Futurize</a>去更新代码（pip install modernize 或 pip install future)</li>
+<li>5.使用<a href="https://pypi.python.org/pypi/pylint">Pylint</a>确保没有回退到不支持python3(pip install pylint)</li>
+<li>6.使用<a href="https://pypi.python.org/pypi/caniusepython3">caniusepython3</a>找出哪些依赖影响了python3的使用（pip install caniusepython3)</li>
+<li>7.但这些依赖不在影响集成，需要确保可以一直兼容python2&amp;3(<a href="https://pypi.python.org/pypi/tox">tox</a>可以帮助你应付不同版本的测试；pip install tox)</li>
+</ul>
+<p>如果放弃对python2的支持，在学习了python2&amp;3的差异之后，可以通过<a href="https://docs.python.org/3/library/2to3.html">2&amp;3</a>转换代码，并可以忽略其他步骤。</p>
+<h4 id="xiang-xi-xin-xi">详细信息</h4>
+<p>同时支持python2&amp;3的关键是今天你就可以开始了。尽管你的依赖现在不支持python3，并不意味着你的代码现在不支持python3.大多为了支持python3，需要清理python2的代码。</p>
+<p>另一个关键是更新python2支持python3已有大量的自动化工具。 虽然必须让一些文字数据和二进制数据API去支持Python 3，但底层的转换工作可以由自动化工具去转换。</p>
+<p>当更新代码以支持python2&amp;3时，一定要记住这些要点的详细信息。</p>
+<h4 id="drop-support-for-python-26-and-older">Drop support for Python 2.6 and older</h4>
+<p>尽管可以让python2.5支持python3,但只使用python2.7要简单的多。如果不打算放弃python2.5，<a href="https://pypi.python.org/pypi/six">six</a>可以帮助兼容python2.5和python3(pip install six).但这个专题，几乎不能提供帮助。</p>
+<p>如果跳过python2.5和之前版本，一些必要的修改可以让你的代码看起来像纯正的ｐｙｔｈｏｎ代码。最坏的情况需要用函数替换一些方法或import的一些内置函数。</p>
+<p>如果要尽量支持python2.7,python2.6以后将不再支持和进行bug 修复。</p>
+<h4 id="make-sure-you-specify-the-proper-version-support-in-your-setuppy-file">Make sure you specify the proper version support in your setup.py file</h4>
+<p>在setup.py文件中，需要你在<a href="https://pypi.python.org/pypi?%3Aaction=list_classifiers">trove classifier</a>指定你支持python版本。如果你的代码不支持python3，你至少应该指定　Programming Language :: Python :: 2 :: only. 例如你同样需要指定哪个主版本，Programming Language :: Python :: 2.7</p>
+<h4 id="have-good-test-coverage">Have good test coverage</h4>
+<p>一旦你让你的代码支持python2早期的版本，你会想确保你的test suite足够覆盖你的代码。如果，你没有工具进行测试覆盖，coverage.py是个不错的选择。</p>
+<h4 id="learn-the-differences-between-python-23">Learn the differences between Python 2&amp;3</h4>
+<p>当你准备好了代码和测试就可以开始支持python3了。 但要完全理解你的代码是如何改变的，你会想学习python2到python3的变化.通常比较好的方法是读python3每个版本的更新<a href="https://docs.python.org/3/whatsnew/index.html">What's New</a>和<a href="python3porting.com">Porting to Python3</a>.还有就是查看python未来项目<a href="http://python-future.org/compatible_idioms.html">cheat sheet</a>.</p>
+<h4 id="update-your-code">Update your code</h4>
+<p>当你了解了python3&amp;2不同之后，就可以更新你的代码了。有两个自动移植代码的工具可以选择：Modernize 和　Futurize.两个工具选择的依据是，你想让你的代码接近python3的程度。Futurize会尽力使Python 3语法同步到ython 2，如存在向后移植的bytes在Python 3这样的类型。</p>
+<p>选好需要的工具之后，就可以开始更新代码了。你需要确保，更新之后的代码和之前的代码在功能实现是一致的。也就需要保证测试结果更新前后保持一致。尽管工具可以将大部分代码更新到支持python3，但仍然有一些不能更新，需要手动去更改，使代码完全支持python3.下面几种情况需要注意，有时调试时可能会忽略。
+ 　</p>
+<h5 id="division">Division</h5>
+<p>在python3中，5/2 == 2.5而不是２；所有int之间的除法的结果都是float.这个变化实际上在2002年发布的python2.2中增加。一直鼓励用户在任何使用/和//的文件中增加"from __future__ import　division" 或-Q标志。 如果你还没有这样做，那么你将需要通过你的代码，做两件事情：
+ * 1.在文件中增加"from __future__ import division"
+ * 2. 使用//进行地板除，/除则得到float</p>
+<p>原因是/不能简单翻译成//,如果你的代码定义__truediv__方法而不是__floordiv__则会导致你的代码出错。</p>
+<h5 id="text-versus-binary-data">Text versus binary data</h5>
+<p>待补</p>
+<h5 id="prevent-compatibility-regressions">Prevent compatibility regressions</h5>
+<p>待补</p>
+<h5 id="check-which-dependencies-block-your-transition">Check which dependencies block your transition</h5>
+<p>待补</p>
+<h5 id="update-your-setuppy-file-to-denote-python3-compatibility">Update your setup.py file to denote Python3 compatibility</h5>
+<p>待补</p>
+<h5 id="use-continuous-integration-to-stay-compatible_idioms">Use continuous integration to stay compatible_idioms</h5>
+<p>待补</p>
+<h4 id="dropping-python2-support-completely_1">Dropping Python2 support completely</h4>
+<p>待补</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-HOWTOS(一）">Python-HOWTOS(一）</a><ul><li><a class="toc-href" href="#jiang-python2dai-ma-yi-zhi-dao-python3" title="将python2代码移植到python3">将python2代码移植到python3</a><ul><li><a class="toc-href" href="#jian-yao-shuo-ming" title="简要说明">简要说明</a></li><li><a class="toc-href" href="#xiang-xi-xin-xi" title="详细信息">详细信息</a></li><li><a class="toc-href" href="#drop-support-for-python-26-and-older" title="Drop support for Python 2.6 and older">Drop support for Python 2.6 and older</a></li><li><a class="toc-href" href="#make-sure-you-specify-the-proper-version-support-in-your-setuppy-file" title="Make sure you specify the proper version support in your setup.py file">Make sure you specify the proper version support in your setup.py file</a></li><li><a class="toc-href" href="#have-good-test-coverage" title="Have good test coverage">Have good test coverage</a></li><li><a class="toc-href" href="#learn-the-differences-between-python-23" title="Learn the differences between Python 2&amp;3">Learn the differences between Python 2&amp;3</a></li><li><a class="toc-href" href="#update-your-code" title="Update your code">Update your code</a><ul><li><a class="toc-href" href="#division" title="Division">Division</a></li><li><a class="toc-href" href="#text-versus-binary-data" title="Text versus binary data">Text versus binary data</a></li><li><a class="toc-href" href="#prevent-compatibility-regressions" title="Prevent compatibility regressions">Prevent compatibility regressions</a></li><li><a class="toc-href" href="#check-which-dependencies-block-your-transition" title="Check which dependencies block your transition">Check which dependencies block your transition</a></li><li><a class="toc-href" href="#update-your-setuppy-file-to-denote-python3-compatibility" title="Update your setup.py file to denote Python3 compatibility">Update your setup.py file to denote Python3 compatibility</a></li><li><a class="toc-href" href="#use-continuous-integration-to-stay-compatible_idioms" title="Use continuous integration to stay compatible_idioms">Use continuous integration to stay compatible_idioms</a></li></ul></li><li><a class="toc-href" href="#dropping-python2-support-completely_1" title="Dropping Python2 support completely">Dropping Python2 support completely</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

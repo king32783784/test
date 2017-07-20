@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="C" />
+        <meta name="description" content="1.简单的宏定义 #define MAXTIME 1000 简单的MATIME定义好了，它代表1000，如果在程序中写： if(i&lt;MAXTIME){...} 编译器在处理这个代码之前会对MAXTIME进行替换为1000。 宏定义类同于简单的文本替换，而不是变量。 2.define的“函数定义” define可以像函数那样接受一些参数，如下： #define max(x,y)(x)&gt;(y)?(x):(y); 这个定义将返回两个数中最大的，而且这个函数没有经过类型检查，好像函数模板，但没有模板安全。存在隐患： #define Add(a,b) a+b; 如果代数式 cAdd(a,b)d,本意为a+b然后去和c、d相乘，而define只是一个简单替换，式子反而变为了： c ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="C-宏定义"/>
+    <meta property="og:url" content="../../../../2011/08/15/C/"/>
+    <meta property="og:description" content="1.简单的宏定义 #define MAXTIME 1000 简单的MATIME定义好了，它代表1000，如果在程序中写： if(i&lt;MAXTIME){...} 编译器在处理这个代码之前会对MAXTIME进行替换为1000。 宏定义类同于简单的文本替换，而不是变量。 2.define的“函数定义” define可以像函数那样接受一些参数，如下： #define max(x,y)(x)&gt;(y)?(x):(y); 这个定义将返回两个数中最大的，而且这个函数没有经过类型检查，好像函数模板，但没有模板安全。存在隐患： #define Add(a,b) a+b; 如果代数式 cAdd(a,b)d,本意为a+b然后去和c、d相乘，而define只是一个简单替换，式子反而变为了： c ..."/>
+    <meta property="article:published_time" content="2011-08-15" />
+    <meta property="article:section" content="编程语言-C" />
+        <meta property="article:tag" content="C" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>C-宏定义 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2011/08/15/C/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2011/08/15/C/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2011/08/15/C/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2011/08/15/C/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2011/08/15/C/"
+                           rel="bookmark"
+                           title="Permalink to C-宏定义">
+                            C-宏定义
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2011-08-15T00:00:00+08:00"> 2011-08-15 一</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-c.html">编程语言-C</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/c.html">C</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p><strong>1.简单的宏定义</strong></p>
+<div class="highlight"><pre><span></span>#define MAXTIME 1000
+</pre></div>
+<p>简单的MATIME定义好了，它代表1000，如果在程序中写：</p>
+<div class="highlight"><pre><span></span>if(i&lt;MAXTIME){...}
+</pre></div>
+<p>编译器在处理这个代码之前会对MAXTIME进行替换为1000。
+宏定义类同于简单的文本替换，而不是变量。</p>
+<p><strong>2.define的“函数定义”</strong></p>
+<p>define可以像函数那样接受一些参数，如下：</p>
+<div class="highlight"><pre><span></span>#define max(x,y)(x)&gt;(y)?(x):(y);
+</pre></div>
+<p>这个定义将返回两个数中最大的，而且这个函数没有经过类型检查，好像函数模板，但没有模板安全。存在隐患：</p>
+<div class="highlight"><pre><span></span>#define Add(a,b) a+b;
+</pre></div>
+<p>如果代数式 c<em>Add(a,b)</em>d,本意为a+b然后去和c、d相乘，而define只是一个简单替换，式子反而变为了： c<em>a + b</em>d ,忽略了运算规则。</p>
+<div class="highlight"><pre><span></span>#define pin(int*);
+pin a,b;
+</pre></div>
+<p>本来是想定义a，b都是int型指针，而一替换变成了 int*a,b; </p>
+<p><strong>3.宏的单行定义</strong></p>
+<div class="highlight"><pre><span></span>#define A(x) T_##x
+#define B (x)#@x
+#define C (x)#x
+</pre></div>
+<p>我们假设x=1,则有：</p>
+<div class="highlight"><pre><span></span>A(1): T_1
+B(1): '1'
+C(1): "1"
+</pre></div>
+<p><strong>3.define的多行定义</strong></p>
+<p>define可以替换多行的代码，例如MFC中的宏定义</p>
+<div class="highlight"><pre><span></span>#define MACRO(arg1, arg2) do{/
+    /*declarations*/
+stmt1;/
+stmt2;/
+}while(0) /*(no trailing;)*/
+</pre></div>
+<p>每行换行时加上换行符“/”</p>
+<p><strong>4.条件编译</strong></p>
+<p>在大规模的开发中，define最重要的功能就是条件编译。也就是本文的用法。</p>
+<div class="highlight"><pre><span></span><span class="cp">#ifdef UCLINU</span>
+<span class="p">...</span>
+<span class="p">...</span>
+<span class="cp">#endif</span>
+</pre></div>
+<p>编译时，可以通过#define设置编译环境</p>
+<p><strong>5如何定义宏，取消宏</strong></p>
+<div class="highlight"><pre><span></span><span class="c1">//定义宏</span>
+<span class="cp">#define [MarcoName] [Macro Value]</span>
+<span class="c1">//取消宏</span>
+<span class="cp">#undef [MacroName]</span>
+<span class="c1">//普通宏</span>
+<span class="cp">#define PI(3.14]</span>
+<span class="c1">//带参数的宏</span>
+<span class="cp">#define max(a,b)((a)&gt;(b)?(a),(b))</span>
+<span class="err">加括号是个好习惯哦</span>
+</pre></div>
+<p><strong>6.头文件(.h)可以被头文件或C文件包含</strong></p>
+<p>重复包含（重复定义）
+由于头文件包含可以嵌套，那么C文件就有可能包含多次同一个头文件，就可能出现重复定义的问题的。
+通过条件编译开关来避免重复包含（重复定义）</p>
+<p>例如
+    #ifndef <strong>headerfileXXX</strong>
+    #define <strong>headerfileXXX</strong>
+    …
+    //文件内容
+    …
+    #endif</p>
+<p><strong>7.define命令的一些高级用法</strong></p>
+<p>define中的三个特殊符号“#” “##” “#@”，前面提到过但未解释。</p>
+<div class="highlight"><pre><span></span>#define Conn(x,y) x##y
+</pre></div>
+<p>x##y 表示什么？ 表示x连接y,</p>
+<div class="highlight"><pre><span></span>int n = Conn(123, 456); //表示n=123456 相信你已经猜到了
+char* str = Conn("asdf", "adf"); //表示str = "asdfadf"
+
+#define ToChar(x) #@x
+</pre></div>
+<h1 id="xjiu-shi-gei-xjia-shang-dan-yin-hao-fan-hui-yi-ge-const-char">@x，就是给x加上单引号，返回一个const char:</h1>
+<div class="highlight"><pre><span></span>char a = ToChar(1) //a='1'
+</pre></div>
+<h1 id="x-jiu-shi-jia-shuang-yin-hao">x, 就是加双引号.</h1>
+<p>下面看一下宏定义常用用法：</p>
+<p>防止头文件被重复包含：</p>
+<div class="highlight"><pre><span></span><span class="cp">#ifdef BODYDEF_H</span>
+<span class="cp">#define BODYDEF_H</span>
+<span class="p">...</span>
+<span class="cp">#endif</span>
+</pre></div>
+<p>得到指定地址上的一个字节或字：</p>
+<div class="highlight"><pre><span></span>#define MEM_B( x ) ( *( (byte *) (x) ) )
+#define MEM_W( x ) ( *( (word *) (x) ) )
+</pre></div>
+<p>得到一个field在结构体(struct)中的偏移量</p>
+<div class="highlight"><pre><span></span>#define OFFSETOF( type, field ) ( (size_t) &amp;(( type *) 0)-&gt; field )
+</pre></div>
+<p>得到一个结构体中field所占用的字节数 </p>
+<div class="highlight"><pre><span></span>#define FSIZ( type, field ) sizeof( ((type *) 0)-&gt;field )
+</pre></div>
+<p>得到一个变量的地址（word宽度） </p>
+<div class="highlight"><pre><span></span>#define B_PTR( var ) ( (byte *) (void *) &amp;(var) ) 
+#define W_PTR( var ) ( (word *) (void *) &amp;(var) )
+</pre></div>
+<p>将一个字母转换为大写</p>
+<div class="highlight"><pre><span></span>#define UPCASE( c ) ( ((c) &gt;= ''a'' &amp;&amp; (c) &lt;= ''z'') ? ((c) - 0x20) : (c) )
+</pre></div>
+<p>判断字符是不是10进值的数字</p>
+<div class="highlight"><pre><span></span>#define DECCHK( c ) ((c) &gt;= ''0'' &amp;&amp; (c) &lt;= ''9'')
+</pre></div>
+<p>判断字符是不是16进值的数字 </p>
+<div class="highlight"><pre><span></span>#define HEXCHK( c ) ( ((c) &gt;= ''0'' &amp;&amp; (c) &lt;= ''9'') ||((c) &gt;= ''A'' &amp;&amp; (c) &lt;= ''F'') ||((c) &gt;= ''a'' &amp;&amp; (c) &lt;= ''f'') )
+</pre></div>
+<p>防止溢出的一个方法</p>
+<div class="highlight"><pre><span></span>#define INC_SAT( val ) (val = ((val)+1 &gt; (val)) ? (val)+1 : (val))
+</pre></div>
+<p>返回数组元素的个数 </p>
+<div class="highlight"><pre><span></span>#define ARR_SIZE( a ) ( sizeof( (a) ) / sizeof( (a[0]) ) )
+</pre></div>
+<p>使用一些宏跟踪调试
+在调试时，我们可以设置__DEBUG宏，也可以再Makefile中使用-D编译选项设置，</p>
+<div class="highlight"><pre><span></span>[cpp] view plain copy print?
+#define __DEBUG
+</pre></div>
+<p>使用方法为，</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">cpp</span><span class="p">]</span> <span class="n">view</span> <span class="n">plain</span> <span class="n">copy</span> <span class="n">print</span><span class="o">?</span>
+<span class="cp">#ifdef __DEBUG  </span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%s"</span><span class="p">,</span> <span class="p">...);</span>  
+<span class="cp">#endif</span>
+</pre></div>
+<p>另外，ANSI C标准中有几个标准预定义宏，前面几个（func...STDC）常用于printf(sprintf)等语句中：</p>
+<div class="highlight"><pre><span></span>__func__：在源代码中插入当前所在函数名；
+__LINE__：在源代码中插入当前源代码行号；
+
+__FILE__：在源文件中插入当前源文件名；
+
+__DATE__：在源文件中插入当前的编译日期
+
+__TIME__：在源文件中插入当前编译时间；
+
+__STDC__：当要求程序严格遵循ANSI C标准时该标识被赋值为1；
+
+__cplusplus：当编写C++程序时该标识符被定义。
+</pre></div>
+<p>其中__cplusplus常用于头文件中，格式如下：</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">cpp</span><span class="p">]</span> <span class="n">view</span> <span class="n">plain</span> <span class="n">copy</span> <span class="n">print</span><span class="o">?</span>
+<span class="cp">#ifndef _ZX_FUNC_H  </span>
+<span class="cp">#define _ZX_FUNC_H</span>
+
+<span class="cp">#ifdef __cplusplus  </span>
+<span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>  
+<span class="cp">#endif</span>
+
+<span class="cm">/* functions */</span>  
+<span class="kt">char</span> <span class="o">*</span><span class="n">strdup</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">);</span>
+
+<span class="cp">#ifdef __cplusplus  </span>
+<span class="p">}</span>  
+<span class="cp">#endif</span>
+
+<span class="cp">#endif</span>
+</pre></div>
+<p>extern"C"表示将其中的代码按照C编译方法编译，目的是实现C++与C语言的调用。</p>
+<p>C编译与C++编译的区别是：C会将上面strdup编译成_STRDUP符号，而C++会编译成_STRDUP_CHAR，这也是C++为什么能实现函数重载的原因。extern只能出现在C++文件中，一般如上面的方式置于头文件中。
+要在C中调用C++代码，需要在C代码中的函数或变量声明为extern类型，在C++中将函数或变量用extern "C"修饰。</p>
+<p>简单数学计算（绝对值，三角函数等）</p>
+<div class="highlight"><pre><span></span>[cpp] view plain copy print?
+#define ABS( a ) ( ((a)&gt;0) ? (a) : (-(a)) )
+</pre></div>
+<h1 id="define-yi-ge-fu-za-yu-ju">define 一个复杂语句</h1>
+<p>比如交换a,b的值，</p>
+<div class="highlight"><pre><span></span>[cpp] view plain copy print?
+#define(a,b) do { \  
+    int t = 0;  
+    t = a; \  
+    a = b; \  
+    b = t; \  
+} while(0)
+</pre></div>
+<h1 id="definede-zhe-xie-gao-ji-yong-fa-zai-linuxnei-he-yuan-dai-ma-hen-duo-chu-chu-xian-ke-yue-du-can-kao-nei-he-yuan-dai-ma">define的这些高级用法在Linux内核源代码很多处出现，可阅读参考内核源代码。</h1></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="C-宏定义">C-宏定义</a><ul><li><a class="toc-href" href="#xjiu-shi-gei-xjia-shang-dan-yin-hao-fan-hui-yi-ge-const-char" title="@x，就是给x加上单引号，返回一个const char:">@x，就是给x加上单引号，返回一个const char:</a></li><li><a class="toc-href" href="#x-jiu-shi-jia-shuang-yin-hao" title="x, 就是加双引号.">x, 就是加双引号.</a></li><li><a class="toc-href" href="#define-yi-ge-fu-za-yu-ju" title="define 一个复杂语句">define 一个复杂语句</a></li><li><a class="toc-href" href="#definede-zhe-xie-gao-ji-yong-fa-zai-linuxnei-he-yuan-dai-ma-hen-duo-chu-chu-xian-ke-yue-du-can-kao-nei-he-yuan-dai-ma" title="define的这些高级用法在Linux内核源代码很多处出现，可阅读参考内核源代码。">define的这些高级用法在Linux内核源代码很多处出现，可阅读参考内核源代码。</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

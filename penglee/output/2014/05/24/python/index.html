@@ -1,0 +1,951 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-Tips" />
+        <meta name="description" content="Tips 25 HTTP WEB http web服务是指以编程的方式直接使用HTTP操作从远程服务器发送和接收数据。如果从服务器获取数据使用HTTP GET;如果向服务器上传数据使用HTTP POST.一些高级的HTTP Web服务 API允许使用HTTP put 和HTTP delete创建、修改和删除数据。数据格式同常是xml或json，可以实现创建好并静态的存储下来，或则由服务器端脚本动态生成，并且所有主要原因都包含http库用于下载数据。调试也比较方便，http web服务中每一个资源都有一个唯一的地址(以url的形式存在),可以在浏览器中加载并立即看到原始的数据。 python3的htpp.client是实现http协议的底层库 urllib.request建立在http.client之上的抽象层。它为访问http和ftp服务器提供了标准的API，可以自动跟随http重定向，并且处理了一些常见形式的http认证。 建议使用httplib2,一个第三方的开源库，它比http.client更完整的实现了http协议，又比urllb.request提供了更好的抽象 HTTP 首先得了解http的特点。 缓存 网络访问代价还是比较大，即使在最快的宽带连接上，延迟（从发送请求到开始响应获得数据所花费的时间）仍然很高。路由器的异常，被丢包 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(九)"/>
+    <meta property="og:url" content="../../../../2014/05/24/python/"/>
+    <meta property="og:description" content="Tips 25 HTTP WEB http web服务是指以编程的方式直接使用HTTP操作从远程服务器发送和接收数据。如果从服务器获取数据使用HTTP GET;如果向服务器上传数据使用HTTP POST.一些高级的HTTP Web服务 API允许使用HTTP put 和HTTP delete创建、修改和删除数据。数据格式同常是xml或json，可以实现创建好并静态的存储下来，或则由服务器端脚本动态生成，并且所有主要原因都包含http库用于下载数据。调试也比较方便，http web服务中每一个资源都有一个唯一的地址(以url的形式存在),可以在浏览器中加载并立即看到原始的数据。 python3的htpp.client是实现http协议的底层库 urllib.request建立在http.client之上的抽象层。它为访问http和ftp服务器提供了标准的API，可以自动跟随http重定向，并且处理了一些常见形式的http认证。 建议使用httplib2,一个第三方的开源库，它比http.client更完整的实现了http协议，又比urllb.request提供了更好的抽象 HTTP 首先得了解http的特点。 缓存 网络访问代价还是比较大，即使在最快的宽带连接上，延迟（从发送请求到开始响应获得数据所花费的时间）仍然很高。路由器的异常，被丢包 ..."/>
+    <meta property="article:published_time" content="2014-05-24" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-Tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(九) - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/24/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/24/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/24/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/24/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/24/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(九)">
+                            Python-Tips(九)
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-24T00:00:00+08:00"> 2014-05-24 六</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-Tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-25">Tips 25</h3>
+<p><strong>HTTP WEB</strong></p>
+<p>http web服务是指以编程的方式直接使用HTTP操作从远程服务器发送和接收数据。如果从服务器获取数据使用HTTP GET;如果向服务器上传数据使用HTTP POST.一些高级的HTTP Web服务 API允许使用HTTP put 和HTTP delete创建、修改和删除数据。数据格式同常是xml或json，可以实现创建好并静态的存储下来，或则由服务器端脚本动态生成，并且所有主要原因都包含http库用于下载数据。调试也比较方便，http web服务中每一个资源都有一个唯一的地址(以url的形式存在),可以在浏览器中加载并立即看到原始的数据。</p>
+<p>python3的htpp.client是实现http协议的底层库
+urllib.request建立在http.client之上的抽象层。它为访问http和ftp服务器提供了标准的API，可以自动跟随http重定向，并且处理了一些常见形式的http认证。</p>
+<p>建议使用httplib2,一个第三方的开源库，它比http.client更完整的实现了http协议，又比urllb.request提供了更好的抽象</p>
+<h4 id="http">HTTP</h4>
+<p>首先得了解http的特点。</p>
+<p><strong>缓存</strong></p>
+<p>网络访问代价还是比较大，即使在最快的宽带连接上，延迟（从发送请求到开始响应获得数据所花费的时间）仍然很高。路由器的异常，被丢包，中间代理商被工具攻击等等，这些你无法改变。因此，http在设计时就考虑到了缓存。有这么一类设备（ 缓存代理服务器）,它们能起作用，因为缓存是内建在http协议中的。</p>
+<p>当你下载一个图片是，服务器返回包含了以下http头：</p>
+<div class="highlight"><pre><span></span>HTTP/1.1 200 OK
+Date: Sun, 31 May 2009 17:14:04 GMT
+Server: Apache
+Last-Modified: Fri, 22 Aug 2008 04:28:16 GMT
+ETag: "3075-ddc8d800"
+Accept-Ranges: bytes
+Content-Length: 12405
+Cache-Control: max-age=31536000, public
+Expires: Mon, 31 May 2010 17:14:04 GMT
+Connection: close
+Content-Type: image/jpeg
+</pre></div>
+<p>Cache-Control和Expires头告诉浏览器(以及任何处于你和服务器之间的缓存代理服务器）这张图片可以缓存长达一年。如果你浏览器从本地缓存删除了这张图片，http头通知这个数据被公共缓存代理服务器缓存(Cache-Control头中 public关键字说明这一点)。当你再次请求下载这个图片时，如果其他的缓存服务器有这张图片，会截取你的请求，返回给你这张图片，如果都没有，就会发出网络请求从远程服务器下载这张图片。当每个角色都按协议来做时，http缓存才能发挥作用。
+python标准库中的http库不支持缓存，但httplib2支持</p>
+<p><strong>最后修改时间</strong></p>
+<p>web上的数据可能从不改变，或许总是在变，或则两则之间。http对于这个问题也有对应的解决方案。当你第一次请求数据时，服务器返回一个last-modified头。
+如果再次请求同一资源时，可以在请求发送If-Modified-Since头，其值为你上一次返回的时间。如果数据发送过变化，服务器会忽略If-Modified-Since并返回新数据和200状态码。否则会服务器会发回HTTP304状态码，它的意思你请求的时间没变化，不用发给你啦。
+python的http库不支持最好修改时间, 但httplib2支持</p>
+<p><strong>ETAGS</strong></p>
+<p>ETag是另一个和最后修改时间达到同样目的的方法。使用ETag时，服务器返回数据的同在ETag头里面返回一个哈希码(如何生成取决于服务器，要求是数据变时哈希码跟着变）。当你再次请求相同数据时，你在If-None-Match放入ETag值，如果服务器比对一下，发现一样，就会返回304状态码。
+同样python的http库不支持ETag,httplib2支持</p>
+<p><strong>压缩</strong></p>
+<p>http_web服务一般都是在来回运输文本数据。可能是XML、JSON或则就是纯文本，不管是啥压缩之后体积就会小，传输就会快。http支持多种压缩算法，最常见的就是gzip和deflate。当你请求资源时，可以包含Accept-encoding头，里面列出你支持的压缩算法。如果服务器也只支持这种算法，就会返回对应格式的压缩数据。
+python http不支持压缩，httplib2支持</p>
+<p><strong>重定向</strong></p>
+<p>好的url不会变化，但是有很多url会变，比如网站调整了，扩展了等等。每一次向服务器请求时，服务器都会在响应中包含一个状态码。200：就是一切正常 404：就是找不到页面 300系列：就是某种形式的重定向。最常见的就是302和301. 302：临时重定向 资源暂时不在；301：永久重定向，但都会在Location头里给出新的地址。urllib.request模块从服务器获得重定向码时会自动重定向，但他不会反馈，所以每次都需要重定向。而httplib2会永久重定向，它会在本地记录这些重定向，下次发送请求时会自动重写为重定向后的url.</p>
+<p><strong>避免通过http重复获取数据</strong></p>
+<p>如果你想通过http下载一个资源。</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; a_url = 'http://diveintopython3.org/examples/feed.xml'
+&gt;&gt;&gt; data = urllib.request.urlopen(a_url).read()  # python通过http下载非常简单。urllib.request模块有一个方便的函数urlopen()，它接收获取页面的地址，然后返回一个类文件对象。然后调用其read()方法就可以获得网页全部内容。
+&gt;&gt;&gt; type(data)                                   
+<span class="nt">&lt;class</span> <span class="err">'bytes'</span><span class="nt">&gt;</span> # urlopen().read()方法返回bytes对象而不是字符串。字符只是字节的抽象
+&gt;&gt;&gt; print(data)
+<span class="cp">&lt;?xml version='1.0' encoding='utf-8'?&gt;</span>
+<span class="nt">&lt;feed</span> <span class="na">xmlns=</span><span class="s">'http://www.w3.org/2005/Atom'</span> <span class="na">xml:lang=</span><span class="s">'en'</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>dive into mark<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;subtitle&gt;</span>currently between addictions<span class="nt">&lt;/subtitle&gt;</span>
+  <span class="nt">&lt;id&gt;</span>tag:diveintomark.org,2001-07-29:/<span class="nt">&lt;/id&gt;</span>
+  <span class="nt">&lt;updated&gt;</span>2009-03-27T21:56:07Z<span class="nt">&lt;/updated&gt;</span>
+  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">'alternate'</span> <span class="na">type=</span><span class="s">'text/html'</span> <span class="na">href=</span><span class="s">'http://diveintomark.org/'</span><span class="nt">/&gt;</span>
+  …
+</pre></div>
+<p>如果只是一次下载，这样确实没有问题，但如果定期访问web服务的时候（比如每隔1小时请求一下这个供稿)，这样做就显得简单粗暴了。
+为啥说简单粗暴呢，我们打开python的http库的调试功能，看看什么东西被发送到线路上。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">http.client</span> <span class="kn">import</span> <span class="n">HTTPConnection</span> <span class="c1"># 从http.client导入HTTPConnection类</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">HTTPConnection</span><span class="o">.</span><span class="n">debuglevel</span> <span class="o">=</span> <span class="mi">1</span>    <span class="c1"># 打开调试</span>
+</pre></div>
+<p>然后再次执行向服务器请求数据，你会看到urlopen()请求了未压缩的数据，所以比较低效。</p>
+<p><strong>HTTPLIB2</strong></p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">)</span> <span class="c1"># httplib2的主要接口是Http对象。创建时需要传入一个目录名。</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'http://diveintopython3.org/examples/feed.xml'</span><span class="p">)</span><span class="c1">#调用http对象的request方法就可以获取数据。</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="c1"># request()方法返回两个值，一个是httplib2.Response对象，包含了服务器返回的所有http头，另一个是status</span>
+<span class="mi">200</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">content</span><span class="p">[:</span><span class="mi">52</span><span class="p">]</span><span class="err">　　</span><span class="c1"># content变量包含了返回的数据</span>
+<span class="sa">b</span><span class="s2">"&lt;?xml version='1.0' encoding='utf-8'?&gt;</span><span class="se">\r\n</span><span class="s2">&lt;feed xmlns="</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+<span class="mi">3070</span>
+</pre></div>
+<p>httplib2返回是字节而不是字符。可以根据需要进行转换。</p>
+<p>处理缓存</p>
+<p>前面我们说应该在创建httplib2.Http对象时提供一个目录名，就是为了缓存。
+当你再次发出相同的请求时，就会发现比之前快了很多。让我们打开调试功能看一下</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">debuglevel</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># 打开调试功能</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response2</span><span class="p">,</span> <span class="n">content2</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'http://www.vimlinux.com/feeds/atom.xml'</span><span class="p">)</span> <span class="c1"># 线路上啥都没返回</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response2</span><span class="o">.</span><span class="n">status</span>
+<span class="mi">200</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response2</span><span class="o">.</span><span class="n">fromcache</span> <span class="c1"># 显示是cache获取的数据</span>
+<span class="bp">True</span>
+</pre></div>
+<p>如果想要打开httplib2的调试开关，需要设置一个模块级的常量(httplib2.debuglevel),然后再创建httplib2.Http对象。关闭是同样要设置。
+现在数据缓存着，但你想跳过缓存重新获取。应该使用http的特性来保证你的请求能够到达远程服务器，因为这其中还有多级缓存要跳过。</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; response2, content2 = h.request('http://www.vimlinux.com/feeds/atom.xml', headers={'cache-control':'no-cache'}) # httplib2允许添加任意的http头部，此次添加no-cache为了跳过缓存
+connect: (www.vimlinux.com, 80) ************
+send: 'GET /feeds/atom.xml HTTP/1.1\r\nHost: www.vimlinux.com\r\nuser-agent: Python-httplib2/0.10.3 (gzip)\r\naccept-encoding: gzip, deflate\r\ncache-control: no-cache\r\n\r\n'
+reply: 'HTTP/1.1 200 OK\r\n'
+header: Server: GitHub.com
+header: Content-Type: application/xml
+header: Last-Modified: Thu, 09 Mar 2017 07:40:35 GMT
+header: Access-Control-Allow-Origin: *
+header: Expires: Thu, 09 Mar 2017 08:44:14 GMT
+header: Cache-Control: max-age=600
+header: Content-Encoding: gzip
+header: X-GitHub-Request-Id: C15C:2A686:36787E9:4761B30:58C11385
+header: Content-Length: 2422597
+header: Accept-Ranges: bytes
+header: Date: Thu, 09 Mar 2017 09:29:38 GMT
+header: Via: 1.1 varnish
+header: Age: 0
+header: Connection: keep-alive
+header: X-Served-By: cache-nrt6131-NRT
+header: X-Cache: MISS
+header: X-Cache-Hits: 0
+header: X-Timer: S1489051777.946283,VS0,VE181
+header: Vary: Accept-Encoding
+header: X-Fastly-Request-ID: 62146dd2576ae50f0f43f9f9117e4b618c0cdb54
+</pre></div>
+<p># 初始化一个网络请求，并且加入了一个no-cache的头　</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; response2.status
+200　　# 请求成功。服务器返回了一个新的数据，并更新了本地缓存
+&gt;&gt;&gt; response2.fromcache
+False                                                                                        
+&gt;&gt;&gt; print(dict(response2.items())
+... )
+{'content-length': '22385455', 'via': '1.1 varnish', 'vary': 'Accept-Encoding', 'x-cache-hits': '0', 'cache-control': 'max-age=600', 'status': '200', 'x-served-by': 'cache-nrt6131-NRT', 'x-cache': 'MISS', 'x-github-request-id': 'C15C:2A686:36787E9:4761B30:58C11385', 'accept-ranges': 'bytes', 'expires': 'Thu, 09 Mar 2017 08:44:14 GMT', 'last-modified': 'Thu, 09 Mar 2017 07:40:35 GMT', '-content-encoding': 'gzip', 'date': 'Thu, 09 Mar 2017 09:29:38 GMT', 'access-control-allow-origin': '*', 'content-location': 'http://www.vimlinux.com/feeds/atom.xml', 'age': '0', 'x-timer': 'S1489051777.946283,VS0,VE181', 'server': 'GitHub.com', 'connection': 'keep-alive', 'x-fastly-request-id': '62146dd2576ae50f0f43f9f9117e4b618c0cdb54', 'content-type': 'application/xml'}
+&gt;&gt;&gt;
+</pre></div>
+<p>http缓存设计为尽量最大化的缓存命中率和最小化的网络访问。</p>
+<p><strong>HTTPLIB2如何处理LAST-MODIFFIED和ETAG头</strong></p>
+<p>Cache-Control和Expires缓存头被称为新鲜度指标。它们通过只缓存，除非缓存过期，不然不会产生任何的网络活动（除非显示的要求跳过缓存）</p>
+<p>如果数据可能已改变，但缓存不知道呢？Http因此定义了Last-Modified和Etag头。如果本地缓存不再是最新的数据，客户端请求时可以发送Last-Modified和Etag头进行验证数据是否改变。如果没有改变，服务器会返回304状态码，但不返回数据。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">debuglevel</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'http://diveintopython3.org/'</span><span class="p">)</span> <span class="c1"># 第一次请求该页面，httplib2在请求时发出较少的头，没啥要处理的</span>
+<span class="n">connect</span><span class="p">:</span> <span class="p">(</span><span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+<span class="n">send</span><span class="p">:</span> <span class="sa">b</span><span class="s1">'GET / HTTP/1.1</span>
+<span class="n">Host</span><span class="p">:</span> <span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span>
+<span class="n">accept</span><span class="o">-</span><span class="n">encoding</span><span class="p">:</span> <span class="n">deflate</span><span class="p">,</span> <span class="n">gzip</span>
+<span class="n">user</span><span class="o">-</span><span class="n">agent</span><span class="p">:</span> <span class="n">Python</span><span class="o">-</span><span class="n">httplib2</span><span class="o">/</span><span class="err">$</span><span class="n">Rev</span><span class="p">:</span> <span class="mi">259</span> <span class="err">$</span><span class="s1">'</span>
+<span class="n">reply</span><span class="p">:</span> <span class="s1">'HTTP/1.1 200 OK'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span><span class="err">　</span><span class="c1"># 响应包含多个http头，但没有缓存信息，但包含了ETag和Last-Modified头</span>
+<span class="p">{</span><span class="s1">'-content-encoding'</span><span class="p">:</span> <span class="s1">'gzip'</span><span class="p">,</span>
+ <span class="s1">'accept-ranges'</span><span class="p">:</span> <span class="s1">'bytes'</span><span class="p">,</span>
+ <span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'close'</span><span class="p">,</span>
+ <span class="s1">'content-length'</span><span class="p">:</span> <span class="s1">'6657'</span><span class="p">,</span>
+ <span class="s1">'content-location'</span><span class="p">:</span> <span class="s1">'http://diveintopython3.org/'</span><span class="p">,</span>
+ <span class="s1">'content-type'</span><span class="p">:</span> <span class="s1">'text/html'</span><span class="p">,</span>
+ <span class="s1">'date'</span><span class="p">:</span> <span class="s1">'Tue, 02 Jun 2009 03:26:54 GMT'</span><span class="p">,</span>
+ <span class="s1">'etag'</span><span class="p">:</span> <span class="s1">'"7f806d-1a01-9fb97900"'</span><span class="p">,</span>
+ <span class="s1">'last-modified'</span><span class="p">:</span> <span class="s1">'Tue, 02 Jun 2009 02:51:48 GMT'</span><span class="p">,</span>
+ <span class="s1">'server'</span><span class="p">:</span> <span class="s1">'Apache'</span><span class="p">,</span>
+ <span class="s1">'status'</span><span class="p">:</span> <span class="s1">'200'</span><span class="p">,</span>
+ <span class="s1">'vary'</span><span class="p">:</span> <span class="s1">'Accept-Encoding,User-Agent'</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>                                                  
+<span class="mi">6657</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'http://diveintopython3.org/'</span><span class="p">)</span><span class="c1"># 再次请求这个页面</span>
+<span class="n">connect</span><span class="p">:</span> <span class="p">(</span><span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+<span class="n">send</span><span class="p">:</span> <span class="sa">b</span><span class="s1">'GET / HTTP/1.1</span>
+<span class="n">Host</span><span class="p">:</span> <span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span>
+<span class="k">if</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="n">match</span><span class="p">:</span> <span class="s2">"7f806d-1a01-9fb97900"</span><span class="err">　</span><span class="c1"># httplib2将Etag validator通过if-none-match头发送回服务器</span>
+<span class="k">if</span><span class="o">-</span><span class="n">modified</span><span class="o">-</span><span class="n">since</span><span class="p">:</span> <span class="n">Tue</span><span class="p">,</span> <span class="mo">02</span> <span class="n">Jun</span> <span class="mi">2009</span> <span class="mo">02</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mi">48</span> <span class="n">GMT</span> <span class="c1"># httplib2将Last-Modified validator通过if-modfied-since发送回服务器</span>
+<span class="n">accept</span><span class="o">-</span><span class="n">encoding</span><span class="p">:</span> <span class="n">deflate</span><span class="p">,</span> <span class="n">gzip</span>
+<span class="n">user</span><span class="o">-</span><span class="n">agent</span><span class="p">:</span> <span class="n">Python</span><span class="o">-</span><span class="n">httplib2</span><span class="o">/</span><span class="err">$</span><span class="n">Rev</span><span class="p">:</span> <span class="mi">259</span> <span class="err">$</span><span class="s1">'</span>
+<span class="n">reply</span><span class="p">:</span> <span class="s1">'HTTP/1.1 304 Not Modified'</span>  <span class="c1"># 服务器查看这些验证器，查看请求的页面，然后判断出页面在上次请求之后没有变化，返回304状态码</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="o">.</span><span class="n">fromcache</span>  <span class="c1"># 客户端httplib2检查到304,所以从缓存加载页面内容</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="c1"># response.status 返回缓存的状态码，没有返回304</span>
+<span class="mi">200</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]</span> <span class="c1"># 服务器返回的状态码(304)可以从response.dict里找到</span>
+<span class="s1">'304'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="c1"># 数据仍然保存在content变量</span>
+<span class="mi">6657</span>
+</pre></div>
+<p><strong>HTTP2LIB处理压缩</strong></p>
+<p>http2lib支持deflate或gzip格式。</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; response, content = h.request('http://diveintopython3.org/')
+connect: (diveintopython3.org, 80)
+send: b'GET / HTTP/1.1
+Host: diveintopython3.org
+accept-encoding: deflate, gzip # 每次httplib2发送请求，都包含了accept-encoding头来告诉服务器它能处理的deflate或gzip压缩
+user-agent: Python-httplib2/$Rev: 259 $'
+reply: 'HTTP/1.1 200 OK'
+&gt;&gt;&gt; print(dict(response.items()))
+{'-content-encoding': 'gzip',   # 服务器返回了gzip压缩格式的数据
+ 'accept-ranges': 'bytes',
+ 'connection': 'close',
+ 'content-length': '6657',
+ 'content-location': 'http://diveintopython3.org/',
+ 'content-type': 'text/html',
+ 'date': 'Tue, 02 Jun 2009 03:26:54 GMT',
+ 'etag': '"7f806d-1a01-9fb97900"',
+ 'last-modified': 'Tue, 02 Jun 2009 02:51:48 GMT',
+ 'server': 'Apache',
+ 'status': '304',
+ 'vary': 'Accept-Encoding,User-Agent'}
+</pre></div>
+<p><strong>HTTPLIB2处理重定向</strong></p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">debuglevel</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'http://diveintopython3.org/examples/feed-302.xml'</span><span class="p">)</span>  <span class="c1"># 这个url没有feed,但设置让服务器发出一个正确的重定向</span>
+<span class="n">connect</span><span class="p">:</span> <span class="p">(</span><span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+<span class="n">send</span><span class="p">:</span> <span class="sa">b</span><span class="s1">'GET /examples/feed-302.xml HTTP/1.1 　# 请求</span>
+<span class="n">Host</span><span class="p">:</span> <span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span>
+<span class="n">accept</span><span class="o">-</span><span class="n">encoding</span><span class="p">:</span> <span class="n">deflate</span><span class="p">,</span> <span class="n">gzip</span>
+<span class="n">user</span><span class="o">-</span><span class="n">agent</span><span class="p">:</span> <span class="n">Python</span><span class="o">-</span><span class="n">httplib2</span><span class="o">/</span><span class="err">$</span><span class="n">Rev</span><span class="p">:</span> <span class="mi">259</span> <span class="err">$</span><span class="s1">'</span>
+<span class="n">reply</span><span class="p">:</span> <span class="s1">'HTTP/1.1 302 Found'</span> <span class="c1"># 响应包含了一个Location头给出实际的URL</span>
+<span class="n">send</span><span class="p">:</span> <span class="sa">b</span><span class="s1">'GET /examples/feed.xml HTTP/1.1 # httplib2立即跟随重定向，发出一个新的Location（包含正确的地址）</span>
+<span class="n">Host</span><span class="p">:</span> <span class="n">diveintopython3</span><span class="o">.</span><span class="n">org</span>
+<span class="n">accept</span><span class="o">-</span><span class="n">encoding</span><span class="p">:</span> <span class="n">deflate</span><span class="p">,</span> <span class="n">gzip</span>
+<span class="n">user</span><span class="o">-</span><span class="n">agent</span><span class="p">:</span> <span class="n">Python</span><span class="o">-</span><span class="n">httplib2</span><span class="o">/</span><span class="err">$</span><span class="n">Rev</span><span class="p">:</span> <span class="mi">259</span> <span class="err">$</span><span class="s1">'</span>
+<span class="n">reply</span><span class="p">:</span> <span class="s1">'HTTP/1.1 200 OK'</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">response</span>   <span class="c1"># 调用request()方法返回的respnse是最终URL的响应</span>
+<span class="p">{</span><span class="s1">'status'</span><span class="p">:</span> <span class="s1">'200'</span><span class="p">,</span>
+ <span class="s1">'content-length'</span><span class="p">:</span> <span class="s1">'3070'</span><span class="p">,</span>
+ <span class="s1">'content-location'</span><span class="p">:</span> <span class="s1">'http://diveintopython3.org/examples/feed.xml'</span><span class="p">,</span>  <span class="c1"># httplib2会将最终的URL以content-localton加入到response字典</span>
+ <span class="s1">'accept-ranges'</span><span class="p">:</span> <span class="s1">'bytes'</span><span class="p">,</span>
+ <span class="s1">'expires'</span><span class="p">:</span> <span class="s1">'Thu, 04 Jun 2009 02:21:41 GMT'</span><span class="p">,</span>
+ <span class="s1">'vary'</span><span class="p">:</span> <span class="s1">'Accept-Encoding'</span><span class="p">,</span>
+ <span class="s1">'server'</span><span class="p">:</span> <span class="s1">'Apache'</span><span class="p">,</span>
+ <span class="s1">'last-modified'</span><span class="p">:</span> <span class="s1">'Wed, 03 Jun 2009 02:20:15 GMT'</span><span class="p">,</span>
+ <span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'close'</span><span class="p">,</span>
+ <span class="s1">'-content-encoding'</span><span class="p">:</span> <span class="s1">'gzip'</span><span class="p">,</span><span class="err">　　</span>
+ <span class="s1">'etag'</span><span class="p">:</span> <span class="s1">'"bfe-4cbbf5c0"'</span><span class="p">,</span>
+ <span class="s1">'cache-control'</span><span class="p">:</span> <span class="s1">'max-age=86400'</span><span class="p">,</span>  
+ <span class="s1">'date'</span><span class="p">:</span> <span class="s1">'Wed, 03 Jun 2009 02:21:41 GMT'</span><span class="p">,</span>
+ <span class="s1">'content-type'</span><span class="p">:</span> <span class="s1">'application/xml'</span><span class="p">}</span>
+</pre></div>
+<p>你得到的response给了你最终URL的相关信息，如果希望那些最后重定向到最终URL中间的URL的信息呢？</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; response.previous # response.previous 属性持有前一个响应对象的引用
+{'status': '302',
+ 'content-length': '228',
+ 'content-location': 'http://diveintopython3.org/examples/feed-302.xml',
+ 'expires': 'Thu, 04 Jun 2009 02:21:41 GMT',
+ 'server': 'Apache',
+ 'connection': 'close',
+ 'location': 'http://diveintopython3.org/examples/feed.xml',
+ 'cache-control': 'max-age=86400',
+ 'date': 'Wed, 03 Jun 2009 02:21:41 GMT',
+ 'content-type': 'text/html; charset=iso-8859-1'}
+&gt;&gt;&gt; type(response)  # response和response.previous都是httplib2.Response对象
+&lt;class 'httplib2.Response'&gt;
+&gt;&gt;&gt; type(response.previous)
+&lt;class 'httplib2.Response'&gt;
+&gt;&gt;&gt; response.previous.previous  # 如果重定向多次，该方法可以追溯
+&gt;&gt;&gt;
+
+&gt;&gt;&gt; response2, content2 = h.request('http://diveintopython3.org/examples/feed-302.xml')  # 同一个URL,同一个httplib2.Http对象
+connect: (diveintopython3.org, 80)
+send: b'GET /examples/feed-302.xml HTTP/1.1 # 302影响没有缓存，所以httplib2对同一个URL再一次发送请求
+Host: diveintopython3.org
+accept-encoding: deflate, gzip
+user-agent: Python-httplib2/$Rev: 259 $'
+reply: 'HTTP/1.1 302 Found' # 再一次，返回302.但是没有继续进行。一旦httplib2收到302Found状态码，再发送新的请求前检查都缓存数据仍然可用
+&gt;&gt;&gt; content2 == content 
+True
+</pre></div>
+<p>永久重定向</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; response, content = h.request('http://diveintopython3.org/examples/feed-301.xml') # 请求一个不存在的URL,设置服务器执行一个永久重定向到正确URL
+connect: (diveintopython3.org, 80)
+send: b'GET /examples/feed-301.xml HTTP/1.1
+Host: diveintopython3.org
+accept-encoding: deflate, gzip
+user-agent: Python-httplib2/$Rev: 259 $'
+reply: 'HTTP/1.1 301 Moved Permanently' # 状态码301,但是再次注意什么没发生，因为本地已缓存
+&gt;&gt;&gt; response.fromcache          　# httplib2跟随重定向到缓存里
+True
+
+
+# continued from the previous example
+&gt;&gt;&gt; response2, content2 = h.request('http://diveintopython3.org/examples/feed-301.xml') # 这是临时和永久重定向的区别：一旦httplib2跟随了一个永久的重定向，后续的都会到定向的URL
+&gt;&gt;&gt; response2.fromcache                                                                 # 数据从本地缓存获取
+True
+&gt;&gt;&gt; content2 == content
+True
+</pre></div>
+<p><strong>HTTP GET之外</strong></p>
+<p>HTTP web服务不限于GET请求。当你要修改服务器上的数据时，就需要POST请求。再发布前，需要进行身份的验证，httplib2支持SSL和HTTP Basic Authentication.
+POST请求和GET请求不同，因为它包含payload，是你要发送到服务器的数据。这个API方法必须的参数是status,并且它应该是URL编码的。这是一种简单的序列化格式，将一组键值对转换为一个字符串。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span> <span class="c1"># Python带有一个工具函数用于URL编码一个字典:urllib.parse.urlencode()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'status'</span><span class="p">:</span> <span class="s1">'Test update from Python 3'</span><span class="p">}</span> <span class="c1"># 这是Identi.ca API所期望的字典。包含一个键，status, 对应值是状态更新的文本</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># URL编码之后的字符串的样子。这就是会通过线路发送到Identi.ca API服务器的HTTP POST请求的负荷</span>
+<span class="s1">'status=Test+update+from+Python+3'</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">debuglevel</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'status'</span><span class="p">:</span> <span class="s1">'Test update from Python 3'</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">h</span><span class="o">.</span><span class="n">add_credentials</span><span class="p">(</span><span class="s1">'diveintomark'</span><span class="p">,</span> <span class="s1">'MY_SECRET_PASSWORD'</span><span class="p">,</span> <span class="s1">'identi.ca'</span><span class="p">)</span> <span class="c1"># httplib2处理认证的方法，add_credentials()方法记录你的用户名和密码。当httplib2试图执行请求的时候，服务会返回一个401 Unauthorized状态码，并且列出所有它支持的认证方法(WWW-Authenticate头).httplib2会自动构造Authorization头并且重新请求该URL</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">resp</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'https://identi.ca/api/statuses/update.xml'</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s1">'POST'</span><span class="p">,</span>         <span class="c1"># 请求的类型POST</span>
+<span class="o">...</span>     <span class="n">urlencode</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="c1"># 发送到服务器的负荷,包含状态消息的URL编码过的字典</span>
+<span class="o">...</span>     <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'Content-Type'</span><span class="p">:</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">})</span><span class="err">　</span><span class="c1">#　最后告诉服务器负荷是URL编码过的数据</span>
+</pre></div>
+<p>add_credentials()方法的第三个参数是该证书有效的域名。你应该总是指定这个参数，如果忽略了，并且之后重用这个httplib2.Http对象访问另一个需要认证的站点，可能会导致httplib2将一个站点的用户名密码泄露给其他站点。</p>
+<p>发送到线路上的数据：</p>
+<div class="highlight"><pre><span></span><span class="n">send</span><span class="o">:</span> <span class="n">b</span><span class="s1">'POST /api/statuses/update.xml HTTP/1.1</span>
+<span class="s1">Host: identi.ca</span>
+<span class="s1">Accept-Encoding: identity</span>
+<span class="s1">Content-Length: 32</span>
+<span class="s1">content-type: application/x-www-form-urlencoded</span>
+<span class="s1">user-agent: Python-httplib2/$Rev: 259 $</span>
+
+<span class="s1">status=Test+update+from+Python+3'</span>
+<span class="n">reply</span><span class="o">:</span> <span class="s1">'HTTP/1.1 401 Unauthorized'</span>  <span class="err">#</span> <span class="err">第一个请求，服务器以</span><span class="mi">401</span> <span class="n">Unauthorized</span><span class="err">状态码返回。</span><span class="n">httplib2</span><span class="err">从不主动发送认证头，触发服务器明确的要求。</span>
+<span class="n">send</span><span class="o">:</span> <span class="n">b</span><span class="s1">'POST /api/statuses/update.xml HTTP/1.1　# httplib2马上转个身，发出第二次相同的URL</span>
+<span class="s1">Host: identi.ca</span>
+<span class="s1">Accept-Encoding: identity</span>
+<span class="s1">Content-Length: 32</span>
+<span class="s1">content-type: application/x-www-form-urlencoded</span>
+<span class="s1">authorization: Basic SECRET_HASH_CONSTRUCTED_BY_HTTPLIB2 # 包含了你通过add_credentials()方法加入的用户名和密码</span>
+<span class="s1">user-agent: Python-httplib2/$Rev: 259 $</span>
+
+<span class="s1">status=Test+update+from+Python+3'</span>
+<span class="n">reply</span><span class="o">:</span> <span class="s1">'HTTP/1.1 200 OK'</span>
+</pre></div>
+<p>请求成功后服务器返回什么？这个完全由web服务API决定。在一些协议里面(像Atom Publishing Protocol)，服务器会返回201 Created状态码，并通过Location提供新创建的资源的地址。Identi.ca返回200 OK和一个包含新创建资源信息的XML文档。</p>
+<p>HTTP并不限于GET和POST，还能处理一些其他的web事务</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span> <span class="k">as</span> <span class="n">etree</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="c1"># 服务器返回的是XML</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">status_id</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s1">'id'</span><span class="p">)</span><span class="err">　</span><span class="c1"># findtext()方法找到对应表达式的第一个实例并抽取它的文本内容</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">status_id</span>
+<span class="s1">'5131472'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">url</span> <span class="o">=</span> <span class="s1">'https://identi.ca/api/statuses/destroy/{0}.xml'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status_id</span><span class="p">)</span>  <span class="c1"># 基于id元素的文本内容，我们构造出一个url用于删除刚发布的状态消息</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">resp</span><span class="p">,</span> <span class="n">deleted_content</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s1">'DELETE'</span><span class="p">)</span><span class="err">　</span><span class="c1"># 要删除一条消息，只需对该URL执行一个HTTP DELETE请求即可</span>
+</pre></div>
+<p>python的网络功能还是比较强大的，以后再分享python网络爬虫。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(九)">Python-Tips(九)</a><ul><li><a class="toc-href" href="#tips-25" title="Tips 25">Tips 25</a><ul><li><a class="toc-href" href="#http" title="HTTP">HTTP</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

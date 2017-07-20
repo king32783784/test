@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="autotest" />
+        <meta name="description" content="Autoserv 是“自动化机器控制“的框架 Autoserv 目的是控制机器，它可以： 电源管理 安装内核 修改bootloader * 运行任意命令 运行Autotest Local(客户端）测试 传输文件 被控制的机器可以是： 本机 远程机器（通过ssh 和 conmux) 虚拟机(通过ＫＶＭ） 控制文件 类似于autotest,Autoserv同样使用控制文件。这些控制文件和autotest使用不同的命令，但是像autotest一样包含一些内部的可以调研python解释器的功能。 这里有一个控制文件的例子，用来控制远程host安装.dep内核。若文件存在server/目录并且命名为example.control,可以在server/目录通过./autotest-remote example.control调用： remote_host = host.SSHHost(&#34;192.168.1.1&#34;) print remote_host.run ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Autotest-Autotest Remote (Autoserv)（一）"/>
+    <meta property="og:url" content="../../../../2015/08/20/autotest/"/>
+    <meta property="og:description" content="Autoserv 是“自动化机器控制“的框架 Autoserv 目的是控制机器，它可以： 电源管理 安装内核 修改bootloader * 运行任意命令 运行Autotest Local(客户端）测试 传输文件 被控制的机器可以是： 本机 远程机器（通过ssh 和 conmux) 虚拟机(通过ＫＶＭ） 控制文件 类似于autotest,Autoserv同样使用控制文件。这些控制文件和autotest使用不同的命令，但是像autotest一样包含一些内部的可以调研python解释器的功能。 这里有一个控制文件的例子，用来控制远程host安装.dep内核。若文件存在server/目录并且命名为example.control,可以在server/目录通过./autotest-remote example.control调用： remote_host = host.SSHHost(&#34;192.168.1.1&#34;) print remote_host.run ..."/>
+    <meta property="article:published_time" content="2015-08-20" />
+    <meta property="article:section" content="自动化测试-Autotest" />
+        <meta property="article:tag" content="autotest" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Autotest-Autotest Remote (Autoserv)（一） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/08/20/autotest/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/08/20/autotest/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/08/20/autotest/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/08/20/autotest/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2015/08/20/autotest/"
+                           rel="bookmark"
+                           title="Permalink to Autotest-Autotest Remote (Autoserv)（一）">
+                            Autotest-Autotest Remote (Autoserv)（一）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2015-08-20T00:00:00+08:00"> 2015-08-20 四</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">自动化测试-Autotest</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/autotest.html">autotest</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p><img class="img-responsive" height="280" src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/autotestlogo.png?raw=true" width="480"/></p>
+<p>Autoserv 是“自动化机器控制“的框架
+Autoserv 目的是控制机器，它可以：</p>
+<ul>
+<li>电源管理</li>
+<li>安装内核</li>
+<li>修改bootloader
+*　运行任意命令</li>
+<li>运行Autotest Local(客户端）测试</li>
+<li>传输文件</li>
+</ul>
+<p>被控制的机器可以是：</p>
+<ul>
+<li>本机</li>
+<li>远程机器（通过ssh 和　conmux)</li>
+<li>虚拟机(通过ＫＶＭ）</li>
+</ul>
+<h2 id="kong-zhi-wen-jian">控制文件</h2>
+<p>类似于autotest,Autoserv同样使用控制文件。这些控制文件和autotest使用不同的命令，但是像autotest一样包含一些内部的可以调研python解释器的功能。</p>
+<p>这里有一个控制文件的例子，用来控制远程host安装.dep内核。若文件存在server/目录并且命名为example.control,可以在server/目录通过./autotest-remote example.control调用：</p>
+<div class="highlight"><pre><span></span>remote_host = host.SSHHost("192.168.1.1")
+print remote_host.run("uname -a").stdout
+
+kernel = deb_kernel.DEBKernel()
+kernel.get("/var/local/linux-2.6.22.deb")
+
+print kernel.get_version()
+print kernel.get_image_name()
+print kernel.get_initrd_name()
+
+kerne.install(remote_host)
+
+remote_host.reboot()
+
+print remote_host.run("uname -a").stdout
+</pre></div>
+<h2 id="hosts">Hosts</h2>
+<p>"Host"类是Autoserv控制文件的操作对象。这些Ｈost类通过ssh/conmux或virtual机控制机器。这些代码结构支持添加其他类型的hosts.如果想添加
+其他类型的host，需要确保添加到server/hosts/<strong>init</strong>.py文件。</p>
+<h3 id="hostde-zhu-yao-fang-fa">Host的主要方法</h3>
+<p>以下是最常用的host的方法。每个类型的host都需要包含这些方法，起码支持列表选项中的方法。特定的host需要支持更多的命令和选项。关于这些信息，可以查看　
+ａｕｔｏｔｅｓｔ子目录server/client中源码文件。下面的列表只是一个基本的汇总，不是那些源码文件的功能的头文件。特别是，需要查看一下server/hosts/ssh_host.py文件。</p>
+<ul>
+<li>run(command)</li>
+<li>reboot()</li>
+<li>get_file(source, dest)</li>
+<li>send_file(source, dest)</li>
+<li>get_tmp_dir</li>
+<li>is_up()</li>
+<li>wait_up(timeout)</li>
+<li>wait_down(timeout)</li>
+<li>get_num_cpu()</li>
+</ul>
+<h4 id="cmdresult-lei">CmdResult　类</h4>
+<p>run()调用的返回值是一个CmdResult类。该类包含了有关命令和其执行信息。这个类的定义和文档信息可以在server/hosts/base_classes.py文件中查看。
+CmdResult类可以打印并且输出其所有的信息。它的每个字段都可以单独访问。这个字段的列表是：</p>
+<ul>
+<li>command: 包含命令行本身的字符</li>
+<li>exit_status: 进程整数退出代码</li>
+<li>stdout:包含程序标准输出的字符串</li>
+<li>stderr: 包含程序错误输出的字符串</li>
+<li>duration: 程序运行的持续时间</li>
+<li>aborted:　导致终端命令中止的信号（０）</li>
+</ul>
+<h3 id="hostde-zhu-yao-lei-xing_1">Host的主要类型</h3>
+<h4 id="sshhost">SSHHost</h4>
+<p>SSHHost是非常重要和实用的host类型。它可以通过ssh会话控制远程机器。它支持所有的hosts的基本方法和run(）功能，支持超时。SSHHost通过
+ssh运行命令，通过scp进行文件传输。</p>
+<p>如果想采用SSHHost，必须设置远程机器无密码登陆，如通过公共秘钥。一个SSHHost对象建立在指定的host name,任意的用户名称和端口号。</p>
+<h4 id="conmuxsshhost">ConmuxSSHHost</h4>
+<p>ConmuxSSHHost是SSHHost的扩展。它通过Conmux来控制远程机器。可以通过hardreset()方法进行硬复位。</p>
+<h4 id="sitehost">SiteHost</h4>
+<p>Site host 是一个空类，可以添加特殊的方法或支持所以类型hostts的属性。它定义在server/hosts/site_host_py文件中，不过可能是空的。
+创建这样的一个类的灵感来自于如更新bios，侦测硬件版本或一些对普通用户不常用的操作。</p>
+<h4 id="kvmguest">KVMGuest</h4>
+<p>KVMGuest 表示可以运行程序的KVM 虚拟机。　它必须绑定到其他host, 这些机器实际上运行于虚拟层。KVMGuest和SSHHost非常类似，但它可以通过hardreset方法（Guest中）调用hypervisor的命令去实现”硬复位“.可以通过查看<a href="">KVM section</a>查看更多的KVM和KVMguest信息。</p>
+<h4 id="bootloader">Bootloader</h4>
+<p>Boottool 是一个查询和修改bootloader文件的perl脚本。Autoserv提供Bootloader类，是围绕boottool的包装。Ａutoserv 在需要时会第一时间将boottool脚本自动复制到一个临时目录。可以通过查看server/hosts/bootloader.py查看支持方法的信息。其中最重要的一个方法是add_kernel()</p>
+<p>当添加了一个新内核是，boottool会复用上一个内核的命令行及配置，来实现一个新的启动项菜单。</p>
+<h2 id="installableobject_2">InstallableObject</h2>
+<p>InstallableObject　表示一个可以再host上安装软件包。通过下面两个方法实现：
+<em> get(location)
+</em> install(host)</p>
+<p>get()表示获取安装包，它可以获取多种类型保存位置的包：
+<em> 本地目录
+</em> URL地址
+<em> python文件对象
+</em> 如果参数不是上述类型，get()会默认将获取的内容当为包内容</p>
+<p>get()获取的软件包，通常会放到一个临时目录。这种方式可以一次获取，安装到多台hosts上面。install()会安装包，当通常会装到一个临时目录。</p>
+<h2 id="autotest-support">Autotest Support</h2>
+<p>Autoserv包含autotest的一些具体支持。它可以安装autotest到一个客户端，可以运行客户端的测试并且取回测试结果。这是通过autotest和运行server/autotest.py中的
+类实现的。Auotest对象是一个installableＯbject.要想使用它，必须：
+<em> 指定来源后通过get()获取，autotest对象有点特别。如果没有指定任何来源，将会自动从autotest　ＳＶＮ库自动获取。而且会在目标主机中完成。
+</em> 当通过install()安装时，autotest会查找一个/etc/autotest.conf的文件：</p>
+<div class="highlight"><pre><span></span>autodir=/usr/local/autotest/
+</pre></div>
+<ul>
+<li>run()运行一个控制文件的语法如下：run(control_file, results_dir, host).control_file 参数支持get()和intallableObject相同类型的值。</li>
+</ul>
+<p>下面是一个Autoserv控制文件和运行Autotest job的例子。测试结果会传输到server的“job_results"目录下。
+    remote_host = hosts.SSHHost("192.168.1.1")</p>
+<div class="highlight"><pre><span></span>at = autotest.Autotest()
+at.get("/var/local/autotest/client")
+at.install(remote_host)
+
+control_file = """
+job.profilers.add("oprofile", events= ["CPU_CLK_UNHALED:8000"])
+job.run_test("linux_stress")
+"""
+
+results_dir = "job_results"
+
+at.run(control_file, results_dir, remote_host)
+</pre></div>
+<h2 id="kernel-objects">Kernel Objects</h2>
+<p>Kernel Objects 是另一个类型的InstallableObjects.计划支持内核源码编译及.rpm和.deb包安装。最初，只支持.deb格式内核。现在已经支持源码格式的内核。
+kernels支持依赖以下方法：</p>
+<ul>
+<li>get(location)
+    用户installableObject方法</li>
+<li>install(host, extra arguments to boottool).当一个内核安装在host后，会使用bootbool使它自己编程默认的启动内核。如果需要指定特别的内核参数，
+需要可以添加，并传递给add_kernel()方法用来启动内核。</li>
+<li>get_version()</li>
+<li>get_image_name()</li>
+<li>get_image_name()</li>
+</ul>
+<p>同样，可以通过查看源码了解更多详细信息，如server/deb_kernel.py</p>
+<p>DEBKernels　有一个额外的方法，host直接提取内核。这个方法可以直接将包解压到指定的host.这样可以不经过安装，可以直接访问包的内容。这个功能比较常用的地方就是
+kvm和qumu的　-kernel选项。</p>
+<p>下面给出一个Autoserv安装内核的控制文件的例子：</p>
+<div class="highlight"><pre><span></span>rh = hosts.SSHHost("192.168.1.1")
+
+print rh.run("uname -a").stdout
+
+kernel = deb_kernel.DEBKernel()
+kernel.get("/var/local/linux-2.6.22.deb")
+
+kernel.install(rh)
+
+rh.reboot()
+
+print rh.run("uname -a").stdout
+</pre></div>
+<p>一个类似的例子使用RPM形式的kernel，并让指定启动参数（autoserv -m host1, host2 install-rpm):</p>
+<div class="highlight"><pre><span></span>if not machines:
+    raise "Specify the machines to run on via the -m flag"
+hosts = [hosts.SSHHost(h) for h in machines]
+
+kernel = rpm_kernel.RPMKernel()
+kernel.get('/stuff/kernels/kernel-smp-2.6.18.x86_64.rpm')
+
+for host in hosts:
+    print host.run("uame -a").stdout
+    kernel.install(host, default=True)
+    host.reboot()
+    print host.run("uname -a").stdout
+
+print "Done"
+</pre></div>
+<p>未完待续</p>
+<p>Top<a href="">^</a></p>
+<p>上一篇<a href="https://king32783784.github.io/2015/08/19/autotest/">Autotest：Autotest-others&gt;&gt;</a>
+下一篇<a href="https://king32783784.github.io/2015/08/21/autotest/">Autotest:Autotest-Autotest Remote (Autoserv)(二）&gt;&gt;&gt;</a></p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Autotest-Autotest Remote (Autoserv)（一）">Autotest-Autotest Remote (Autoserv)（一）</a><ul><li><a class="toc-href" href="#kong-zhi-wen-jian" title="控制文件">控制文件</a></li><li><a class="toc-href" href="#hosts" title="Hosts">Hosts</a><ul><li><a class="toc-href" href="#hostde-zhu-yao-fang-fa" title="Host的主要方法">Host的主要方法</a><ul><li><a class="toc-href" href="#cmdresult-lei" title="CmdResult　类">CmdResult　类</a></li></ul></li><li><a class="toc-href" href="#hostde-zhu-yao-lei-xing_1" title="Host的主要类型">Host的主要类型</a><ul><li><a class="toc-href" href="#sshhost" title="SSHHost">SSHHost</a></li><li><a class="toc-href" href="#conmuxsshhost" title="ConmuxSSHHost">ConmuxSSHHost</a></li><li><a class="toc-href" href="#sitehost" title="SiteHost">SiteHost</a></li><li><a class="toc-href" href="#kvmguest" title="KVMGuest">KVMGuest</a></li><li><a class="toc-href" href="#bootloader" title="Bootloader">Bootloader</a></li></ul></li></ul></li><li><a class="toc-href" href="#installableobject_2" title="InstallableObject">InstallableObject</a></li><li><a class="toc-href" href="#autotest-support" title="Autotest Support">Autotest Support</a></li><li><a class="toc-href" href="#kernel-objects" title="Kernel Objects">Kernel Objects</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

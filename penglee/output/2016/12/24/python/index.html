@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python" />
+        <meta name="description" content="存储方式 Python的数据存储主要是以下六类：普通文件、DBM文件、Pickled对象存储、shelve对象存储、对象数据库存储、关系数据库存储。 DBM文件 普通文件不解释了，DBM就是把字符串的键值对存储在文件里： Python代码 &gt;&gt;&gt; import anydbm &gt;&gt;&gt; file = anydbm.open(&#39;movie&#39;, &#39;c&#39;) # make a DBM file called &#39;movie&#39; &gt;&gt;&gt; file[&#39;Batman&#39;] = &#39;Pow!&#39; # store a string under key &#39;Batman&#39; &gt;&gt;&gt; file.keys( ) # get the file&#39;s key directory [&#39;Batman&#39;] &gt;&gt;&gt; file[&#39;Batman&#39;] # fetch value for key &#39;Batman ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="python数据存储"/>
+    <meta property="og:url" content="../../../../2016/12/24/python/"/>
+    <meta property="og:description" content="存储方式 Python的数据存储主要是以下六类：普通文件、DBM文件、Pickled对象存储、shelve对象存储、对象数据库存储、关系数据库存储。 DBM文件 普通文件不解释了，DBM就是把字符串的键值对存储在文件里： Python代码 &gt;&gt;&gt; import anydbm &gt;&gt;&gt; file = anydbm.open(&#39;movie&#39;, &#39;c&#39;) # make a DBM file called &#39;movie&#39; &gt;&gt;&gt; file[&#39;Batman&#39;] = &#39;Pow!&#39; # store a string under key &#39;Batman&#39; &gt;&gt;&gt; file.keys( ) # get the file&#39;s key directory [&#39;Batman&#39;] &gt;&gt;&gt; file[&#39;Batman&#39;] # fetch value for key &#39;Batman ..."/>
+    <meta property="article:published_time" content="2016-12-24" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>python数据存储 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/12/24/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/12/24/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/12/24/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/12/24/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2016/12/24/python/"
+                           rel="bookmark"
+                           title="Permalink to python数据存储">
+                            python数据存储
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2016-12-24T00:00:00+08:00"> 2016-12-24 六</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python.html">Python</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="cun-chu-fang-shi">存储方式</h3>
+<p>Python的数据存储主要是以下六类：普通文件、DBM文件、Pickled对象存储、shelve对象存储、对象数据库存储、关系数据库存储。</p>
+<h4 id="dbmwen-jian">DBM文件</h4>
+<p>普通文件不解释了，DBM就是把字符串的键值对存储在文件里：</p>
+<p>Python代码</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">anydbm</span>                             
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">file</span> <span class="o">=</span> <span class="n">anydbm</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'movie'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">)</span>        <span class="c1"># make a DBM file called 'movie' </span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">file</span><span class="p">[</span><span class="s1">'Batman'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Pow!'</span>                 <span class="c1"># store a string under key 'Batman' </span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">file</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span> <span class="p">)</span>                                 <span class="c1"># get the file's key directory</span>
+
+<span class="p">[</span><span class="s1">'Batman'</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">file</span><span class="p">[</span><span class="s1">'Batman'</span><span class="p">]</span>                          <span class="c1"># fetch value for key 'Batman'</span>
+
+<span class="s1">'Pow!'</span>
+</pre></div>
+<h4 id="pickleddui-xiang-cun-chu">Pickled对象存储</h4>
+<p>Pickled就是把对象序列化到文件，可以存储复杂类型：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">table</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>  
+         <span class="s1">'b'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'spam'</span><span class="p">,</span> <span class="s1">'eggs'</span><span class="p">],</span>  
+         <span class="s1">'c'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'bob'</span><span class="p">}}</span>  
+<span class="o">&gt;&gt;&gt;</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pickle</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mydb</span>  <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'dbase'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">mydb</span><span class="p">)</span>
+</pre></div>
+<p>下面是反序列化：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pickle</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mydb</span>  <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'dbase'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">table</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">mydb</span><span class="p">)</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">table</span>
+
+<span class="p">{</span><span class="s1">'b'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'spam'</span><span class="p">,</span> <span class="s1">'eggs'</span><span class="p">],</span> <span class="s1">'a'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">'c'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bob'</span><span class="p">}}</span>
+</pre></div>
+<h4 id="shelvecun-chu">shelve存储</h4>
+<p>shelve存储差不多就是DBM和Pickled方式的结合，以键值对的形式把对象序列化到文件：</p>
+<p>数据存储：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">shelve</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"mydbase"</span><span class="p">)</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">object1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'The'</span><span class="p">,</span> <span class="s1">'bright'</span><span class="p">,</span> <span class="p">(</span><span class="s1">'side'</span><span class="p">,</span> <span class="s1">'of'</span><span class="p">),</span> <span class="p">[</span><span class="s1">'life'</span><span class="p">]]</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">object2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Brian'</span><span class="p">,</span> <span class="s1">'age'</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="s1">'motto'</span><span class="p">:</span> <span class="n">object1</span><span class="p">}</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span><span class="p">[</span><span class="s1">'brian'</span><span class="p">]</span>  <span class="o">=</span> <span class="n">object2</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span><span class="p">[</span><span class="s1">'knight'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Knight'</span><span class="p">,</span> <span class="s1">'motto'</span><span class="p">:</span> <span class="s1">'Ni!'</span><span class="p">}</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span><span class="o">.</span><span class="n">close</span><span class="p">(</span> <span class="p">)</span>
+</pre></div>
+<p>取数据：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">shelve</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"mydbase"</span><span class="p">)</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">dbase</span><span class="p">)</span>                             <span class="c1"># entries  </span>
+    <span class="mi">2</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span> <span class="p">)</span>                          <span class="c1"># index  </span>
+    <span class="p">[</span><span class="s1">'knight'</span><span class="p">,</span> <span class="s1">'brian'</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dbase</span><span class="p">[</span><span class="s1">'knight'</span><span class="p">]</span>                        <span class="c1"># fetch  </span>
+    <span class="p">{</span><span class="s1">'motto'</span><span class="p">:</span> <span class="s1">'Ni!'</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Knight'</span><span class="p">}</span>
+</pre></div>
+<p>对象数据库的存储没怎么了解，因为不习惯用它存储数据。感觉应该和shelve差不多吧，只是把数据保存到了数据库里（其实还是一个文件嘛），然后增加了些事务之类的高级功能。</p>
+<p>Python中关系数据库的存储是重点，操作关系数据库最“简单”的就是直接用DB-API，就像Java里的JDBC；当然，数据结构复杂了、设计要求高了，就得找些ORM框架偷懒了，主要有独立的SQLAlchemy，Django的自带ORM等。</p>
+<p><img class="img-responsive" height="280" src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/8N5QJCOLP7.jpg" width="420"/></p>
+<h3 id="jian-dan-bi-jiao-pythonde-shu-ju-cao-zuo_1">简单比较Python的数据操作</h3>
+<p>Python中操作关系数据库最直接的就是用DB-API了，流程一般是：连接、执行SQL语句、提交、断开。以MySQL为例，下面是各步骤的代码示例：</p>
+<p>首先是连接：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">MySQLdb</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">'root'</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">'python'</span><span class="p">)</span>
+</pre></div>
+<p>接着便可以执行语句了，但在执行SQL语句前要先获取指针：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; curs = conn.cursor( )  
+&gt;&gt;&gt; curs.execute('create database peopledb')  
+1L  
+&gt;&gt;&gt; curs.execute('use peopledb')  
+0L  
+&gt;&gt;&gt; tblcmd = 'create table people (name char(30), job char(10), pay int(4))' 
+&gt;&gt;&gt; curs.execute(tblcmd)  
+0L
+</pre></div>
+<p>添加数据：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; curs.execute('insert people values (%s, %s, %s)', ('Bob', 'dev', 5000))  
+1L  
+&gt;&gt;&gt; curs.executemany('insert people values (%s, %s, %s)',  
+...          [ ('Sue', 'mus', '70000'),  
+...            ('Ann', 'mus', '60000')])  
+2L  
+&gt;&gt;&gt; conn.commit( )
+</pre></div>
+<p>执行查询：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; curs.execute('select * from people')  
+6L  
+&gt;&gt;&gt; curs.fetchall( )  
+(('Bob', 'dev', 5000L), ('Sue', 'mus', 70000L), ('Ann', 'mus', 60000L), ('Tom',  
+'mgr', 100000L))
+</pre></div>
+<p>执行完数据库操作记得断开连接：</p>
+<div class="highlight"><pre><span></span>conn.close( )        # close, _ _del_ _ call rollback if changes not committed yet
+</pre></div>
+<p>如果数据结构不是很复杂，配合Python强大的列表解析能力，不用ORM框架也是很方便的；或者自己封装对象映射也不是很难。</p>
+<p>如果使用了Django框架，可以使用它自带的ORM工具来操作数据库。首先当然是编写实体类（或者叫模型）了：</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">Musician</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>  
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>  
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>  
+    <span class="n">instrument</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Album</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>  
+    <span class="n">artist</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Musician</span><span class="p">)</span>  
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>  
+    <span class="n">release_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">()</span>  
+    <span class="n">num_stars</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">()</span>
+</pre></div>
+<p>Python的代码已经很清楚了，类对应表，成员变量对应表的列，列属性由models.XXXField(…)定义。如果实体类没有显式定义主键，Django会默认加上一句：</p>
+<div class="highlight"><pre><span></span>id = models.AutoField(primary_key=True)
+</pre></div>
+<p>Django里可以这样定义枚举型数据：</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">Model</span><span class="p">)</span><span class="o">:</span>  
+    <span class="nx">GENDER_CHOICES</span> <span class="o">=</span> <span class="p">(</span>  
+        <span class="p">(</span><span class="nx">u</span><span class="s1">'M'</span><span class="p">,</span> <span class="nx">u</span><span class="s1">'Male'</span><span class="p">),</span>  
+        <span class="p">(</span><span class="nx">u</span><span class="s1">'F'</span><span class="p">,</span> <span class="nx">u</span><span class="s1">'Female'</span><span class="p">),</span>  
+    <span class="p">)</span>  
+    <span class="nx">name</span> <span class="o">=</span> <span class="nx">models</span><span class="p">.</span><span class="nx">CharField</span><span class="p">(</span><span class="nx">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  
+    <span class="nx">gender</span> <span class="o">=</span> <span class="nx">models</span><span class="p">.</span><span class="nx">CharField</span><span class="p">(</span><span class="nx">max_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="nx">choices</span><span class="o">=</span><span class="nx">GENDER_CHOICES</span><span class="p">)</span>
+</pre></div>
+<p>对于关联关系，在做列的映射定义时可以这么写：</p>
+<div class="highlight"><pre><span></span>poll = models.ForeignKey(Poll)  
+sites = models.ManyToManyField(Site)  
+place = models.OneToOneField(Place")
+</pre></div>
+<p>在Django里定义关联关系还有更多功能，后面的文件再介绍。</p>
+<p>Django的Model基类中已经定义了基本的数据库操作，因为所有的实体类都是继承自Model类，所以也就有了这些操作。例如新建并保存一个person只需要这么做：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; p = Person(name="Fred Flinstone", gender="M")  
+&gt;&gt;&gt; p.save()
+</pre></div>
+<p>Django会通过查询对象的主键是否存在来决定该UPDATE还是INSERT，当然你也可以强制框架执行某种操作。如果你不满意框架自带的方法，可以重写它：</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Blog</span><span class="p">(</span><span class="nx">models</span><span class="p">.</span><span class="nx">Model</span><span class="p">)</span><span class="o">:</span>  
+    <span class="nx">name</span> <span class="o">=</span> <span class="nx">models</span><span class="p">.</span><span class="nx">CharField</span><span class="p">(</span><span class="nx">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>  
+    <span class="nx">tagline</span> <span class="o">=</span> <span class="nx">models</span><span class="p">.</span><span class="nx">TextField</span><span class="p">()</span>
+
+    <span class="nx">def</span> <span class="nx">save</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="o">*</span><span class="nx">args</span><span class="p">,</span> <span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span><span class="o">:</span>  
+        <span class="nx">do_something</span><span class="p">()</span>  
+        <span class="kr">super</span><span class="p">(</span><span class="nx">Blog</span><span class="p">,</span> <span class="nx">self</span><span class="p">).</span><span class="nx">save</span><span class="p">(</span><span class="o">*</span><span class="nx">args</span><span class="p">,</span> <span class="o">**</span><span class="nx">kwargs</span><span class="p">)</span> <span class="err">#</span> <span class="nx">Call</span> <span class="nx">the</span> <span class="s2">"real"</span> <span class="nx">save</span><span class="p">()</span> <span class="nx">method</span><span class="p">.</span>  
+        <span class="nx">do_something_else</span><span class="p">()</span>
+</pre></div>
+<p>发现没，Django里存取数据不需要那种session，最讨厌Hibernate里的session了，总是报“Session Closed”错误……</p>
+<p>Python还有一个独立的ORM框架——SQLAlchemy。功能更强大，支持的数据库也比Django自带的ORM工具要多。它有两种建立实体类的方法。</p>
+<p>一种是分开定义，再将表定义和类定义映射起来。首先是建立表的定义：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">,</span> <span class="n">ForeignKey</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">users_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s1">'users'</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span>  
+<span class="o">...</span>     <span class="n">Column</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">(</span><span class="s1">'user_id_seq'</span><span class="p">),</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>  
+<span class="o">...</span>     <span class="n">Column</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">)),</span>  
+<span class="o">...</span>     <span class="n">Column</span><span class="p">(</span><span class="s1">'fullname'</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">)),</span>  
+<span class="o">...</span>     <span class="n">Column</span><span class="p">(</span><span class="s1">'password'</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>  
+<span class="o">...</span> <span class="p">)</span>
+</pre></div>
+<p>接着定义实体类：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; class User(object):  
+...     def __init__(self, name, fullname, password):  
+...         self.name = name  
+...         self.fullname = fullname  
+...         self.password = password
+</pre></div>
+<p>这还没完，还要把他们映射起来：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">mapper</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mapper</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">users_table</span><span class="p">)</span>
+</pre></div>
+<p>这样的过程有点像Hibernate里将XML的Map文件和实体类的映射。Hibernate中还可以方便的直接用注释在实体类中完成与表的映射，当然SQLAlchemy也有直接的方法：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>  
+<span class="o">...</span>     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'users'</span> 
+<span class="o">...</span>  
+<span class="o">...</span>     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  
+<span class="o">...</span>     <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>  
+<span class="o">...</span>     <span class="n">fullname</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>  
+<span class="o">...</span>     <span class="n">password</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">)</span>
+</pre></div>
+<p>作为一个独立的ORM框架，实体类的存取当然就不会像Django那样集成的那么完美了，SQLAlchemy里存取数据也是要Session的：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+</pre></div>
+<p>这里的engine对象需要这样建立：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>  
+<span class="o">&gt;&gt;&gt;</span> <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s1">'&lt;span style="font-family: monospace; white-space: normal; color: #333333; line-height: 20px;"&gt;dialect+driver://user:password@host/dbname[?key=value..]&lt;/span&gt;'</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+<p>对于存取操作，如果是保存就这么写：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; ed_user = User('ed', 'Ed Jones', 'edspassword')  
+&gt;&gt;&gt; session.add(ed_user)
+</pre></div>
+<p>如果要查询，就是类似的这种形式：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; our_user = session.query(User).filter_by(name='ed').first()
+执行完一些数据操作，必要的时候要提交或是回滚：
+&gt;&gt;&gt; session.rollback()  
+或者  
+&gt;&gt;&gt; session.commit()
+</pre></div>
+<p>SQLAlchemy框架还有一个衍生产品——Elixir，在SQLAlchemy的基础上对其映射方式做了些封装，使得实体类的定义有点类似Django中的定义方式。</p>
+<p>话说Django的ORM与它的其他模块结合的很紧密，不好单独使用；SQLAlchemy虽然强大，但风格不太喜欢，所以下一步打算深入两个ORM框架的代码，看看他们是怎么实现的。一方面好抉择用哪一个，另外也可以看看在自己的应用中能否自己做一个简单的ORM。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="python数据存储">python数据存储</a><ul><li><a class="toc-href" href="#cun-chu-fang-shi" title="存储方式">存储方式</a><ul><li><a class="toc-href" href="#dbmwen-jian" title="DBM文件">DBM文件</a></li><li><a class="toc-href" href="#pickleddui-xiang-cun-chu" title="Pickled对象存储">Pickled对象存储</a></li><li><a class="toc-href" href="#shelvecun-chu" title="shelve存储">shelve存储</a></li></ul></li><li><a class="toc-href" href="#jian-dan-bi-jiao-pythonde-shu-ju-cao-zuo_1" title="简单比较Python的数据操作">简单比较Python的数据操作</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

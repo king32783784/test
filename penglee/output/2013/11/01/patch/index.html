@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Linux" />
+        <meta name="description" content="如果hack了开源代码，为了方便分享（如提交Bug）或自己留存使用，一般都要制作一个补丁（Patch）。在从源码安装软件时，也难免要应用些别人做好的补丁。本文介绍如何制作和应用补丁。 制作补丁和打补丁分别需要用到diff和patch。 diff diff可以比较两个东西，并可同时记录下二者的区别。制作补丁时的一般用法和常见选项为： diff 【选项】 源文件（夹） 目的文件（夹） -r 递归。设置后diff会将两个不同版本源代码目录中的所有对应文件全部都进行一次比较，包括子目录文件。 -N 选项确保补丁文件将正确地处理已经创建或删除文件的情况。 -u 输出每个修改前后的3行，也可以用-u5等指定输出更多上下文。 -E, -b, -w, -B, --strip-trailing-cr 忽略各种空白，可参见文档，按需选用。 patch patch的作用则是将diff记录的结果（即补丁）应用到相应文件（夹）上。最常见的用法为： patch -pNUM &lt;patchfile&gt; -p Num 忽略几层文件夹 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="diff 和 patch"/>
+    <meta property="og:url" content="../../../../2013/11/01/patch/"/>
+    <meta property="og:description" content="如果hack了开源代码，为了方便分享（如提交Bug）或自己留存使用，一般都要制作一个补丁（Patch）。在从源码安装软件时，也难免要应用些别人做好的补丁。本文介绍如何制作和应用补丁。 制作补丁和打补丁分别需要用到diff和patch。 diff diff可以比较两个东西，并可同时记录下二者的区别。制作补丁时的一般用法和常见选项为： diff 【选项】 源文件（夹） 目的文件（夹） -r 递归。设置后diff会将两个不同版本源代码目录中的所有对应文件全部都进行一次比较，包括子目录文件。 -N 选项确保补丁文件将正确地处理已经创建或删除文件的情况。 -u 输出每个修改前后的3行，也可以用-u5等指定输出更多上下文。 -E, -b, -w, -B, --strip-trailing-cr 忽略各种空白，可参见文档，按需选用。 patch patch的作用则是将diff记录的结果（即补丁）应用到相应文件（夹）上。最常见的用法为： patch -pNUM &lt;patchfile&gt; -p Num 忽略几层文件夹 ..."/>
+    <meta property="article:published_time" content="2013-11-01" />
+    <meta property="article:section" content="Linux" />
+        <meta property="article:tag" content="Linux" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>diff 和 patch - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2013/11/01/patch/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2013/11/01/patch/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2013/11/01/patch/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2013/11/01/patch/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2013/11/01/patch/"
+                           rel="bookmark"
+                           title="Permalink to diff 和 patch">
+                            diff 和 patch
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2013-11-01T00:00:00+08:00"> 2013-11-01 五</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/linux.html">Linux</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/linux.html">Linux</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p>如果hack了开源代码，为了方便分享（如提交Bug）或自己留存使用，一般都要制作一个补丁（Patch）。在从源码安装软件时，也难免要应用些别人做好的补丁。本文介绍如何制作和应用补丁。</p>
+<p>制作补丁和打补丁分别需要用到diff和patch。</p>
+<h4 id="diff">diff</h4>
+<p>diff可以比较两个东西，并可同时记录下二者的区别。制作补丁时的一般用法和常见选项为：</p>
+<div class="highlight"><pre><span></span><span class="gh">diff 【选项】 源文件（夹） 目的文件（夹）</span>
+<span class="gd">-r</span>
+递归。设置后diff会将两个不同版本源代码目录中的所有对应文件全部都进行一次比较，包括子目录文件。
+<span class="gd">-N</span>
+选项确保补丁文件将正确地处理已经创建或删除文件的情况。
+<span class="gd">-u</span>
+输出每个修改前后的3行，也可以用-u5等指定输出更多上下文。
+<span class="gd">-E, -b, -w, -B, --strip-trailing-cr</span>
+忽略各种空白，可参见文档，按需选用。
+</pre></div>
+<h4 id="patch">patch</h4>
+<p>patch的作用则是将diff记录的结果（即补丁）应用到相应文件（夹）上。最常见的用法为：</p>
+<div class="highlight"><pre><span></span>patch -pNUM &lt;patchfile&gt;
+-p Num
+忽略几层文件夹，随后详解。
+-E
+选项说明如果发现了空文件，那么就删除它
+-R
+取消打过的补丁。
+</pre></div>
+<p>为了解释 -p 参数，需要看看如下patch文件片段：</p>
+<div class="highlight"><pre><span></span><span class="gd">--- test1       2017-03-02 16:58:55.085518422 +0800</span>
+<span class="gi">+++ test2       2017-03-02 16:59:03.306461415 +0800</span>
+<span class="gu">@@ -1,5 +1,4 @@</span>
+<span class="gd">-test1</span>
+<span class="gd">-test1</span>
+<span class="gd">-test1</span>
+<span class="gd">-test1</span>
+<span class="gd">-</span>
+<span class="gi">+test2</span>
+<span class="gi">+test2</span>
+<span class="gi">+test2</span>
+<span class="gi">+test2</span>
+</pre></div>
+<h4 id="ying-yong">应用</h4>
+<p>利用以上命令，处理单个文件补丁的方法：</p>
+<h5 id="chan-sheng-bu-ding">产生补丁</h5>
+<div class="highlight"><pre><span></span><span class="gh">diff -uN from-file to-file &gt;to-file.patch</span>
+</pre></div>
+<h5 id="da-bu-ding">打补丁</h5>
+<div class="highlight"><pre><span></span>patch -p0 &lt; to-file.patch
+</pre></div>
+<h5 id="qu-xiao-bu-ding">取消补丁</h5>
+<div class="highlight"><pre><span></span>patch -RE -p0 &lt; to-file.patch
+</pre></div>
+<p>对整个文件夹打补丁的情况：</p>
+<h5 id="chan-sheng-bu-ding_1">产生补丁</h5>
+<div class="highlight"><pre><span></span><span class="gh">diff -uNr  from-docu  to-docu  &gt;to-docu.patch</span>
+</pre></div>
+<h5 id="da-bu-ding_1">打补丁</h5>
+<div class="highlight"><pre><span></span>cd to-docu
+patch -p1 &lt; to-docu.patch
+</pre></div>
+<h5 id="qu-xiao-bu-ding_1">取消补丁</h5>
+<div class="highlight"><pre><span></span>patch -R -p1 &lt;to-docu.patch
+</pre></div>
+<p>另外，使用版本控制工具时，可以直接用svn diff或git diff生成补丁文件。</p>
+<p>值得一提的是，由于应用补丁时的目标代码和生成补丁时的代码未必相同，打补丁操作可能失败。补丁失败的文件会以.rej结尾，下面命令可以找出所有rej文件：</p>
+<div class="highlight"><pre><span></span>find . -name '*.rej'
+</pre></div>
+<h4 id="patchwen-jian-gou-cheng_1">patch文件构成</h4>
+<p>补丁文件里到底存储了哪些信息呢？看看这个例子：</p>
+<div class="highlight"><pre><span></span><span class="gd">--- test0       2013-08-18 09:12:01.000000000 +0800</span>
+<span class="gi">+++ test1       2013-08-18 09:13:09.000000000 +0800</span>
+<span class="gu">@@ -1,3 +1,4 @@</span>
+<span class="gi">+222222</span>
+111111
+<span class="gd">-111111</span>
+<span class="gi">+222222</span>
+111111
+</pre></div>
+<h5 id="bu-ding-tou">补丁头</h5>
+<p>补丁头是分别由---/+++开头的两行，用来表示要打补丁的文件。---开头表示旧文件，+++开头表示新文件。
+一个补丁文件中的多个补丁
+一个补丁文件中可能包含以---/+++开头的很多节，每一节用来打一个补丁。所以在一个补丁文件中可以包含好多个补丁。</p>
+<h5 id="kuai">块</h5>
+<p>块是补丁中要修改的地方。它通常由一部分不用修改的东西开始和结束。他们只是用来表示要修改的位置。他们通常以@@开始，结束于另一个块的开始或者一个新的补丁头。</p>
+<p>块的缩进</p>
+<p>块会缩进一列，而这一列是用来表示这一行是要增加还是要删除的。
+块的第一列</p>
+<p>+号表示这一行是要加上的。-号表示这一行是要删除的。没有加号也没有减号表示这里只是引用的而不需要修改。</p>
+<h4 id="shi-li-fen-xi_1">实例分析</h4>
+<p>单文件补丁</p>
+<p>设当前目录有文件 test0：</p>
+<div class="highlight"><pre><span></span>111111
+111111
+111111
+</pre></div>
+<p>和文件test1：</p>
+<div class="highlight"><pre><span></span>222222
+111111
+222222
+111111
+</pre></div>
+<p>使用diff创建补丁test1.patch</p>
+<div class="highlight"><pre><span></span><span class="gh">diff -uN test0 test1 &gt; test1.patch</span>
+</pre></div>
+<p>因为是单个文件，故不需要 -r 选项。此命令得到如下补丁：</p>
+<div class="highlight"><pre><span></span><span class="gd">--- test0       2006-08-18 09:12:01.000000000 +0800</span>
+<span class="gi">+++ test1       2006-08-18 09:13:09.000000000 +0800</span>
+<span class="gu">@@ -1,3 +1,4 @@</span>
+<span class="gi">+222222</span>
+111111
+<span class="gd">-111111</span>
+<span class="gi">+222222</span>
+111111
+</pre></div>
+<p>要应用补丁，只需：</p>
+<div class="highlight"><pre><span></span>$ patch -p0 &lt; test1.patch
+patching file test0
+</pre></div>
+<p>此时test0就和test1一样了。</p>
+<p>如果要取消补丁做出的更改，恢复旧版本：</p>
+<div class="highlight"><pre><span></span>$ patch -RE -p0 &lt; test1.patch
+patching file test0
+</pre></div>
+<p>文件夹补丁
+设有如下环境：</p>
+<div class="highlight"><pre><span></span>--prj0/
+    test0
+    prj0name
+--prj1/
+    test1
+    prj1name
+</pre></div>
+<p>prj0/prj0name内容为如下三行：</p>
+<div class="highlight"><pre><span></span>--------
+prj0/prj0name
+--------
+</pre></div>
+<p>prj1/prj1name内容为如下三行：</p>
+<div class="highlight"><pre><span></span>--------
+prj1/prj1name
+--------
+</pre></div>
+<p>用 diff -uNr 创建补丁，</p>
+<div class="highlight"><pre><span></span><span class="gh">diff -uNr prj0 prj1 &gt; prj1.patch</span>
+</pre></div>
+<p>得到的patch文件为：</p>
+<div class="highlight"><pre><span></span><span class="gh">diff -uNr prj0/prj0name prj1/prj0name</span>
+<span class="gd">--- prj0/prj0name       2006-08-18 09:25:11.000000000 +0800</span>
+<span class="gi">+++ prj1/prj0name       1970-01-01 08:00:00.000000000 +0800</span>
+<span class="gu">@@ -1,3 +0,0 @@</span>
+<span class="gd">---------</span>
+<span class="gd">-prj0/prj0name</span>
+<span class="gd">---------</span>
+<span class="gh">diff -uNr prj0/prj1name prj1/prj1name</span>
+<span class="gd">--- prj0/prj1name       1970-01-01 08:00:00.000000000 +0800</span>
+<span class="gi">+++ prj1/prj1name       2006-08-18 09:26:36.000000000 +0800</span>
+<span class="gu">@@ -0,0 +1,3 @@</span>
+<span class="gi">+---------</span>
+<span class="gi">+prj1/prj1name</span>
+<span class="gi">+---------</span>
+<span class="gh">diff -uNr prj0/test0 prj1/test0</span>
+<span class="gd">--- prj0/test0  2006-08-18 09:23:53.000000000 +0800</span>
+<span class="gi">+++ prj1/test0  1970-01-01 08:00:00.000000000 +0800</span>
+<span class="gu">@@ -1,3 +0,0 @@</span>
+<span class="gd">-111111</span>
+<span class="gd">-111111</span>
+<span class="gd">-111111</span>
+
+<span class="gh">diff -uNr prj0/test1 prj1/test1</span>
+
+<span class="gd">--- prj0/test1  1970-01-01 08:00:00.000000000 +0800</span>
+<span class="gi">+++ prj1/test1  2006-08-18 09:26:00.000000000 +0800</span>
+<span class="gu">@@ -0,0 +1,4 @@</span>
+<span class="gi">+222222</span>
+<span class="gi">+111111</span>
+<span class="gi">+222222</span>
+<span class="gi">+111111</span>
+</pre></div>
+<p>如果要应用此补丁，则：</p>
+<div class="highlight"><pre><span></span>$ ls
+prj0  prj1  prj1.patch
+$ <span class="nb">cd</span> prj0
+$ patch -p1 &lt; ../prj1.patch
+patching file prj0name
+patching file prj1name
+patching file test0
+patching file test1
+</pre></div>
+<p>此时可用ls看到打补丁后的结果：</p>
+<div class="highlight"><pre><span></span>$ ls
+prj1name  test1
+</pre></div>
+<p>类似的，如果要回滚补丁操作：</p>
+<div class="highlight"><pre><span></span>$ patch -R -p1 &lt; ../prj1.patch
+patching file prj0name
+patching file prj1name
+patching file test0
+patching file test1
+$ ls
+prj0name  test0
+</pre></div></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="diff 和 patch">diff 和 patch</a><ul><li><a class="toc-href" href="#diff" title="diff">diff</a></li><li><a class="toc-href" href="#patch" title="patch">patch</a></li><li><a class="toc-href" href="#ying-yong" title="应用">应用</a><ul><li><a class="toc-href" href="#chan-sheng-bu-ding" title="产生补丁">产生补丁</a></li><li><a class="toc-href" href="#da-bu-ding" title="打补丁">打补丁</a></li><li><a class="toc-href" href="#qu-xiao-bu-ding" title="取消补丁">取消补丁</a></li><li><a class="toc-href" href="#chan-sheng-bu-ding_1" title="产生补丁">产生补丁</a></li><li><a class="toc-href" href="#da-bu-ding_1" title="打补丁">打补丁</a></li><li><a class="toc-href" href="#qu-xiao-bu-ding_1" title="取消补丁">取消补丁</a></li></ul></li><li><a class="toc-href" href="#patchwen-jian-gou-cheng_1" title="patch文件构成">patch文件构成</a><ul><li><a class="toc-href" href="#bu-ding-tou" title="补丁头">补丁头</a></li><li><a class="toc-href" href="#kuai" title="块">块</a></li></ul></li><li><a class="toc-href" href="#shi-li-fen-xi_1" title="实例分析">实例分析</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

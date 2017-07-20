@@ -1,0 +1,776 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-Tips" />
+        <meta name="description" content="Tips 22 文件操作 读取文件之前，需要打开，打开文件比较简单： a_file = open(&#39;roman2.py&#39;, encoding=&#39;utf-8&#39;) &#34;roman2.py&#34;打开文件的文件名＋路径名 encoding 指定编码规则，如果想查看当前编码信息，可以导入local模块通过locale.getpreferredencoding()查看 open函数返回一个流对象(stream object)支持下面的方法： &gt;&gt;&gt; a_file.name &#39;roman2.py&#39; &gt;&gt;&gt; a_file.encoding &#39;utf-8&#39; &gt;&gt;&gt; a_file.mode &#39;r&#39; &gt;&gt;&gt; a_file.read() # 返回的结果是文件的一个字符串表示 &gt;&gt;&gt; a_file.read() # 再次读取不会返回一个异常，但返回为空 &#39;&#39; &gt;&gt;&gt; a_file.read() # 依旧在文末所以为空 &#39;&#39; &gt;&gt;&gt; a_file.seek(0) # seek ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(七）"/>
+    <meta property="og:url" content="../../../../2014/05/13/python/"/>
+    <meta property="og:description" content="Tips 22 文件操作 读取文件之前，需要打开，打开文件比较简单： a_file = open(&#39;roman2.py&#39;, encoding=&#39;utf-8&#39;) &#34;roman2.py&#34;打开文件的文件名＋路径名 encoding 指定编码规则，如果想查看当前编码信息，可以导入local模块通过locale.getpreferredencoding()查看 open函数返回一个流对象(stream object)支持下面的方法： &gt;&gt;&gt; a_file.name &#39;roman2.py&#39; &gt;&gt;&gt; a_file.encoding &#39;utf-8&#39; &gt;&gt;&gt; a_file.mode &#39;r&#39; &gt;&gt;&gt; a_file.read() # 返回的结果是文件的一个字符串表示 &gt;&gt;&gt; a_file.read() # 再次读取不会返回一个异常，但返回为空 &#39;&#39; &gt;&gt;&gt; a_file.read() # 依旧在文末所以为空 &#39;&#39; &gt;&gt;&gt; a_file.seek(0) # seek ..."/>
+    <meta property="article:published_time" content="2014-05-13" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-Tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(七） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/13/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/13/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/13/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/13/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/13/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(七）">
+                            Python-Tips(七）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-13T00:00:00+08:00"> 2014-05-13 二</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-Tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-22">Tips 22</h3>
+<p><strong>文件操作</strong></p>
+<p>读取文件之前，需要打开，打开文件比较简单：</p>
+<p>a_file = open('roman2.py', encoding='utf-8')</p>
+<p>"roman2.py"打开文件的文件名＋路径名　encoding 指定编码规则，如果想查看当前编码信息，可以导入local模块通过locale.getpreferredencoding()查看
+open函数返回一个流对象(stream　object)支持下面的方法：</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; a_file.name
+'roman2.py'
+&gt;&gt;&gt; a_file.encoding
+'utf-8'
+&gt;&gt;&gt; a_file.mode
+'r'
+&gt;&gt;&gt; a_file.read() # 返回的结果是文件的一个字符串表示
+&gt;&gt;&gt; a_file.read() # 再次读取不会返回一个异常，但返回为空
+''
+&gt;&gt;&gt; a_file.read() # 依旧在文末所以为空
+''
+&gt;&gt;&gt; a_file.seek(0) # seek()方法定位到文件中特定字节
+0
+&gt;&gt;&gt; a_file.read(16) #read()方法支持字符个数的参数
+'#*-*coding=utf-8'
+&gt;&gt;&gt; a_file.read(1)
+'*'
+&gt;&gt;&gt; a_file.read(1)
+'-'
+&gt;&gt;&gt; a_file.tell()　# 当前在18字符处　
+18
+</pre></div>
+<p>read()和seek()方法是以字节的方式记数。</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; a_file.close()
+&gt;&gt;&gt; a_fiel.read() # 试图读取关闭的文件会引发IOError异常
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+NameError: name 'a_fiel' is not defined
+&gt;&gt;&gt; a_file.close()
+&gt;&gt;&gt; a_file.closed　# closed用来确认文件是否关闭
+True
+</pre></div>
+<p><strong>自动关闭文件</strong></p>
+<p>try..finally可以，但with更好。</p>
+<div class="highlight"><pre><span></span>with open('roman2.py', encoding='utf-8') as a_file:
+    a_file.seek(17)
+    a_character = a_file.read(1)
+    print(a_character)
+</pre></div>
+<p>这里没有使用cloase()方法，但with块结束时，会自动调用a_file.close(),即时程序突然中止，也会保证文件被关闭。
+从实现上说，with语句创建了一个运行时环境(runtime context)。在几个样例中，流对象的行为就是一个上下文管理器。当with结束时，python告诉流对象正在退出这个运行时环境，然后环境对象就会调用它的close()方法。</p>
+<p>with语句不是针对文件而言的，它是用来创建运行时环境的通用框架，告诉对象它们正在进入和离开一个运行时环境。如果该对象是流对象，那么它就会做一些类似文件对象一样有用的动作。但是那个行为是被流对象自身定义的，不是with决定的。还有很多跟文件无关的使用上线文管理器的方法。</p>
+<p><strong>一次读取一行数据</strong></p>
+<div class="highlight"><pre><span></span>line_number = 0
+with open('roman2.py') as a_file:  # 使用for循环一次读取一行(a_line),流对象也是一个迭代器
+    for a_line in a_file:
+        line_number += 1
+        print('{:&gt;4} {}'.format(line_number, a_line.rstrip())) # 使用字符串的format方法，可以打印出行号和行内容，{:&gt;4}"使用最多４个空格使之右对齐,字符串方法rstrip()可以去掉尾随的空白符
+</pre></div>
+<p><strong>写入文本文件</strong></p>
+<p>使用open()函数，指定写入模式，存在两种模式用于写入：</p>
+<ul>
+<li>"写"模式会重写文件, mode='w'</li>
+<li>“追加”模式会在文件末尾追写数据，mode='a'</li>
+</ul>
+<p>如果打开文件不存在，两种模式都会自动创建文件。
+完成写入后应该马上关闭文件，释放文件句柄，并且保证数据被完整的写入到了磁盘。跟读文件类似，可以调用close(),或则使用with块。
+    &gt;&gt;&gt; with open('test.log', mode='w', encoding='utf-8') as a_file: # 覆盖写，之前的数据没有了
+    ...     a_file.write('test successed')
+    ... 
+    14
+    &gt;&gt;&gt; with open('test.log', encoding='utf-8') as a_file:
+    ...     print(a_file.read())
+    ... 
+    test successed
+    &gt;&gt;&gt; with open('test.log', mode='a', encoding='utf-8') as a_file: # 追加写
+    ...     a_file.write('and again')
+    ... 
+    9
+    &gt;&gt;&gt; with open('test.log', encoding='utf-8') as a_file:
+    ...     print(a_file.read())
+    ... 
+    test successedand again</p>
+<p><strong>字符编码</strong>
+打开写入时加了encoding参数，这个参数非常重要，文件中并不存在字符串，他们都是字节，当年你指定编码方式时，从文件读取字符串才可能。
+不是所有的文件都包含文本内容，还可以存放二进制。打开二进制时需要加入参数'b'，二进制流对象没有encoding属性。</p>
+<p><strong>非文件来源的流对象</strong>
+使用read()方法即可从虚拟文件读取数据。
+比如一个库，其中一个库函数从文件读取数据，它使用文件名为参数，以只读的方式打开文件，读取数据，关闭文件，返回。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">a_string</span> <span class="o">=</span> <span class="s1">'PapayaWhip is the new black.'</span> <span class="c1"># 字符串</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">io</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">a_string</span><span class="p">)</span><span class="err">　</span><span class="c1"># io模块定义了StringIO类，可以把内存中字符串作为文件处理</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="s1">'PapayaWhip is the new black.'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="s1">''</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mi">10</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="s1">'PapayaWhip'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+<span class="mi">10</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+<span class="mi">18</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="s1">'new black.'</span>
+</pre></div>
+<p>io.StringIO可以将一个字符串作为文件处理，io.ByteIO可以把字节数组当成二进制文件处理。</p>
+<p><strong>压缩文件</strong></p>
+<p>python标准库中包含支持读写压缩文件的模块，其中gzip和bzip2是非windows下最流行的压缩方式。
+gzip模块允许你创建用来读写gzip压缩文件的流对象，该流对象支持read()方法或则write()方法。也就是可以用普通文件的方式来操作gzip压缩文件，它同样支持with语句。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">gzip</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'out.log.gz'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">z_file</span><span class="p">:</span> <span class="c1"># mode参数里面有b</span>
+<span class="o">...</span>     <span class="n">z_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'A nine mile walk is no joke, especially in the rain.'</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">))</span>
+<span class="o">...</span> 
+<span class="mi">52</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">exit</span><span class="p">()</span>
+</pre></div>
+<p>退出之后，通过ls，可以看到压缩文件。</p>
+<p><strong>标准输入、输出和错误</strong></p>
+<p>sys.stdin, sys.stdout, sys.stderr</p>
+<p>数据流应用时，多次提到。标准输出和标准错误输出，是类UNIX系统中的两个管道(pipe)。当你调用print()的时候，需要打印的内容被发送的stdout管道，当程序出错并需要打印跟踪信息时，被发送到sys.stderr管道。默认情况下，两个管道都链接到终端。
+sys.stdout和sys.stderr都是流对象，但他们都只支持写入，试图调用read()会引发IOError。</p>
+<p><strong>标准输出重定向</strong></p>
+<p>sys.stdout和sys.stderr是变量不是常量，可以利用其他任意流对象进行重定向他们的输出。</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">class</span> <span class="nc">RedirectStdoutTo</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_new</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_new</span> <span class="o">=</span> <span class="n">out_new</span> <span class="c1"># 传入一个参数(上下文环境的生命周期内用作标准输出的流对象</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># 进入上下文环境时会调用该方法（即with开始时)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_old</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="c1"># 把当前的sys.stdout值保存到self.out_old</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_new</span><span class="err">　</span><span class="c1"># 通过self.out_new赋给sys.stdout来重定向标准输出</span>
+    <span class="c1"># 先保存当前的标准输出，然后将标准输出定向到为传入的流对象(out.log)</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span> <span class="c1"># 离开上下文是调用（with语句末尾)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_old</span> <span class="c1"># 把保存的self.out_old的值赋给sys.stdout恢复标准输出</span>
+    <span class="c1"># 恢复标准输出为标准输出（终端输出）</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span><span class="err">　</span><span class="c1"># 输出到终端</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'out.log'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">a_file</span><span class="p">:</span> <span class="c1"># 打开一个文件out.log</span>
+    <span class="k">with</span> <span class="n">RedirectStdoutTo</span><span class="p">(</span><span class="n">a_file</span><span class="p">):</span> <span class="c1">#  怎么没有as,就像调用函数忽略返回值，with语句的上下文环境同样可以忽略</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">'B'</span><span class="p">)</span><span class="err">　</span><span class="c1"># 这个print()函数在with语句上下文环境执行，不会输出，会写入文件</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">'C'</span><span class="p">)</span>
+</pre></div>
+<p>with语句块结束了，python告诉每一个上下文管理器完成他们应该离开上下文环境时该做的事。这些上下文环境形成一个后进先出的栈。当一个上下文环境离开时，第二个上下文环境将sys.stdout的值恢复到原来的状态，然后第一个上下文环境关闭out.log文件。由于标准输出已经被恢复，所以再调用print()函数会输出到终端上。
+　
+ RedirectsStdoutTo上下文环境的side effect,该类是用户自定义的上下文管理器。任何类只要定义了__enter__()和__exit__()就可以变成上下文管理器。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(七）">Python-Tips(七）</a><ul><li><a class="toc-href" href="#tips-22" title="Tips 22">Tips 22</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

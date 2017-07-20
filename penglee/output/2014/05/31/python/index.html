@@ -1,0 +1,1198 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-tips" />
+        <meta name="description" content="Tips 28 python类中包含很多特殊方法，这些方法让类用起来如同序列、字典、函数、迭代器，甚至像个数字。 基础知识 最常见的就是__init__()。 序号 目的 代码 python内部调用 1 初始化一个实例 x = MyClass() x.__init__() 2 字符串的“官方”表现形式 repr(x) x.__repr__() 3 字符串的“非正式&#34;值 str(x) x.__str__() 4 字节数组的”非正式“值 bytes(x) x.__bytes__() 5 格式化字符串的值 format(x, format_spec) x ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(十三)"/>
+    <meta property="og:url" content="../../../../2014/05/31/python/"/>
+    <meta property="og:description" content="Tips 28 python类中包含很多特殊方法，这些方法让类用起来如同序列、字典、函数、迭代器，甚至像个数字。 基础知识 最常见的就是__init__()。 序号 目的 代码 python内部调用 1 初始化一个实例 x = MyClass() x.__init__() 2 字符串的“官方”表现形式 repr(x) x.__repr__() 3 字符串的“非正式&#34;值 str(x) x.__str__() 4 字节数组的”非正式“值 bytes(x) x.__bytes__() 5 格式化字符串的值 format(x, format_spec) x ..."/>
+    <meta property="article:published_time" content="2014-05-31" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(十三) - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/31/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/31/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/31/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/31/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/31/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(十三)">
+                            Python-Tips(十三)
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-31T00:00:00+08:00"> 2014-05-31 六</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-28">Tips 28</h3>
+<p>python类中包含很多特殊方法，这些方法让类用起来如同序列、字典、函数、迭代器，甚至像个数字。</p>
+<h4 id="ji-chu-zhi-shi">基础知识</h4>
+<p>最常见的就是__init__()。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>序号</th>
+<th>目的</th>
+<th>代码</th>
+<th>python内部调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>初始化一个实例</td>
+<td>x = MyClass()</td>
+<td>x.__init__()</td>
+</tr>
+<tr>
+<td>2</td>
+<td>字符串的“官方”表现形式</td>
+<td>repr(x)</td>
+<td>x.__repr__()</td>
+</tr>
+<tr>
+<td>3</td>
+<td>字符串的“非正式"值</td>
+<td>str(x)</td>
+<td>x.__str__()</td>
+</tr>
+<tr>
+<td>4</td>
+<td>字节数组的”非正式“值</td>
+<td>bytes(x)</td>
+<td>x.__bytes__()</td>
+</tr>
+<tr>
+<td>5</td>
+<td>格式化字符串的值</td>
+<td>format(x, format_spec)</td>
+<td>x.__format__(format_spec)</td>
+</tr>
+</tbody>
+</table>
+<p>1.对__init__()方法调用发生在实例被创建之后。如果要控制实际创建进程，请使用__new__方法。
+2.__repr__()方法返回的字符串为合法的python表达式
+3.在调用print(x)的同时调用了__str__()方法</p>
+<h4 id="xing-wei-fang-shi-he-die-dai-qi-lei-si-de-lei">行为方式和迭代器类似的类</h4>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>序号</th>
+<th>目的</th>
+<th>编写的代码</th>
+<th>python的实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>遍历每个序列</td>
+<td>iter(seq)</td>
+<td>seq.__iter__()</td>
+</tr>
+<tr>
+<td>2</td>
+<td>迭代器取下一个值</td>
+<td>next(seq)</td>
+<td>seq.__next__()</td>
+</tr>
+<tr>
+<td>3</td>
+<td>按逆序创建一个迭代器</td>
+<td>reversed(seq)</td>
+<td>seq.__reversed__()</td>
+</tr>
+</tbody>
+</table>
+<p>1.无论何时创建迭代器都将调用__iter__()方法。这是用初始值对迭代器进行初始化的绝佳之处。
+2.无论何时从迭代器中获取下一个值都将调用__next__()方法。
+3.__reversed__()方法并不常用。它以一个现有序列为参数，并将该序列中所有元素从尾到头以逆序生成一个新的迭代器。</p>
+<h4 id="shu-xing">属性</h4>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>序号</th>
+<th>目的</th>
+<th>编写的代码</th>
+<th>python 实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>获取一个属性</td>
+<td>x.my_property</td>
+<td>x.__getattribute__('my_property')</td>
+</tr>
+<tr>
+<td>2</td>
+<td>获取一个属性（备用)</td>
+<td>x.my_property</td>
+<td>x.__getattr__('my_property')</td>
+</tr>
+<tr>
+<td>3</td>
+<td>设置某属性</td>
+<td>x.my_property = value</td>
+<td>x.__setattr__('my_property', value)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>删除某属性</td>
+<td>del x.myproperty</td>
+<td>x.__delattr__('my_property')</td>
+</tr>
+<tr>
+<td>5</td>
+<td>列出所有属性和方法</td>
+<td>dir(x)</td>
+<td>x.__dir__()</td>
+</tr>
+</tbody>
+</table>
+<p>1.如果类定义了__getattribute__()方法，在每次引用属性或方法名称时python都调用它（特殊方法名称除外，因为会导致无限循环）
+2.如果类定义了__getattr__()方法，python在正常位置查询属性时才会调用。
+3.无论何时给属性赋值，都会调用__setattr__()
+4.删除属性时，会调用__delattr__()
+5.如果定义了__getattr__()或__getattribute__()，__dir__()方法将会非常有用</p>
+<p>__getattr__()和__getattribute__()方法的区别非常细微，但非常重要。</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Dynamo</span>:
+    <span class="kt">def</span> <span class="nx">__getattr__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="s1">'color'</span><span class="o">:</span>
+            <span class="k">return</span> <span class="s1">'PapayaWhip'</span> <span class="err">#</span> <span class="err">属性名称以字符串的形式传入</span><span class="nx">__getattr</span><span class="p">()</span><span class="nx">__</span><span class="err">方法</span>
+        <span class="k">else</span><span class="o">:</span><span class="err">　　　　　　　　#</span> <span class="err">如果属性名称未知，触发异常</span>
+            <span class="nx">raise</span> <span class="nx">AttributeError</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span> <span class="o">=</span> <span class="nx">Dynamo</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span><span class="p">.</span><span class="nx">color</span>  <span class="err">#</span> <span class="nx">dyn</span><span class="err">没有名为</span><span class="nx">color</span><span class="err">的属性，获取时将调用</span><span class="nx">__getattr__</span><span class="p">()</span>
+ <span class="s1">'PapayaWhip'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="s1">'LemonChiffon'</span> <span class="err">#</span> <span class="err">显示的设置了</span><span class="nx">color</span><span class="err">属性后，不再调用</span><span class="nx">__getattr__</span><span class="err">方法。</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span><span class="p">.</span><span class="nx">color</span>
+ <span class="s1">'LemonChiffon'</span>
+</pre></div>
+<p>另一方面，__getattribute__()方法是直接的，无条件的。</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">SuperDynamo</span>:
+    <span class="kt">def</span> <span class="nx">__getattribute__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="s1">'color'</span><span class="o">:</span>
+            <span class="k">return</span> <span class="s1">'PapayaWhip'</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="nx">raise</span> <span class="nx">AttributeError</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span> <span class="o">=</span> <span class="nx">SuperDynamo</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span><span class="p">.</span><span class="nx">color</span> <span class="err">#</span> <span class="err">直接调用</span><span class="nx">__getattribute__</span><span class="p">()</span><span class="err">，返回</span><span class="nx">color</span>
+ <span class="s1">'PapayaWhip'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="s1">'LemonChiffon'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">dyn</span><span class="p">.</span><span class="nx">color</span>  <span class="err">#</span> <span class="err">虽然显示的设置了</span><span class="nx">color</span><span class="err">属性，但仍然会调用</span><span class="nx">__getattribute__</span><span class="p">()</span>
+ <span class="s1">'PapayaWhip'</span>
+</pre></div>
+<p>如果定义了类的__getattribute__()方法，你可能还想定义一个__setattr__()方法，需要两则之间进行协同，以跟踪属性的值。
+必须特别小心__getattribute__()方法，因为python在查找类的方法名称时也将对其进行调用</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Rastan</span>:
+    <span class="kt">def</span> <span class="nx">__getattribute__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">raise</span> <span class="nx">AttributeError</span>  <span class="err">#</span> <span class="err">定义了一个总是触发异常的</span><span class="nx">__getattribute__</span><span class="err">方法</span>
+
+    <span class="nx">def</span> <span class="nx">swim</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="err">：</span>
+        <span class="nx">pass</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">hero</span> <span class="o">=</span> <span class="nx">Rastan</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">hero</span><span class="p">.</span><span class="nx">swim</span><span class="p">()</span> <span class="err">#</span> <span class="err">调用</span><span class="nx">hero</span><span class="p">.</span><span class="nx">swim</span><span class="p">()</span><span class="err">时，</span><span class="nx">python</span><span class="err">将在</span><span class="nx">Rastan</span><span class="err">类查找</span><span class="nx">swim</span><span class="p">()</span><span class="err">方法。该查找将执行整个</span><span class="nx">__getattribute__</span><span class="p">()</span><span class="err">方法，因为所有的属性和方法查找都通过</span><span class="nx">__getattribute__</span><span class="p">()</span><span class="err">方法。</span>
+<span class="nx">Traceback</span> <span class="p">(</span><span class="nx">most</span> <span class="nx">recent</span> <span class="nx">call</span> <span class="nx">last</span><span class="p">)</span><span class="o">:</span>
+<span class="nx">File</span> <span class="s2">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="nx">line</span> <span class="mi">1</span><span class="p">,</span> <span class="k">in</span> <span class="o">&lt;</span><span class="nx">module</span><span class="o">&gt;</span>
+<span class="nx">File</span> <span class="s2">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="nx">line</span> <span class="mi">3</span><span class="p">,</span> <span class="k">in</span> <span class="nx">__getattribute__</span>
+<span class="nx">AttributeError</span>
+</pre></div>
+<h4 id="xing-wei-fang-shi-he-han-shu-lei-si-de-lei">行为方式和函数类似的类</h4>
+<p>可以让类的实例变得可调用-就想函数可以调用一样-通过定义__call__()方法</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>序号</th>
+<th>目的</th>
+<th>编写代码</th>
+<th>Python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>像调用函数一样使用实例</td>
+<td>my_instance()</td>
+<td>my_instance.__call__()</td>
+</tr>
+</tbody>
+</table>
+<h4 id="xing-wei-he-xu-lie-lei-si-de-lei">行为和序列类似的类</h4>
+<p>如果类作为一系列值的容器出现，可以通过下面方法，让其的行为方式和序列类似。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>序列的长度</td>
+<td>len(seq)</td>
+<td>seq.__len__()</td>
+</tr>
+<tr>
+<td>判断序列是否包含指定的值</td>
+<td>x in seq</td>
+<td>seq.__contains__(x)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="xing-wei-he-zi-dian-lei-si-de-lei">行为和字典类似的类</h4>
+<p>类可以像字典一样根据键来返回值</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通过键来获取值</td>
+<td>x[key]</td>
+<td>x.__getitem__(key)</td>
+</tr>
+<tr>
+<td>通过键来设置值</td>
+<td>x[key] = value</td>
+<td>x.__setitem__(key, value)</td>
+</tr>
+<tr>
+<td>删除一个键值对</td>
+<td>del x[key]</td>
+<td>x.__delitem__(key)</td>
+</tr>
+<tr>
+<td>为缺失键提供默认值</td>
+<td>x[nonexistent_key]</td>
+<td>x.__missing__(nonexistent_key)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="xing-wei-he-shu-zhi-lei-si-de-lei">行为和数值类似的类</h4>
+<p>使用适当的特殊方法，可以将类的行为定义为与数字相仿。也就是说，可以进行相加、相减、及其他运算，Fraction类就实现了这些特殊方法：</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">fractions</span> <span class="kn">import</span> <span class="n">Fraction</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">/</span><span class="mi">3</span>
+<span class="n">Fraction</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+</pre></div>
+<p>| 目的 | 编写的代码 |  python实际调用 |
+| 加法 | x + y      | x.__add__(y) |
+| 减法 | x - y      | x.__sub__(y) |
+| 乘法 | x * y      | x.__mul__(y) |
+| 除法 | x / y      | x.__truediv__(y) |
+| 地板除 | x//y     | x.__fooldiv__(y) |
+| 取余 | x % y      | x.__mod__(y) |
+| 地板除&amp;取余 | divmod(x,y) | x.__divmod__(y)|
+| 乘幂 | x ** y | x.__pow__(y) |
+| 左移位 | x &lt;&lt; y | x.__lshift__(y) |
+| 右移位 | x &gt;&gt; y | x.__rshift__(y) |
+| 按位与 | x &amp; y | x.__and__(y) |
+| 按位异或 | x^y | x.__xor__(y) |
+| 按位或 | x | y | x.__or__(y) |</p>
+<p>前面是第一个的操作数调用对应函数，第二个操作数作为参数，下面的特殊方法集合，是第二个操作数调用方法，第一个操作数作为参数。</p>
+<p>| 目的  |  代码    | python 调用 |
+| +    | x + y     | y.__radd__(x) |
+| -    | x - y     | y.__rsub__(x) |
+| *    | x * y     | y.__rmul__(x) |
+| /    | x / y     | y.__rturediv__(x) |
+| //   | x // y    | y.__rfloordiv__(x) |
+| %    | x % y     | y.__rmod__(x) |
+|// &amp; % | divmod(x,y) | y.__rdivmod__(x) |
+| <strong>   |   x </strong> y |  y.__rpow__(x) |
+| &lt;&lt; | x &lt;&lt; y | y.__rlshift__(x) |
+| &gt;&gt; | x &gt;&gt; y | y.__rrshift__(x) |
+| &amp; | x &amp; y | y.__rand__(x)|
+| ^ | x ^ y | y.__rxor__(x) |
+| 或 | x or y | y.__ror__(x) |</p>
+<p>如果原地操作呢？x += 3</p>
+<p>| 代码 | python实际调用 |
+| x += y | x.__iadd__(y) |
+| x -= y | x.__isub__(y) |
+| x *= y | x.__imul__(y) |
+| x /= y | x.__iturediv__(y) |
+| x //= y | x.__ifloordiv__(y) |
+| x %= y | x.__imod__(y) |
+| x **= y | x.__ipow__(y) |
+| x &lt;&lt;= y | x.__ilshift__(y) |
+| x &gt;&gt;= y | x.__irshift__(y) | 
+| x &amp;= y | x.__iland__(y) |
+| x ^= y | x.__ixor__(y) |
+| x |= y | x.__ior__(y) |</p>
+<p>还有一些一元运算符，可以对“类-数字”对象自己执行。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>正数</td>
+<td>+x</td>
+<td>x.__pos__()</td>
+</tr>
+<tr>
+<td>绝对值</td>
+<td>abs(x)</td>
+<td>x.__abs__()</td>
+</tr>
+<tr>
+<td>取反</td>
+<td>~x</td>
+<td>x.__invert__()</td>
+</tr>
+<tr>
+<td>复数</td>
+<td>complex(x)</td>
+<td>x.__complex__()</td>
+</tr>
+<tr>
+<td>整数转换</td>
+<td>int(x)</td>
+<td>x.__int__()</td>
+</tr>
+<tr>
+<td>浮点数</td>
+<td>float(x)</td>
+<td>x.__float__()</td>
+</tr>
+<tr>
+<td>四舍五入整数</td>
+<td>round(x)</td>
+<td>x.__round__()</td>
+</tr>
+<tr>
+<td>四舍五入至n位小数</td>
+<td>round(x, n)</td>
+<td>x.__round__(n)</td>
+</tr>
+<tr>
+<td>&gt;= x的最小整数</td>
+<td>math.ceil(x)</td>
+<td>x.__ceil__()</td>
+</tr>
+<tr>
+<td>&lt;= x的最大整数</td>
+<td>math.floor(x)</td>
+<td>x.__floor__()</td>
+</tr>
+<tr>
+<td>对x朝向０取整</td>
+<td>math.trunc(x)</td>
+<td>x.__trunc__()</td>
+</tr>
+<tr>
+<td>作为索引的数字</td>
+<td>a_list[x]</td>
+<td>a_list[x.__index__()]</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ke-bi-jiao-de-lei">可比较的类</h4>
+<p>许多数据类型都可以进行比较，可以使用以下特殊方法来实现。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码实现</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>相等</td>
+<td>x == y</td>
+<td>x.__eq__(y)</td>
+</tr>
+<tr>
+<td>不相等</td>
+<td>x!= y</td>
+<td>x.__ne__(y)</td>
+</tr>
+<tr>
+<td>小于</td>
+<td>x &lt; y</td>
+<td>x.__lt__(y)</td>
+</tr>
+<tr>
+<td>小于或等于</td>
+<td>x &lt;= y</td>
+<td>x.__le__(y)</td>
+</tr>
+<tr>
+<td>大于</td>
+<td>x&gt;y</td>
+<td>x.__gt__(y)</td>
+</tr>
+<tr>
+<td>大于或等于</td>
+<td>x &gt;= y</td>
+<td>x.__ge__(y)</td>
+</tr>
+<tr>
+<td>布尔上下文环境的真值</td>
+<td>if x :</td>
+<td>x.__bool__()</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ke-xu-lie-hua-de-lei">可序列化的类</h4>
+<p>python支持任意对象的可序列化和反序列化。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自定义对象的复制</td>
+<td>copy.copy(x)</td>
+<td>x.__copy__()</td>
+</tr>
+<tr>
+<td>自定义对象的深度复制</td>
+<td>copy.deepcopy(x)</td>
+<td>x.__deepcopy__()</td>
+</tr>
+<tr>
+<td>在pickling之前获取对象的状态</td>
+<td>pickle.dump(x, file)</td>
+<td>x.__getstate__()</td>
+</tr>
+<tr>
+<td>序列化某对象</td>
+<td>pickle.dump(x, file)</td>
+<td>x.__reduce__()</td>
+</tr>
+<tr>
+<td>序列化某对象(新pickling协议)</td>
+<td>pickle.dump(x,file, protocol_version)</td>
+<td>x.__reduce_ex__(protocol_verion)</td>
+</tr>
+<tr>
+<td>控制unpickling过程中对象的创建方式</td>
+<td>x = pickle.load(file)</td>
+<td>x.__getnewargs__()</td>
+</tr>
+<tr>
+<td>在unpickling之后还原对象的状态</td>
+<td>x = pickle.load(file)</td>
+<td>x.__setstate__()</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ke-zai-withyu-kuai-zhong-shi-yong-de-lei">可在WITH语块中使用的类</h4>
+<p>with语块定义了运行时刻上下文环境；在执行with语句时将“进入”该上下文环境，而执行该语块中的最后一条语句将“退出"该上下文环境。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>进入with语块时进行一些特别操作</td>
+<td>with x：</td>
+<td>x.__enter__()</td>
+</tr>
+<tr>
+<td>在退出with语块时进行一些特别操作</td>
+<td>with x:</td>
+<td>x.__exit__()</td>
+</tr>
+</tbody>
+</table>
+<p>以下是with　file习惯用法的运作方式：</p>
+<div class="highlight"><pre><span></span>def _checkClosed(self, msg=None):
+    if self.closed:
+        raise ValueError('I/O operation on closed file.'
+                          if msg is None else msg)
+def __enter__(self):
+    self._checkClosed()
+    return self
+
+def __exit__(self, *args):
+    self.close()
+
+该文件对象同时定义了一个__enter__()和一个__exit__()方法。该__enter__()方法检查文件是否处于打开状态；如果没有,_checkClosed方法触发一个例外
+__enter__方法将始终返回self，这是with语块将用于调用属性和方法的对象。
+</pre></div>
+<p>在with语块结束后，文件对象将自动关闭</p>
+<h4 id="qi-ta">其他</h4>
+<p>如果知道自己在做什么，几乎可以完全控制类是如何比较的、属性如何定义，以及类的子类是何种类型。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>目的</th>
+<th>代码</th>
+<th>python实际调用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类构造器</td>
+<td>x=MyClass()</td>
+<td>x.__new__()</td>
+</tr>
+<tr>
+<td>类析构器</td>
+<td>del x</td>
+<td>x.__del__()</td>
+</tr>
+<tr>
+<td>只定义特定集合的某些特性</td>
+<td></td>
+<td>x.__slots__()</td>
+</tr>
+<tr>
+<td>自定义散列值</td>
+<td>hash(x)</td>
+<td>x.__hash__()</td>
+</tr>
+<tr>
+<td>获取某个属性的值</td>
+<td>x.color</td>
+<td>type(x).__dict__['color'].__get__(x,type(x))</td>
+</tr>
+<tr>
+<td>设置某个属性的值</td>
+<td>x.color = 'PapayWhip'</td>
+<td>type(x).__dict__['color'].__set__(x, 'PapayaWhip')</td>
+</tr>
+<tr>
+<td>删除某个属性</td>
+<td>del x.color</td>
+<td>type(x).__dict__['color'].__del__(x)</td>
+</tr>
+<tr>
+<td>控制某个对象是否该对象的实例</td>
+<td>isinstance(x, MyClass)</td>
+<td>MyClass.__instancecheck__(x)</td>
+</tr>
+<tr>
+<td>控制某个类是否是该类的子类</td>
+<td>issubclass(C,MyClass)</td>
+<td>MyClass.__subclasscheck__(C)</td>
+</tr>
+<tr>
+<td>控制某个类是否是该抽象基类的子类</td>
+<td>issubclass(C, MyABC)</td>
+<td>MyABC.__subclasshook__(C)</td>
+</tr>
+</tbody>
+</table></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(十三)">Python-Tips(十三)</a><ul><li><a class="toc-href" href="#tips-28" title="Tips 28">Tips 28</a><ul><li><a class="toc-href" href="#ji-chu-zhi-shi" title="基础知识">基础知识</a></li><li><a class="toc-href" href="#xing-wei-fang-shi-he-die-dai-qi-lei-si-de-lei" title="行为方式和迭代器类似的类">行为方式和迭代器类似的类</a></li><li><a class="toc-href" href="#shu-xing" title="属性">属性</a></li><li><a class="toc-href" href="#xing-wei-fang-shi-he-han-shu-lei-si-de-lei" title="行为方式和函数类似的类">行为方式和函数类似的类</a></li><li><a class="toc-href" href="#xing-wei-he-xu-lie-lei-si-de-lei" title="行为和序列类似的类">行为和序列类似的类</a></li><li><a class="toc-href" href="#xing-wei-he-zi-dian-lei-si-de-lei" title="行为和字典类似的类">行为和字典类似的类</a></li><li><a class="toc-href" href="#xing-wei-he-shu-zhi-lei-si-de-lei" title="行为和数值类似的类">行为和数值类似的类</a></li><li><a class="toc-href" href="#ke-bi-jiao-de-lei" title="可比较的类">可比较的类</a></li><li><a class="toc-href" href="#ke-xu-lie-hua-de-lei" title="可序列化的类">可序列化的类</a></li><li><a class="toc-href" href="#ke-zai-withyu-kuai-zhong-shi-yong-de-lei" title="可在WITH语块中使用的类">可在WITH语块中使用的类</a></li><li><a class="toc-href" href="#qi-ta" title="其他">其他</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

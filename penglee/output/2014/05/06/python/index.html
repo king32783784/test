@@ -1,0 +1,961 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-Tips" />
+        <meta name="description" content="Tips19 斐波那契生成器 每个数字都是前两个数字的和 def fib(max): a, b = 0, 1 while a &lt; max: yield a # a是当前序列的数字，因此对它进行yield，yield命令的意思是这不是一个普通的函数。它是一次生成一个值的特殊类型函数。可以将其视为可恢复函数。调用该函数将返回一个可用于生成连 续x值的生成器【Generator】 a,b = b, a+b # b是序列中下一个数字，因此将它赋值给a，但同时计算下一个值(a+b)并将其赋值给b以供稍后使用 for n in fib(1000): print(n, end=&#39; &#39;) 0 1 1 2 3 5 8 13 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(四）"/>
+    <meta property="og:url" content="../../../../2014/05/06/python/"/>
+    <meta property="og:description" content="Tips19 斐波那契生成器 每个数字都是前两个数字的和 def fib(max): a, b = 0, 1 while a &lt; max: yield a # a是当前序列的数字，因此对它进行yield，yield命令的意思是这不是一个普通的函数。它是一次生成一个值的特殊类型函数。可以将其视为可恢复函数。调用该函数将返回一个可用于生成连 续x值的生成器【Generator】 a,b = b, a+b # b是序列中下一个数字，因此将它赋值给a，但同时计算下一个值(a+b)并将其赋值给b以供稍后使用 for n in fib(1000): print(n, end=&#39; &#39;) 0 1 1 2 3 5 8 13 ..."/>
+    <meta property="article:published_time" content="2014-05-06" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-Tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(四） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/06/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/06/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/06/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/06/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/06/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(四）">
+                            Python-Tips(四）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-06T00:00:00+08:00"> 2014-05-06 二</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-Tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h2 id="tips19">Tips19</h2>
+<h3 id="fei-bo-na-qi-sheng-cheng-qi">斐波那契生成器</h3>
+<p>每个数字都是前两个数字的和</p>
+<div class="highlight"><pre><span></span>def fib(max):
+    a, b = 0, 1
+    while a &lt; max:
+        yield a　　　　# a是当前序列的数字，因此对它进行yield，yield命令的意思是这不是一个普通的函数。它是一次生成一个值的特殊类型函数。可以将其视为可恢复函数。调用该函数将返回一个可用于生成连　　续x值的生成器【Generator】　　
+        a,b = b, a+b   # b是序列中下一个数字，因此将它赋值给a，但同时计算下一个值(a+b)并将其赋值给b以供稍后使用
+for n in fib(1000):
+    print(n, end=' ')
+
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+</pre></div>
+<h3 id="fu-shu-gui-ze-sheng-cheng-qi">复数规则生成器</h3>
+<p>英文单词复数形式</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="k">def</span> <span class="nf">build_math_and_appll_function</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">matches_rule</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">word</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">apply_rule</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">matches_rule</span><span class="p">,</span> <span class="n">apply_rule</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">rules</span><span class="p">(</span><span class="n">rules_filename</span><span class="p">):</span>          <span class="c1"># rules()是按照需求连续生成匹配和应用函数的生成器</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">rules_filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">pattern_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pattern_file</span><span class="p">:</span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">replace</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">yield</span>
+        <span class="n">build_math_and_appll_function</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">plural</span><span class="p">(</span><span class="n">noun</span><span class="p">,</span> <span class="n">rules_filename</span><span class="o">=</span><span class="s1">'plural5-rules.txt'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">matches_rule</span><span class="p">,</span> <span class="n">apply_rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">(</span><span class="n">rules_filename</span><span class="p">):</span><span class="err">　</span><span class="c1"># rules是生成器，可直接for循环使用</span>
+        <span class="k">if</span> <span class="n">matches_rule</span><span class="p">(</span><span class="n">noun</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">apply_rule</span><span class="p">(</span><span class="n">noun</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'no matching rule for {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">noun</span><span class="p">))</span>
+</pre></div>
+<h3 id="fei-bo-na-qi-die-dai-qi">斐波那契迭代器</h3>
+<p>迭代器就是一个定义了__iter__()方法的类。</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Fib</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">max</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">max</span> <span class="o">=</span> <span class="nx">max</span>
+
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span> <span class="err">#</span> <span class="err">调用</span><span class="nx">iter</span><span class="p">(</span><span class="nx">fib</span><span class="p">)</span><span class="err">时，</span><span class="nx">__iter__</span><span class="p">()</span><span class="err">就会被调用</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nx">self</span>
+
+    <span class="nx">def</span> <span class="nx">__next__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span><span class="err">　#</span> <span class="err">当有人在迭代器实例中调用</span><span class="nx">next</span><span class="p">()</span><span class="err">方法时，</span><span class="nx">__next__</span><span class="p">()</span><span class="err">会自动调用</span>
+        <span class="nx">fib</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">a</span>
+        <span class="k">if</span> <span class="nx">fib</span> <span class="o">&gt;</span> <span class="nx">self.max</span>:
+            <span class="kt">raise</span> <span class="nx">StopIteration</span><span class="err">　#</span> <span class="err">给调用者发送迭代用完的信号</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">a</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">b</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">b</span>
+        <span class="k">return</span> <span class="nx">fib</span>
+
+<span class="k">for</span> <span class="nx">n</span> <span class="k">in</span> <span class="nx">Fib</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">print</span> <span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">end</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
+</pre></div>
+<p>for 循环调用iter(fib_inst),它返回迭代器，叫fib_iter.在这，fib_inst== fib_inst,因为__iter__()方法返回self.for 循环调用next(fib_iter),调用fib_iter对象的__next__()方法，产生下一个计算并返回值。当抛出StopIteration时，for循环将接收该异常并退出。</p>
+<h3 id="fu-shu-gui-ze-die-dai-qi-qi">复数规则迭代器器</h3>
+<div class="highlight"><pre><span></span><span class="nx">iter</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="err">调用</span><span class="nx">f</span><span class="p">.</span><span class="nx">__iter__</span>
+<span class="nx">next</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="err">调用</span><span class="nx">f</span><span class="p">.</span><span class="nx">__next__</span>
+
+<span class="kr">class</span> <span class="nx">LazyRules</span>:
+    <span class="kt">rules_filename</span> <span class="o">=</span> <span class="s1">'plural6-rules.txt'</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">pattern_file</span> <span class="o">=</span> <span class="nx">open</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">rules_filename</span><span class="p">,</span> <span class="nx">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="err">#</span> <span class="err">实例化</span><span class="nx">LazyRules</span><span class="err">时，打开文件</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">cache</span> <span class="o">=</span> <span class="p">[]</span><span class="err">　　　＃　打开文件之后，初始化缓存</span>
+
+    <span class="nx">def</span> <span class="nx">__iter__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span><span class="err">　　　　#</span> <span class="err">调用</span><span class="nx">iter</span><span class="p">(</span><span class="nx">rules</span><span class="p">)</span><span class="err">时，</span><span class="nx">__iter__</span><span class="err">方法会自动调用</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">cache_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nx">self</span><span class="err">　　　　　　#</span> <span class="err">每个</span><span class="nx">__iter__</span><span class="err">方法都需要返回一个迭代器，返回</span><span class="nx">self</span>
+
+    <span class="nx">def</span> <span class="nx">__next__</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span><span class="err">　　　　#</span> <span class="err">调用</span><span class="nx">__next__</span><span class="err">方法，</span><span class="nx">next</span><span class="p">(</span><span class="nx">rules</span><span class="p">)</span><span class="err">会跟着被调用</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">cache_index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">cache</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nx">self.cache_index</span>:
+            <span class="kt">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">self</span><span class="p">.</span><span class="nx">cache_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nx">self.pattern_file.closed</span>:
+            <span class="kt">raise</span> <span class="nx">StopIteration</span>
+
+        <span class="nx">line</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">pattern_file</span><span class="p">.</span><span class="nx">readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">not</span> <span class="nx">line</span>:
+            <span class="kt">self.pattern_file.close</span><span class="p">()</span>
+            <span class="nx">raise</span> <span class="nx">StopIteration</span>
+
+        <span class="nx">pattern</span><span class="p">,</span> <span class="nx">search</span><span class="p">,</span> <span class="nx">replace</span> <span class="o">=</span> <span class="nx">line</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="nx">funcs</span> <span class="o">=</span> <span class="nx">build_math_and_appll_function</span><span class="p">(</span>
+            <span class="nx">pattern</span><span class="p">,</span> <span class="nx">search</span><span class="p">,</span> <span class="nx">replace</span><span class="p">)</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">cache</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">funcs</span><span class="p">)</span><span class="err">　　#</span> <span class="err">在返回匹配和应用功能之前（保存在元组</span><span class="nx">funcs</span><span class="err">中）</span>
+        <span class="k">return</span> <span class="nx">funcs</span>
+    <span class="nx">rules</span> <span class="o">=</span> <span class="nx">LazyRules</span><span class="p">()</span>
+</pre></div>
+<h3 id="gao-ji-die-dai-qi">高级迭代器</h3>
+<p>例如，解决字母算术谜题。</p>
+<p>HAWAII+IDAHO+IOWA+OHIO==STATES</p>
+<p>510199+98153+9301+3593==621246</p>
+<p>H=5 A=1 W=0 I=9 D=8 O=3 S=6 T=2 E=4</p>
+<p>示例代码</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">puzzle</span><span class="p">):</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'[A-Z]+'</span><span class="p">,</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="c1"># 找到字符串，形成字符串列表</span>
+    <span class="n">unique_characters</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">))</span> <span class="c1"># 通过集合唯一性，找到字母的集合</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_characters</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">'Too many letters'</span> <span class="c1"># 判断字母的种类是否大于10</span>
+    <span class="n">first_letters</span> <span class="o">=</span> <span class="p">{</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">}</span> <span class="c1"># 获取每个字符串的首字母　</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_letters</span><span class="p">)</span> <span class="c1"># 字符串数量</span>
+    <span class="n">sorted_characters</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">first_letters</span><span class="p">)</span> <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unique_characters</span> <span class="o">-</span> <span class="n">first_letters</span><span class="p">)</span> <span class="c1">#首字符在前的，有序字符串</span>
+    <span class="n">characters</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sorted_characters</span><span class="p">)</span> <span class="c1"># 获取字母的对应的字节值列表</span>
+    <span class="n">digits</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">'0123456789'</span><span class="p">)</span> <span class="c1"># 计算0-9数字的字节值生成元组</span>
+    <span class="n">zero</span> <span class="o">=</span> <span class="n">digits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># 0的字节值</span>
+    <span class="k">for</span> <span class="n">guess</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">digits</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)):</span> <span class="c1"># 通过迭代器取出指定数目的&gt;有序组合</span>
+        <span class="k">if</span> <span class="n">zero</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">guess</span><span class="p">[:</span><span class="n">n</span><span class="p">]:</span>  <span class="c1"># 判断是否存在０</span>
+            <span class="n">equation</span> <span class="o">=</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">characters</span><span class="p">,</span> <span class="n">guess</span><span class="p">)))</span><span class="c1"># 先将characters和guess&gt;元素对构造出作为转换表的字典，然后通过translate,将字符串中的每个字母转换为相应的数字）</span>
+            <span class="k">if</span> <span class="nb">eval</span><span class="p">(</span><span class="n">equation</span><span class="p">):</span> <span class="c1"># 判断equation是否成立</span>
+                <span class="k">return</span> <span class="n">equation</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="k">for</span> <span class="n">puzzle</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">solution</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">puzzle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solution</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+</pre></div>
+<p>运行结果</p>
+<div class="highlight"><pre><span></span>[root@isoft_lp 0306]# python3 alphametics.py "HAWAII + IDAHO + IOWA + OHIO == STATES"
+
+HAWAII + IDAHO + IOWA + OHIO == STATES                                                                                                               
+510199 + 98153 + 9301 + 3593 == 621246
+</pre></div>
+<p>解决这个问题，首先要找到谜题中所有的[A-Z]字母</p>
+<div class="highlight"><pre><span></span>re.findall('[0-9]+', '16 2-by-4s in rows of 8')  # 找到字符串中的数字
+
+re.findall('[A-Z]+', 'SEND + MORE == MONEY')　　# 找到字符串中的字母
+
+re.findall(' s.*? s', "The sixth sick sheikh's is sixth sheep's sick.") # 先匹配一个空格，后跟s 然后任意字符然后空格s;重叠的匹配只返回前一个
+</pre></div>
+<p><strong>在序列中需找不同的元素</strong></p>
+<p>集合使得在序列中查找不同的元素变得容易。</p>
+<div class="highlight"><pre><span></span>&gt; a_list = ['The', 'sixth', 'sick', "sheik's", 'sixth', "sheep's", 'sick']
+&gt; set(a_list)
+{"sheik's", 'sick', 'The', "sheep's", 'sixth'}　# set()函数将字符串列表转为集合（去掉重复，且无序）
+&gt; a_string = 'EAST IS EAST'
+&gt; set(a_string)
+{'E', ' ', 'I', 'S', 'T', 'A'}　　　　# set()函数可以将字符串转为集合
+&gt; words = ['SEND', 'MORE', 'MONEY']
+&gt; ''.join(words)
+'SENDMOREMONEY'　　# ''.join(words)将字符串列表拼接成一个字符串
+&gt; set(''.join(words))
+{'D', 'E', 'M', 'Y', 'S', 'R', 'O', 'N'} # 先拼接字符串，先后转为集合（去掉重复的字母）
+&gt; unique_characters = set(''.join(words)) # 找到了题目提供不同字符的集合
+</pre></div>
+<p><strong>断言</strong></p>
+<p>python中assert语句用作断言。例如</p>
+<div class="highlight"><pre><span></span>assert 1 + 1 == 2  # True
+assert 1 + 1 == 3  # AssertionError
+assert len(unique_characters) &lt;= 10, 'Too many letters' # 出现AssertionError，打印"Too many letters"因为数字只有０－９ 10个数字，如果字母大于10,肯定是无解的
+</pre></div>
+<p><strong>生成器表达式</strong></p>
+<div class="highlight"><pre><span></span>&gt; unique_characters = { 'E', 'D', 'M', 'O', 'N', 'S', 'R', 'Y'}
+&gt; gen = (ord(c) for c in unique_characters)  # 生成器表达式类似一个yield值的匿名函数
+&gt; gen　　# 生成器表达式返回迭代器
+&lt;generator object &lt;genexpr&gt; at 0x7f74c9f02938&gt;　
+&gt; next(gen)       # 调用next(gen)返回迭代器的下一个值
+68
+&gt; next(gen)    
+69
+&gt; tuple(ord(c) for c in unique_characters) # 将生成器表达式ord(c) for c in unique_characters传递给tiple()，生成一个元组
+(68, 69, 77, 89, 82, 83, 79, 78)
+</pre></div>
+<p><strong>使用生成器表达式取代列表解析可以同时节省cpu和内存，如果构造一个列表的目的仅仅是传递给别的函数（比如传递给tuple或set()),推荐使用生成器表达式替代</strong></p>
+<p><strong>生成器函数</strong></p>
+<div class="highlight"><pre><span></span>def ord_map(a_string):
+    for c in a_string:
+        yield ord(c)
+gen = ord_map(unique_characters)
+</pre></div>
+<p>生成器表达式功能相同，但更紧凑</p>
+<h3 id="ji-suan-pai-lie">计算排列</h3>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">itertools</span><span class="err">　　</span>
+<span class="o">&gt;</span> <span class="n">perms</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="err">　</span><span class="c1"># permutations()函数接受一个序列(3个元素的列表，和排列的元素的数目）函数返回一个迭代器，可以在for循环使用它</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span><span class="err">　　</span><span class="c1"># [1,2,3]取２个的第一个排列是（１，2)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>           <span class="c1"># 排列是有序的</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">StopIteration</span>
+</pre></div>
+<p>permutaitons()函数可以接受任何序列，甚至是字符串。</p>
+<div class="highlight"><pre><span></span>&gt;perms = itertools.permutations('ABC', 3)　# 字符串'ABC'和列表['A','B','C']是等价的
+&gt; for string in perms:
+...     print(string)
+...
+
+('A', 'B', 'C')
+('A', 'C', 'B')
+('B', 'A', 'C')
+('B', 'C', 'A')
+('C', 'A', 'B')
+('C', 'B', 'A')
+&gt; list(itertools.permutations('ABC', 3))　# permutaitons()函数总是返回迭代器，将这个迭代器传给内建list()函数接收排列
+[('A', 'B', 'C'), ('A', 'C', 'B'), ('B', 'A', 'C'), ('B', 'C', 'A'), ('C', 'A', 'B'), ('C', 'B', 'A')]
+</pre></div>
+<h3 id="itertoolsmo-kuai-zhong-qi-ta-you-yi-si-de-fang-fa">itertools模块中其他有意思的方法</h3>
+<div class="highlight"><pre><span></span>&gt; list(itertools.product('ABC', '123'))　# itertools.product()函数返回包含两个序列的笛卡尔乘积的迭代器
+[('A', '1'), ('A', '2'), ('A', '3'), ('B', '1'), ('B', '2'), ('B', '3'), ('C', '1'), ('C', '2'), ('C', '3')]
+&gt; list(itertools.combinations('ABC', 2)) # itertools.combinations()函数返回包含给定序列的给定长度的所有组合的迭代器
+[('A', 'B'), ('A', 'C'), ('B', 'C')]
+&gt; names = list(open('favorite-people.text', encoding='utf-8'))　# 这个表达式将文本内容以一行一行组成的列表返回
+&gt; names
+['Dora\n', 'Ethan\n', 'Wesley\n', 'John\n', 'Anne\n', 'Mike\n', 'Chris\n', 'Sarah\n', 'Alex\n', 'Lizzie\n']
+&gt; names = [name.rstrip() for name in names]　# 通过rstrip字符串方法移除每行的空白
+&gt; names
+['Dora', 'Ethan', 'Wesley', 'John', 'Anne', 'Mike', 'Chris', 'Sarah', 'Alex', 'Lizzie']
+&gt; names=sorted(names)　# 进行排列
+&gt; names
+['Alex', 'Anne', 'Chris', 'Dora', 'Ethan', 'John', 'Lizzie', 'Mike', 'Sarah', 'Wesley']
+&gt; names = sorted(names, key=len)　# 通过key参数定义排序规则
+&gt; names
+['Alex', 'Anne', 'Dora', 'John', 'Mike', 'Chris', 'Ethan', 'Sarah', 'Lizzie', 'Wesley']
+&gt; groups = itertools.groupby(names, len)　# 接收一个序列和一个key函数，返回一个生成二元组的迭代器，每个二元组包含key_functoion(each item)的结果和另一个包含着所有共享key结果的元素的迭代器
+&gt; groups
+&lt;itertools.groupby object at 0x7f6788c8da48&gt;
+&gt; list(groups)
+[(4, &lt;itertools._grouper object at 0x7f6788c86da0&gt;), (5, &lt;itertools._grouper object at 0x7f6788c86dd8&gt;), (6, &lt;itertools._grouper object at 0x7f6788c86e10&gt;)]　# 调用list()函数会耗尽这个迭代器，将迭代器中所以元素生成了list。迭代器一但使用，就无法重新开始
+&gt; groups = itertools.groupby(names, len)　# 重新生成迭代器,会分别生成４个字母的迭代器，５个字母的迭代器，６个字母的迭代器
+&gt; for name_length, name_iter in groups:　
+...     print('Names with {0:d} letters:'.format(name_length))
+...     for name in name_iter:
+...         print(name)
+... 　# 
+Names with 4 letters:
+Alex
+Anne
+Dora
+John
+Mike
+Names with 5 letters:
+Chris
+Ethan
+Sarah
+Names with 6 letters:
+Lizzie
+Wesley
+</pre></div>
+<p>itertools.groupby()只有当输入序列已经按分组函数排过序才能正常工作。</p>
+<div class="highlight"><pre><span></span>&gt; list(range(0,3))
+[0, 1, 2]
+&gt; list(range(10,13))
+[10, 11, 12]
+&gt; list(itertools.chain(range(0,3), range(10,13)))　# itertools.chain()函数接受两个迭代器，返回一个迭代器，它接受任何数目的迭代器，并把他们按传入顺序串在一起
+[0, 1, 2, 10, 11, 12]
+&gt; list(zip(range(0,3), range(10,13)))　# zip函数：接收任何数目的序列，然后返回一个迭代器，其第一个元素是每个序列的第一个元素组成的数组，以此类推
+[(0, 10), (1, 11), (2, 12)]
+&gt; list(zip(range(0,3), range(10,14)))　# zip在到达最短序列结尾的时候停止。
+[(0, 10), (1, 11), (2, 12)]
+&gt; list(itertools.zip_longest(range(0,3), range(10,14)))# itertools.zip_longest()函数到达最长的序列的结尾时停止，空的填入None
+[(0, 10), (1, 11), (2, 12), (None, 13)]
+&gt; characters = ('S', 'M', 'E', 'D', 'O', 'N', 'R', 'Y')
+&gt; guess = ('1', '2', '0', '3', '4', '5', '6', '7')
+&gt; tuple(zip(characters, guess)) #  zip将字母列表，数字列表对应生成一组组字母数字对
+(('S', '1'), ('M', '2'), ('E', '0'), ('D', '3'), ('O', '4'), ('N', '5'), ('R', '6'), ('Y', '7'))
+&gt; dict(zip(characters, guess))　# 将字母列表、数字列表生成对应键值对的字典
+{'S': '1', 'E': '0', 'N': '5', 'D': '3', 'O': '4', 'Y': '7', 'R': '6', 'M': '2'}
+</pre></div>
+<p>算术谜题解决方法使用这个方法对每一个可能的解法创建一个将谜题中字母映射到解法中的数字的字典</p>
+<div class="highlight"><pre><span></span>characters = tuple(ord(c) for c in sorted_characters)
+digits = tuple(ord(c) for c in '0123456789')
+...
+for guess in iteratools.permutations(digits, len*characters)):
+    ...
+    equation = puzzle.translate(dict(zip(characters, guess)))
+</pre></div>
+<h3 id="translatefang-fa">translate方法</h3>
+<p>python字符串方法有很多。</p>
+<div class="highlight"><pre><span></span>&gt; translation_table = {ord('A'): ord('O')}　# 字符串翻译从一个转换表开始，转换表是将一个字符映射到另一个字符的字典(一个字节映射到另一个）
+&gt; translation_table　# python3字节是整型数，ord()函数返回字符的ASCII码。
+{65: 79}
+&gt; 'MARK'.translate(translation_table)# 一个字符串的translate()方法接收一个转换表，并用它来转换该字符串。
+'MORK'
+&gt; characters = tuple(ord(c) for c in 'SMEDONRY')# 使用生成器表达式，可以快速的计算字符串每个字符的字节值
+&gt; characters
+(83, 77, 69, 68, 79, 78, 82, 89)
+&gt; guess = tuple(ord(c) for c in '91570682')# 使用另一个生成器表达式，快速的计算出字符串中每个数字的字节值，计算结果guess，正好是alphametics.solve()函数中iteratools.permutations()函数返回值的格式
+&gt; guess
+(57, 49, 53, 55, 48, 54, 56, 50)
+&gt; translation_table = dict(zip(characters, guess))#通过characters和guesszipping出来的元素对序列构造出的字典作为转换表，正是alphametics.solve()在for循环里面干的事情
+&gt; translation_table
+{82: 56, 83: 57, 68: 55, 69: 53, 89: 50, 77: 49, 78: 54, 79: 48}
+&gt; 'SEND + MORE == MONEY'.translate(translation_table)# 最后我们将转换表传递给原始字符串的translate（）方法。将字符串中的每个字母转换为相应的数字（基于characters中字母和guess中的数字）
+'9567 + 1085 == 10652'
+&gt; eval('9567 + 1085 == 10652')
+True
+&gt; eval('"A" + "B"')
+'AB'
+&gt; eval('"MARK".translate({65:79})')
+'MORK'
+&gt; eval('"AAAAA".count("A")')
+5
+&gt; eval('["*"] * 5')
+['*', '*', '*', '*', '*']
+&gt; x=5
+&gt; eval("x * 5")
+25
+&gt; eval("pow(x,2)")
+25
+&gt; import math
+&gt; eval("math.sqrt(x)")
+2.23606797749979
+</pre></div>
+<p>eval()接受的表达式可以引用evel()之外定义的全局变量，以及函数、模块</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="o">&gt;</span> <span class="nb">eval</span><span class="p">(</span><span class="s2">"subprocess.getoutput('ls ~')"</span><span class="p">)</span>
+<span class="s1">'abc.xml</span><span class="se">\n</span><span class="s1">AndroidStudioProjects</span><span class="se">\n</span><span class="s1">avocado</span><span class="se">\n</span><span class="s1">cpu.cfs_quota_us~</span><span class="se">\n</span><span class="s1">Desktop</span><span class="se">\n</span><span class="s1">Documents</span><span class="se">\n</span><span class="s1">install.txt</span><span class="se">\n</span><span class="s1">Linux-version-test-result-201701181301.tar.gz</span><span class="se">\n</span><span class="s1">rpmbuild</span><span class="se">\n</span><span class="s1">test_brain</span><span class="se">\n</span><span class="s1">test.brain</span><span class="se">\n</span><span class="s1">test.log</span><span class="se">\n</span><span class="s1">下载'</span>
+</pre></div>
+<p>subprocess模块允许执行任何shell命令并以字符串形式获得输出</p>
+<p>总的来说，这个程序通过暴力解决字母数字算术谜题，通过穷举所有可能。</p>
+<p>１通过re.findall()函数找到谜题中所有的字母</p>
+<p>2.使用集合和set()函数找到谜题出现的所有不同的字母</p>
+<p>3.使用assert语句检查是否有超过１０个不同的字母，超过则无解</p>
+<p>4.通过一个生成器对象将字符转换成对应的ascii码值</p>
+<p>5.使用itertools.permutations()函数计算所有可能的解法</p>
+<p>6.使用translate()字符串方法将所有可能的解转换成python表达式</p>
+<p>7.使用eval()函数通过求值python表达式来检验解法</p>
+<p>8.返回第一个求值结果为True的解法</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(四）">Python-Tips(四）</a><ul><li><a class="toc-href" href="#tips19" title="Tips19">Tips19</a><ul><li><a class="toc-href" href="#fei-bo-na-qi-sheng-cheng-qi" title="斐波那契生成器">斐波那契生成器</a></li><li><a class="toc-href" href="#fu-shu-gui-ze-sheng-cheng-qi" title="复数规则生成器">复数规则生成器</a></li><li><a class="toc-href" href="#fei-bo-na-qi-die-dai-qi" title="斐波那契迭代器">斐波那契迭代器</a></li><li><a class="toc-href" href="#fu-shu-gui-ze-die-dai-qi-qi" title="复数规则迭代器器">复数规则迭代器器</a></li><li><a class="toc-href" href="#gao-ji-die-dai-qi" title="高级迭代器">高级迭代器</a></li><li><a class="toc-href" href="#ji-suan-pai-lie" title="计算排列">计算排列</a></li><li><a class="toc-href" href="#itertoolsmo-kuai-zhong-qi-ta-you-yi-si-de-fang-fa" title="itertools模块中其他有意思的方法">itertools模块中其他有意思的方法</a></li><li><a class="toc-href" href="#translatefang-fa" title="translate方法">translate方法</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

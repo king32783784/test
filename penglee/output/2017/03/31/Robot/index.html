@@ -1,0 +1,1165 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Framework" />
+        <meta name="description" content="2.1.3 测试数据表 测试数据为下表所示的４种结构。测试数据表通过表中第一个区域被识别。被识别的表名是Settings, Variables, Test Cases, Keywords.匹配区分大小写，并且支持Setting和Test Case的变体。 不同的测试数据表 Table Used for Settings (1)导入测试库、资源文件和变量文件；(2)定义测试集和测试用例的元数据 Variables 定义可以用于测试数据任何地方的变量 Test Cases 从可用的关键字中创建测试用例 Keywords 通过底层关键字创建用户关键字 2.1.4 数据分析规则 忽略数据 当RF分析测试数据时，以下将被忽略： 第一部分中所有不以可识别表头开始的内容 第一部分除了表第一行之外的任何内容 第一个表之外的所有内容。如果数据表之间插入的数据，也会被忽略 所有用于增加表可读性的空行，也会被忽略 所有行结束时的空单元格也被忽略 所有单个(\)转义符 所有(#)字符后面的字符 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Robot Framework 用户手册(二)"/>
+    <meta property="og:url" content="../../../../2017/03/31/Robot/"/>
+    <meta property="og:description" content="2.1.3 测试数据表 测试数据为下表所示的４种结构。测试数据表通过表中第一个区域被识别。被识别的表名是Settings, Variables, Test Cases, Keywords.匹配区分大小写，并且支持Setting和Test Case的变体。 不同的测试数据表 Table Used for Settings (1)导入测试库、资源文件和变量文件；(2)定义测试集和测试用例的元数据 Variables 定义可以用于测试数据任何地方的变量 Test Cases 从可用的关键字中创建测试用例 Keywords 通过底层关键字创建用户关键字 2.1.4 数据分析规则 忽略数据 当RF分析测试数据时，以下将被忽略： 第一部分中所有不以可识别表头开始的内容 第一部分除了表第一行之外的任何内容 第一个表之外的所有内容。如果数据表之间插入的数据，也会被忽略 所有用于增加表可读性的空行，也会被忽略 所有行结束时的空单元格也被忽略 所有单个(\)转义符 所有(#)字符后面的字符 ..."/>
+    <meta property="article:published_time" content="2017-03-31" />
+    <meta property="article:section" content="自动化测试-Robot" />
+        <meta property="article:tag" content="Framework" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Robot Framework 用户手册(二) - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2017/03/31/Robot/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2017/03/31/Robot/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2017/03/31/Robot/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2017/03/31/Robot/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2017/03/31/Robot/"
+                           rel="bookmark"
+                           title="Permalink to Robot Framework 用户手册(二)">
+                            Robot Framework 用户手册(二)
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2017-03-31T00:00:00+08:00"> 2017-03-31 五</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-robot.html">自动化测试-Robot</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/framework.html">Framework</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="213-ce-shi-shu-ju-biao">2.1.3 测试数据表</h3>
+<p>测试数据为下表所示的４种结构。测试数据表通过表中第一个区域被识别。被识别的表名是Settings, Variables, Test Cases, Keywords.匹配区分大小写，并且支持Setting和Test Case的变体。</p>
+<p>不同的测试数据表</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Table</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Settings</td>
+<td>(1)导入测试库、资源文件和变量文件；(2)定义测试集和测试用例的元数据</td>
+</tr>
+<tr>
+<td>Variables</td>
+<td>定义可以用于测试数据任何地方的变量</td>
+</tr>
+<tr>
+<td>Test Cases</td>
+<td>从可用的关键字中创建测试用例</td>
+</tr>
+<tr>
+<td>Keywords</td>
+<td>通过底层关键字创建用户关键字</td>
+</tr>
+</tbody>
+</table>
+<h3 id="214-shu-ju-fen-xi-gui-ze">2.1.4 数据分析规则</h3>
+<h4 id="hu-lue-shu-ju">忽略数据</h4>
+<p>当RF分析测试数据时，以下将被忽略：</p>
+<ul>
+<li>第一部分中所有不以可识别表头开始的内容</li>
+<li>第一部分除了表第一行之外的任何内容</li>
+<li>第一个表之外的所有内容。如果数据表之间插入的数据，也会被忽略</li>
+<li>所有用于增加表可读性的空行，也会被忽略</li>
+<li>所有行结束时的空单元格也被忽略</li>
+<li>所有单个(\)转义符</li>
+<li>所有(#)字符后面的字符，被当做注释忽略</li>
+<li>HTML/reST中格式内容</li>
+</ul>
+<p>RF忽略的数据，在结果报告同样不可见，RF调用的工具同样忽略。如果需要在结果中增加一些信息，需要在Builtln的keyword Log或Comment中添加。</p>
+<h4 id="kong-bai-chu-li">空白处理</h4>
+<p>RF处理空白的方式和HTML源码处理方式相同：</p>
+<ul>
+<li>换行符、回车和制表符转换为空格；</li>
+<li>所有表格开头和结尾的空白被忽略；</li>
+<li>多个连续的空格将合并为一个单一的空格</li>
+</ul>
+<p>如果前置或需要连续的空格，需要进行转义。换行符、回车、制表符和非换行空格分别通过\n \r \t和\xA0转义。</p>
+<h4 id="zhuan-yi">转义</h4>
+<p>RF测试数据中的转义字符为()和内建标量<span class="math" space="SPACE">\({EMPTY}和\)</span>.</p>
+<p><strong>转义特殊字符</strong></p>
+<p>转义特殊字符</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Character</th>
+<th>Meaning</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\\$</td>
+<td>美元符，当不是scalar变量开头时</td>
+<td>\${notvar}</td>
+</tr>
+<tr>
+<td>\@</td>
+<td>at符合，当不是列表变量开头时</td>
+<td>\@{notvar}</td>
+</tr>
+<tr>
+<td>\%</td>
+<td>百分号，当不是环境变量的开头时</td>
+<td>\%{notvar}</td>
+</tr>
+<tr>
+<td>\#</td>
+<td>井号，当不是commnet开头时</td>
+<td>\# not comment</td>
+</tr>
+<tr>
+<td>\=</td>
+<td>等号，当不是用于命名语法的一部分时</td>
+<td>not \=named</td>
+</tr>
+<tr>
+<td>\/</td>
+<td>管道符，当不是用于管道分隔格式时</td>
+<td>/ Run / ps \/ grep xxx /</td>
+</tr>
+<tr>
+<td>\\</td>
+<td>反斜杠，不用于转义时</td>
+<td>c:\\temp, \\${var}</td>
+</tr>
+</tbody>
+</table>
+<p>/代表"|"</p>
+<p><strong>转义序列</strong></p>
+<p>反斜杠字符也允许创建被识别为字符，否则不能在测试数据来创建特殊的转义序列。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Sequence</th>
+<th>Meaning</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\n</td>
+<td>换行符</td>
+<td>first line\n2nd line</td>
+</tr>
+<tr>
+<td>\r</td>
+<td>回车符</td>
+<td>text\rmore text</td>
+</tr>
+<tr>
+<td>\t</td>
+<td>制表符</td>
+<td>text\tmore text</td>
+</tr>
+<tr>
+<td>\xhh</td>
+<td>16进制字符hh</td>
+<td>null type: \x00, a: \xE4</td>
+</tr>
+<tr>
+<td>\uhhhh</td>
+<td>16进制字符hhhh</td>
+<td>snowman: \u2603</td>
+</tr>
+<tr>
+<td>\uhhhhhhhh</td>
+<td>16进制字符hhhhhhhh</td>
+<td>love hotel: \U0001f3e9</td>
+</tr>
+</tbody>
+</table>
+<p>在测试数据创建的所有字符串，包括系那个\x02，都是Unicode，如果有需要的必须转换为字符串。可以使用内建关键字和字符串库如Convert To Bytes或Encode String To Bytes keywords，或使用str(value)或value.encode('UTF-8').</p>
+<p><strong>防止忽略空单元格</strong></p>
+<p>如果空格作为关键字或其他类型的参数时，需要进行转义，以免被忽略。空格作为测试数据或分隔格式一部分时，必须要进行转义。
+空格可以使用反斜杠或则内建变量${EMPTY}进行转义。通常建议使用后者，后者更容易理解。此建议一个例外情况是当使用分离格式的空格时。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Action</th>
+<th>Argument</th>
+<th>Argument</th>
+<th>Argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>使用反斜杠</td>
+<td>Do Something</td>
+<td>first arg</td>
+<td>\</td>
+<td></td>
+</tr>
+<tr>
+<td>使用${EMPTY}</td>
+<td>Do Something</td>
+<td>first arg</td>
+<td>${EMPTY}</td>
+<td></td>
+</tr>
+<tr>
+<td>非尾部空格</td>
+<td>Do Something</td>
+<td></td>
+<td>second arg</td>
+<td># No escaping needed in HTML</td>
+</tr>
+<tr>
+<td>For loop</td>
+<td>:FOR</td>
+<td>${var}</td>
+<td>IN</td>
+<td>@{VALUES}</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Log</td>
+<td>${var}</td>
+<td># No escaping needed here either</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span>*** Test Cases ***
+Using backslash
+    Do Something    first arg    \
+Using <span class="cp">${</span><span class="n">EMPTY</span><span class="cp">}</span>
+    Do Something    first arg    <span class="cp">${</span><span class="n">EMPTY</span><span class="cp">}</span>
+Non-trailing empty
+    Do Something    <span class="cp">${</span><span class="n">EMPTY</span><span class="cp">}</span>    second arg    # Escaping needed in space separated format
+For loop
+    :FOR    <span class="cp">${</span><span class="n">var</span><span class="cp">}</span>    IN    @{VALUES}
+    \    Log    <span class="cp">${</span><span class="n">var</span><span class="cp">}</span>    # Escaping needed here too
+</pre></div>
+<p><strong>防止忽略空格</strong></p>
+<p>由于前置或连续的空格会被忽略，但是当作为关键字或其他类型的参数时就需要进行转义。和单元格处理一样，要么使用反斜线要么使用内建变量${SPACE}</p>
+<p>转义示例</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Escaping with backslash</th>
+<th>Escaping with ${SPACE}</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\ leading space</td>
+<td>${SPACE}leading space</td>
+<td></td>
+</tr>
+<tr>
+<td>trailing space \</td>
+<td>trailing space${SPACE}</td>
+<td>反斜线必须在空格后</td>
+</tr>
+<tr>
+<td>\ \</td>
+<td>${SPACE}</td>
+<td>反斜线需要在两侧</td>
+</tr>
+<tr>
+<td>consecutive \  \ speces</td>
+<td>consecutive${SPACE * 3}spaces</td>
+<td>使用扩展变量语法</td>
+</tr>
+</tbody>
+</table>
+<p>上面的例子可以看出使用变量比较容易理解，而且可以使用一些扩展变量语法。</p>
+<p><strong>将测试数据分隔为多行</strong></p>
+<p>如果数据超出了一行，下一行可以使用(...)继续。在测试用例或关键字表格中，省略号前必须有个空单元格。在settings和变量表中，可以直接添加到setting或变量表下面。在所有的表中，省略号前面的空单元都会被忽略。</p>
+<p>此外，settings的单一的值可以被分为多列。当测试数据解析时，会把空格分隔的值一起处理。</p>
+<p>测试数据没有分隔的表</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Seting</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Tags</td>
+<td>tag-1</td>
+<td>tag-2</td>
+<td>tag-3</td>
+<td>tag-4</td>
+<td>tag-5</td>
+<td>tag-6</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@{LIST}</td>
+<td>this</td>
+<td>list</td>
+<td>has</td>
+<td>quite</td>
+<td>many</td>
+<td>items</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Action</th>
+<th>Argument</th>
+<th>Arg</th>
+<th>Arg</th>
+<th>Arg</th>
+<th>Arg</th>
+<th>Arg</th>
+<th>Arg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Example</td>
+<td>[Documentation</td>
+<td>Documentation for this test case.\n This can get quite long...</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>[Tags]</td>
+<td>t-1</td>
+<td>t-2</td>
+<td>t-3</td>
+<td>t-4</td>
+<td>t-5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>Do X</td>
+<td>one</td>
+<td>two</td>
+<td>three</td>
+<td>four</td>
+<td>five</td>
+<td>six</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>${var}=</td>
+<td>Get X</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>测试数据分隔为多行</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Tags</td>
+<td>tag-1</td>
+<td>tag-2</td>
+<td>tag-3</td>
+</tr>
+<tr>
+<td>...</td>
+<td>tag-4</td>
+<td>tag-5</td>
+<td>tag-6</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Value</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@{LIST}</td>
+<td>this</td>
+<td>list</td>
+<td>has</td>
+</tr>
+<tr>
+<td>...</td>
+<td>quite</td>
+<td>many</td>
+<td>items</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Action</th>
+<th>Argument</th>
+<th>Argument</th>
+<th>Argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Example</td>
+<td>[Documentation]</td>
+<td>Documentation</td>
+<td>for this</td>
+<td>test case.</td>
+</tr>
+<tr>
+<td></td>
+<td>...</td>
+<td>This can get</td>
+<td>quite</td>
+<td>long...</td>
+</tr>
+<tr>
+<td></td>
+<td>[Tags]</td>
+<td>t-1</td>
+<td>t-2</td>
+<td>t-3</td>
+</tr>
+<tr>
+<td></td>
+<td>...</td>
+<td>t-4</td>
+<td>t-5</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>Do X</td>
+<td>one</td>
+<td>two</td>
+<td>three</td>
+</tr>
+<tr>
+<td></td>
+<td>...</td>
+<td>Four</td>
+<td>five</td>
+<td>six</td>
+</tr>
+<tr>
+<td></td>
+<td>${var}=</td>
+<td>Get X</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>...</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>...</td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Robot Framework 用户手册(二)">Robot Framework 用户手册(二)</a><ul><li><a class="toc-href" href="#213-ce-shi-shu-ju-biao" title="2.1.3 测试数据表">2.1.3 测试数据表</a></li><li><a class="toc-href" href="#214-shu-ju-fen-xi-gui-ze" title="2.1.4 数据分析规则">2.1.4 数据分析规则</a><ul><li><a class="toc-href" href="#hu-lue-shu-ju" title="忽略数据">忽略数据</a></li><li><a class="toc-href" href="#kong-bai-chu-li" title="空白处理">空白处理</a></li><li><a class="toc-href" href="#zhuan-yi" title="转义">转义</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

@@ -1,0 +1,878 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Selenium" />
+        <meta name="description" content="Alert 警告相关的实现 class selenium.webdriver.common.alert.Alert(driver) Bases: object 允许使用alerts. 使用这个类作为与alert互动的接口。它包括dismissing(忽略），accepting(接受），inputting（输入）和获取警告提示的文本信息的方法。 接受／忽略警报信息： Alert(driver).accpet() Alert(driver).dismiss() 往警报信息中输入： name_prompt = Alert(driver)name_prompt.send_keys(&#34;Willian Shakesphere&#34;) name_prompt.accept() 读取警报信息作为验证： alert_text = Alert(driver).text self.assertEqual(&#34;Do ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="selenium-API-2"/>
+    <meta property="og:url" content="../../../../2015/01/20/selenium/"/>
+    <meta property="og:description" content="Alert 警告相关的实现 class selenium.webdriver.common.alert.Alert(driver) Bases: object 允许使用alerts. 使用这个类作为与alert互动的接口。它包括dismissing(忽略），accepting(接受），inputting（输入）和获取警告提示的文本信息的方法。 接受／忽略警报信息： Alert(driver).accpet() Alert(driver).dismiss() 往警报信息中输入： name_prompt = Alert(driver)name_prompt.send_keys(&#34;Willian Shakesphere&#34;) name_prompt.accept() 读取警报信息作为验证： alert_text = Alert(driver).text self.assertEqual(&#34;Do ..."/>
+    <meta property="article:published_time" content="2015-01-20" />
+    <meta property="article:section" content="自动化测试-Selenium" />
+        <meta property="article:tag" content="Selenium" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>selenium-API-2 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/01/20/selenium/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/01/20/selenium/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/01/20/selenium/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/01/20/selenium/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2015/01/20/selenium/"
+                           rel="bookmark"
+                           title="Permalink to selenium-API-2">
+                            selenium-API-2
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2015-01-20T00:00:00+08:00"> 2015-01-20 二</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">自动化测试-Selenium</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/selenium.html">Selenium</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="alert">Alert</h3>
+<p>警告相关的实现</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">selenium</span><span class="p">.</span><span class="nx">webdriver</span><span class="p">.</span><span class="nx">common</span><span class="p">.</span><span class="nx">alert</span><span class="p">.</span><span class="nx">Alert</span><span class="p">(</span><span class="nx">driver</span><span class="p">)</span>
+    <span class="nx">Bases</span>: <span class="kt">object</span>
+    <span class="err">允许使用</span><span class="nx">alerts</span><span class="p">.</span>
+    <span class="err">使用这个类作为与</span><span class="nx">alert</span><span class="err">互动的接口。它包括</span><span class="nx">dismissing</span><span class="p">(</span><span class="err">忽略），</span><span class="nx">accepting</span><span class="p">(</span><span class="err">接受），</span><span class="nx">inputting</span><span class="err">（输入）和获取警告提示的文本信息的方法。</span>
+    <span class="err">接受／忽略警报信息：</span>
+        <span class="nx">Alert</span><span class="p">(</span><span class="nx">driver</span><span class="p">).</span><span class="nx">accpet</span><span class="p">()</span>
+        <span class="nx">Alert</span><span class="p">(</span><span class="nx">driver</span><span class="p">).</span><span class="nx">dismiss</span><span class="p">()</span>
+
+    <span class="err">往警报信息中输入：</span>
+        <span class="nx">name_prompt</span> <span class="o">=</span> <span class="nx">Alert</span><span class="p">(</span><span class="nx">driver</span><span class="p">)</span><span class="nx">name_prompt</span><span class="p">.</span><span class="nx">send_keys</span><span class="p">(</span><span class="s2">"Willian Shakesphere"</span><span class="p">)</span>
+        <span class="nx">name_prompt</span><span class="p">.</span><span class="nx">accept</span><span class="p">()</span>
+
+    <span class="err">读取警报信息作为验证：</span>
+        <span class="nx">alert_text</span> <span class="o">=</span> <span class="nx">Alert</span><span class="p">(</span><span class="nx">driver</span><span class="p">).</span><span class="nx">text</span> <span class="nx">self</span><span class="p">.</span><span class="nx">assertEqual</span><span class="p">(</span><span class="s2">"Do you wish to quit?"</span><span class="p">,</span> <span class="nx">alert_text</span><span class="p">)</span>
+
+    <span class="nx">accept</span><span class="p">()</span>
+        <span class="err">接受可用的警报信息</span>
+        <span class="nx">Usage</span><span class="o">::</span> <span class="nx">Alert</span><span class="p">(</span><span class="nx">driver</span><span class="p">).</span><span class="nx">accept</span><span class="p">()</span> <span class="err">#</span> <span class="err">确认一个警告提示框</span>
+
+    <span class="nx">authenticate</span><span class="p">(</span><span class="nx">username</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span>
+        <span class="err">发送用户名／密码到身份验证框（例如</span><span class="nx">Basic</span> <span class="nx">HTTP</span> <span class="nx">Auth</span><span class="p">),</span><span class="err">隐性发送“</span><span class="nx">clicks</span> <span class="nx">ok</span><span class="err">"</span>
+        <span class="err">用法</span><span class="o">::</span> <span class="nx">driver</span><span class="p">.</span><span class="nx">switch_to</span><span class="p">.</span><span class="nx">alert</span><span class="p">.</span><span class="nx">authenticate</span><span class="p">(</span><span class="s1">'cheese'</span><span class="p">,</span> <span class="s1">'secretGouda'</span><span class="p">)</span>
+        <span class="err">参数：　－</span><span class="nx">username</span><span class="o">:</span> <span class="err">用户名对话框的字符串　</span><span class="o">-</span><span class="nx">password</span><span class="o">:</span><span class="err">　密码对话框的字符串</span>
+
+    <span class="nx">dismiss</span><span class="p">()</span>
+        <span class="err">忽略警报</span>
+
+    <span class="nx">send_keys</span><span class="p">(</span><span class="nx">keysToSend</span><span class="p">)</span>
+        <span class="err">向</span><span class="nx">Alert</span><span class="err">发送键</span>
+        <span class="nx">Aargs</span><span class="o">:</span> <span class="o">*</span><span class="nx">keysToSend</span><span class="o">:</span> <span class="err">发送给</span><span class="nx">Alert</span><span class="err">的文本</span>
+
+    <span class="nx">text</span>
+        <span class="err">获取警报的文本</span>
+</pre></div>
+<h3 id="te-shu-jian">特殊键</h3>
+<p>该键实现如下
+　
+    class selenium.webdriver.common.keys.Keys</p>
+<div class="highlight"><pre><span></span>    Bases: object
+    一套特殊的键码：
+    ADD=u'\ue025'
+    ALT=u'\ue00a'
+    ARROW_DOWN=u'\ue015'
+    ARROW_RIGHT=u'\ue014'
+    ARROW_UP=u'\ue013'
+    BACKSPACE=u'\ue003'
+    BACK_SPACE=u'\ue003'
+    CHANCE=u'\ue001'
+    CLEAR=u'\ue005'
+    COMMAND=u'\ue03d'
+    CONTROL=u'\ue009'
+    DECIMAL=u'\ue028'
+    DELETE=u'\ue017'
+    DIVIDE=u'\ue029'
+    DOWN=u'\ue015'
+    END=u'\ue010'
+    ENTER=u'\ue007'
+    EQUALS=u'\ue019'
+    ESCAPE=u'\ue00c'
+    F1=u'\ue031'
+    F10=u'\ue03a'
+    F11=u'\ue03b'
+    F12=u'\ue032'
+    F2 = u'\ue032'
+    F3 = u'\ue033'
+    F4 = u'\ue034'
+    F5 = u'\ue035'
+    F6 = u'\ue036'
+    F7 = u'\ue037'
+    F8 = u'\ue038'
+    F9 = u'\ue039'
+    HELP = u'\ue002'
+    HOME = u'\ue011'
+    INSERT = u'\ue016'
+    LEFT = u'\ue012'
+    LEFT_ALT = u'\ue00a'
+    LEFT_CONTROL = u'\ue009'
+    LEFT_SHIFT = u'\ue008'
+    META = u'\ue03d'
+    MULTIPLY = u'\ue024'
+    NULL = u'\ue000'
+    NUMPAD0 = u'\ue01a'
+    NUMPAD1 = u'\ue01b'
+    NUMPAD2 = u'\ue01c'
+    NUMPAD3 = u'\ue01d'
+    NUMPAD4 = u'\ue01e'
+    NUMPAD5 = u'\ue01f'
+    NUMPAD6 = u'\ue020'
+    NUMPAD7 = u'\ue021'
+    NUMPAD8 = u'\ue022'
+    NUMPAD9 = u'\ue023'
+    PAGE_DOWN = u'\ue00f'
+    PAGE_UP = u'\ue00e'
+    PAUSE = u'\ue00b'
+    RETURN = u'\ue006'
+    RIGHT = u'\ue014'
+    SEMICOLON = u'\ue018'
+    SEPARATOR = u'\ue026'
+    SHIFT = u'\ue008'
+    SPACE = u'\ue00d'
+    SUBTRACT = u'\ue027'
+    TAB = u'\ue004'
+    UP = u'\ue013
+</pre></div>
+<h3 id="ding-wei-yuan-su">定位元素</h3>
+<p>有很多特征可以用于元素定位，实现如下：</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">selenium</span><span class="p">.</span><span class="nx">webdriver</span><span class="p">.</span><span class="nx">common</span><span class="p">.</span><span class="nx">by</span><span class="p">.</span><span class="nx">By</span>
+    <span class="nx">Bases</span>:<span class="kt">object</span>
+
+    <span class="nx">CLASS_NAME</span><span class="o">=</span><span class="s1">'class name'</span>
+
+    <span class="nx">CSS_SELECTOR</span><span class="o">=</span><span class="s1">'css selector'</span>
+
+    <span class="nx">ID</span><span class="o">=</span><span class="s1">'id'</span>
+
+    <span class="nx">LINK_TEXT</span><span class="o">=</span><span class="s1">'link text'</span>
+
+    <span class="nx">NAME</span><span class="o">=</span><span class="s1">'name'</span>
+
+    <span class="nx">PARTIAL_LINK_TEXT</span><span class="o">=</span><span class="s1">'partial link text'</span>
+
+    <span class="nx">TAG_NAME</span><span class="o">=</span><span class="s1">'tag name'</span>
+
+    <span class="nx">XPATH</span><span class="o">=</span><span class="s1">'xpath'</span>
+</pre></div>
+<h3 id="desired-capabilities">Desired Capabilities</h3>
+<p>Desired Capabilities实现如下：</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">selenium</span><span class="o">.</span><span class="n">webdriver</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">desired_capabilities</span><span class="o">.</span><span class="n">desired_capabilities</span>
+    <span class="n">Bases</span><span class="p">:</span> <span class="nb">object</span>
+
+    <span class="err">设置默认支持的所需功能</span><span class="o">.</span>
+    <span class="err">以此为起点创建</span><span class="n">desired</span> <span class="n">capbilities</span><span class="err">对象用于连接</span><span class="n">selenium</span><span class="err">服务器或</span><span class="n">grid</span><span class="err">的</span><span class="n">remote</span><span class="err">　</span><span class="n">webdrivers</span><span class="err">请求</span><span class="o">.</span>
+    <span class="err">例如：</span>
+        <span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+        <span class="n">selenium_grid_url</span> <span class="o">=</span> <span class="s2">"http://198.0.0.1:4444/wd/hub"</span>
+        <span class="c1"># Creat a desired capabilities object as a starting point. capabilities = </span>
+        <span class="n">DesiredCapabilities</span><span class="o">.</span><span class="n">FIREFOX</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="n">capabilities</span><span class="p">[</span><span class="s1">'platform'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"WINDOWS"</span>
+        <span class="n">capabilities</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span><span class="o">=</span><span class="s2">"10"</span>
+
+        <span class="c1"># Instantiate an instance of Remove WebDriver with the desired capabilities. driver = </span>
+        <span class="n">webdriver</span><span class="o">.</span><span class="n">Remote</span><span class="p">(</span><span class="n">desired_capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">,</span>
+            <span class="n">command_executor</span><span class="o">=</span><span class="n">selenium_grid_url</span><span class="p">)</span>
+
+        <span class="err">注：</span><span class="n">DesiredCapabilities</span><span class="err">对象始终使用“</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="s2">"，避免出现改变全局类实例的副作用。</span>
+
+        <span class="n">ANDROID</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'ANDROID'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'andorid'</span><span class="p">,</span><span class="s1">'version'</span><span class="p">:</span><span class="s2">",'javascriptEnabled':True}</span>
+
+        <span class="n">CHROME</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span> <span class="s1">'ANY'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'chrome'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">:</span><span class="s2">", 'javascriptEnabled': True}</span>
+
+        <span class="n">EDGE</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'WINDOWS'</span><span class="p">,</span> <span class="s1">'broserNAME'</span><span class="p">:</span><span class="s1">'MicrosoftEdge'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">:</span><span class="s2">"}</span>
+
+        <span class="n">FIREFOX</span> 
+        <span class="o">=</span> <span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span> <span class="s1">'ANY'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'firefox'</span><span class="p">,</span><span class="s1">'version'</span><span class="p">:</span><span class="s2">",'marionette':False,'javascriptEnabled':True}</span>
+
+        <span class="n">HTMLUNIT</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'ANY'</span><span class="p">,</span><span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'htmlunit'</span><span class="p">,</span><span class="s1">'version'</span><span class="p">:</span><span class="s2">"}</span>
+
+        <span class="n">HTMLUNITWITHJS</span>
+        <span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'ANY'</span><span class="p">,</span><span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'htmlunit'</span><span class="p">,</span><span class="s1">'version'</span><span class="p">:</span><span class="s1">'firefox'</span><span class="p">,</span><span class="s1">'javascriptEnabled'</span><span class="p">:</span><span class="bp">True</span><span class="p">}</span>
+
+        <span class="n">INTERNETEXPLORER</span>
+        <span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'WINDOWS'</span><span class="p">,</span><span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'internet explorer'</span><span class="p">,</span><span class="s1">'version'</span><span class="p">:</span><span class="s2">", 'javascriptEnabled':True}</span>
+
+        <span class="n">IPAD</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'MAC'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'iPad'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">:</span><span class="s2">", 'javascriptEnabled':True}</span>
+
+        <span class="n">IPHONE</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'MAC'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'iPhone'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">:</span><span class="s2">", 'javascriptEnabled':True}</span>
+
+        <span class="n">OPERA</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'ANY'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'opera'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">:</span><span class="s2">". 'javascriptEnabled':True}</span>
+
+        <span class="n">PHANTOMJS</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span> <span class="s1">'ANY'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'phantomjs'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">:</span><span class="s2">", 'javascriptEnabled':True}</span>
+
+        <span class="n">SAFART</span><span class="o">=</span><span class="p">{</span><span class="s1">'platform'</span><span class="p">:</span><span class="s1">'MAC'</span><span class="p">,</span> <span class="s1">'browserName'</span><span class="p">:</span><span class="s1">'safari'</span><span class="p">,</span><span class="s1">'version'</span><span class="p">:</span><span class="s2">",'javascriptEnabled':True}</span>
+</pre></div>
+<h3 id="gong-gong-bu-fen">公共部分</h3>
+<p>Utils 方法。</p>
+<div class="highlight"><pre><span></span>selenium.webdriver.common.utils.find_connectable_ip(host, port=None)
+
+    将hostname解析为ip,建议ipv4.
+    之所以建议ipv4,不是因为只支持ipv4,是因为一些dirvers（如firfoxdriver)不支持ipv6连接。
+    如果提供了可选的端口号，仅监听给定端口号的ip.
+    参数：
+        * host - hostname
+        * port - 可选的端口号
+
+    返回值：
+        一个单一的ip地址，字符串类型。如果找到任意ipv4地址，就会返回。或则，找到任意的ipv6地址，也会返回。如果都没有找到，返回None.
+
+
+selenium.webdriver.common.utils.free_port()
+
+    确定一个使用套接字的空闲端口
+
+selenium.webdriver.common.utils.is_connectable(port, host='localhost')
+
+    尝试通过端口连接server,查看server是否在运行。
+    参数：* port:　连接的端口
+
+selenium.webdriver.common.utils.is_url_connectable(port)
+
+    尝试通过端口连接到／status HTTP server，查看HTTPserver是否响应。
+    参数：　*port: 连接的端口
+
+selenium.webdriver.common.utils.join_host_port(host, port)
+
+    将hostname和port拼接到一起
+    这是一个小的实现用于应对ipv6,如：
+    _join_host_port('::1',80) == '[::1]:80'.
+
+    参数：
+       *host - hostname
+       *port - 整数端口
+
+    selenium.webdriver.common.utils.keys_to_typing(value)
+
+        处理元素键入的值
+</pre></div>
+<h3 id="firefox-webdriver">Firefox WebDriver</h3>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">selenium</span><span class="p">.</span><span class="nx">webdriver</span><span class="p">.</span><span class="nx">firefox</span><span class="p">.</span><span class="nx">webdriver</span><span class="p">.</span><span class="nx">WebDriver</span><span class="p">(</span><span class="nx">firefox_profile</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">firefox_binary</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span>
+<span class="nx">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="nx">capabilities</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">proxy</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">executable_path</span><span class="o">=</span><span class="s1">'wires'</span><span class="p">,</span> <span class="nx">firefox_options</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span>
+
+    <span class="nx">Base</span>: <span class="kt">selenium.webdriver.remote.webdriver.WebDriver</span>
+    <span class="nx">quit</span><span class="p">()</span>
+       <span class="err">退出</span><span class="nx">driver</span><span class="err">并每一个相关窗口</span>
+
+    <span class="nx">set_context</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span>
+
+    <span class="nx">NATIVE_EVENTS_ALLOWED</span><span class="o">=</span><span class="nx">True</span>
+
+    <span class="nx">firefox_profile</span>
+</pre></div>
+<h4 id="chrome-webdriver">Chrome WebDriver</h4>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">selenium</span><span class="p">.</span><span class="nx">webdriver</span><span class="p">.</span><span class="nx">chrome</span><span class="p">.</span><span class="nx">webdriver</span><span class="p">.</span><span class="nx">WebDriver</span><span class="p">(</span><span class="nx">executable_path</span><span class="o">=</span><span class="s1">'chromedriver'</span><span class="p">,</span> <span class="nx">prot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="nx">chrome_options</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">service_args</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">desired_capabilities</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">service_log_path</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span>
+
+    <span class="nx">Bases</span>: <span class="kt">selenium.webdriver.remote.webdriver.WebDriver</span>
+
+    <span class="err">控制</span><span class="nx">ChromeDriver</span><span class="p">,</span><span class="err">并允许</span><span class="nx">drive</span><span class="err">　</span><span class="nx">browser</span><span class="p">.</span>
+    <span class="nx">Chromedriver</span><span class="err">下载地址</span><span class="p">[</span><span class="nx">http</span><span class="o">:</span><span class="c1">//chromedriver.storage.googleapis.com/index.html](http://chromedriver.storage.googleapis.com/index.html)</span>
+
+    <span class="nx">create_options</span><span class="p">()</span>
+
+    <span class="nx">launch_app</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+       <span class="err">启动由</span><span class="nx">id</span><span class="err">指定的</span><span class="nx">Chrome</span> <span class="nx">app</span><span class="p">.</span>
+
+    <span class="nx">quit</span><span class="p">()</span>
+       <span class="err">关闭浏览器和关闭启动</span><span class="nx">ChromeDriver</span><span class="err">时启动的</span><span class="nx">ChromeDriver</span><span class="p">.</span>
+</pre></div>
+<p>Top<a href="">^</a></p>
+<p>上一篇<a href="https://king32783784.github.io/2015/01/19/selenium/">Selenium主题7</a>
+下一篇<a href="https://king32783784.github.io/2015/01/21/selenium/">Selenium主题9</a></p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="selenium-API-2">selenium-API-2</a><ul><li><a class="toc-href" href="#alert" title="Alert">Alert</a></li><li><a class="toc-href" href="#te-shu-jian" title="特殊键">特殊键</a></li><li><a class="toc-href" href="#ding-wei-yuan-su" title="定位元素">定位元素</a></li><li><a class="toc-href" href="#desired-capabilities" title="Desired Capabilities">Desired Capabilities</a></li><li><a class="toc-href" href="#gong-gong-bu-fen" title="公共部分">公共部分</a></li><li><a class="toc-href" href="#firefox-webdriver" title="Firefox WebDriver">Firefox WebDriver</a><ul><li><a class="toc-href" href="#chrome-webdriver" title="Chrome WebDriver">Chrome WebDriver</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

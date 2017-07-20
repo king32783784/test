@@ -1,0 +1,1006 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="ACC" />
+        <meta name="description" content="简介 ACC（Attributes Components Capability）是Google测试团队使用的一种建模方法，用来快速地建立产品的模型，以指导下一步的测试计划和设计。在Google内部，ACC得到较普遍的应用，一些工程师还开发了支持ACC模型的Web应用，并将其开源。 ACC的指导原则如下： 避免散漫的文字，使用简明的列表 不必推销，避免华丽的介绍 简洁 不要把不重要的、无法执行的东西放进测试计划 渐进式的描述 指导计划者的思路 最终结果应该是测试用例 ACC通过指导计划者依次考察产品的三个维度达成这个目标：描述产品目标的形容词和副词；确定产品各部分、各特性的名词；描述产品实际做什么的动词。测试需要完成的就是验证这些能力能够正常运作、产品各组件能满足应用的目标。 A代表特质 特质是系统的形容词，代表了产品的品质和特色，是区别于竞争对手的关键。 C代表组件 组件是系统的名词，在特质被识别之后确定。组件是构成待建系统的模块，是一个软件之所以如此的关键代码块。 C代表能力 能力是系统的动词，代表着系统在用户指令之下完成的动作。 示例一 参考《How Google Tests Software》中的Google+的例子 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="测试建模"/>
+    <meta property="og:url" content="../../../../2014/10/11/测试/"/>
+    <meta property="og:description" content="简介 ACC（Attributes Components Capability）是Google测试团队使用的一种建模方法，用来快速地建立产品的模型，以指导下一步的测试计划和设计。在Google内部，ACC得到较普遍的应用，一些工程师还开发了支持ACC模型的Web应用，并将其开源。 ACC的指导原则如下： 避免散漫的文字，使用简明的列表 不必推销，避免华丽的介绍 简洁 不要把不重要的、无法执行的东西放进测试计划 渐进式的描述 指导计划者的思路 最终结果应该是测试用例 ACC通过指导计划者依次考察产品的三个维度达成这个目标：描述产品目标的形容词和副词；确定产品各部分、各特性的名词；描述产品实际做什么的动词。测试需要完成的就是验证这些能力能够正常运作、产品各组件能满足应用的目标。 A代表特质 特质是系统的形容词，代表了产品的品质和特色，是区别于竞争对手的关键。 C代表组件 组件是系统的名词，在特质被识别之后确定。组件是构成待建系统的模块，是一个软件之所以如此的关键代码块。 C代表能力 能力是系统的动词，代表着系统在用户指令之下完成的动作。 示例一 参考《How Google Tests Software》中的Google+的例子 ..."/>
+    <meta property="article:published_time" content="2014-10-11" />
+    <meta property="article:section" content="测试" />
+        <meta property="article:tag" content="ACC" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>测试建模 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/10/11/测试/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/10/11/测试/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/10/11/测试/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/10/11/测试/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/10/11/测试/"
+                           rel="bookmark"
+                           title="Permalink to 测试建模">
+                            测试建模
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-10-11T00:00:00+08:00"> 2014-10-11 六</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/ce-shi.html">测试</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/acc.html">ACC</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="jian-jie">简介</h3>
+<p>ACC（Attributes Components Capability）是Google测试团队使用的一种建模方法，用来快速地建立产品的模型，以指导下一步的测试计划和设计。在Google内部，ACC得到较普遍的应用，一些工程师还开发了支持ACC模型的Web应用，并将其开源。</p>
+<p>ACC的指导原则如下：</p>
+<ul>
+<li>避免散漫的文字，使用简明的列表</li>
+<li>不必推销，避免华丽的介绍</li>
+<li>简洁</li>
+<li>不要把不重要的、无法执行的东西放进测试计划</li>
+<li>渐进式的描述　</li>
+<li>指导计划者的思路</li>
+<li>最终结果应该是测试用例</li>
+</ul>
+<p>ACC通过指导计划者依次考察产品的三个维度达成这个目标：描述产品目标的形容词和副词；确定产品各部分、各特性的名词；描述产品实际做什么的动词。测试需要完成的就是验证这些能力能够正常运作、产品各组件能满足应用的目标。</p>
+<ul>
+<li>A代表特质</li>
+</ul>
+<p>特质是系统的形容词，代表了产品的品质和特色，是区别于竞争对手的关键。</p>
+<ul>
+<li>C代表组件</li>
+</ul>
+<p>组件是系统的名词，在特质被识别之后确定。组件是构成待建系统的模块，是一个软件之所以如此的关键代码块。</p>
+<ul>
+<li>C代表能力　</li>
+</ul>
+<p>能力是系统的动词，代表着系统在用户指令之下完成的动作。</p>
+<h3 id="shi-li-yi">示例一</h3>
+<p>参考《How Google　Tests Software》中的Google+的例子。</p>
+<p>Ｇoogle+的特质：</p>
+<ul>
+<li>Social（社交）：鼓励用户去分享信息和他们的状态</li>
+<li>Expressive（表现力）：用户可以运用各种功能去表达自我</li>
+<li>Easy（容易）：让用户以直观的方式做他们想做的事</li>
+<li>Relevant（相关）：只显示用户感兴趣的内容</li>
+<li>Extensible（可扩展）：能够与Google的已有功能、第三方网站和应用（Application）集成</li>
+<li>Private（隐私）：用户数据不会泄漏</li>
+</ul>
+<p>第二步，确定Google+的Components组件：</p>
+<ul>
+<li>Profile（个人资料）：用户的帐户信息和兴趣爱好</li>
+<li>People（人脉）：用户已经连接的好友</li>
+<li>Stream（信息流）：由帖子、评论、通知、照片等组成的有序的信息流</li>
+<li>Circles（圈子）：将好友分组，如把不同的好友归于“朋友”、“同事”等小组</li>
+<li>Notifications（通知）：当用户被帖子提到时，向他显示提示信息</li>
+<li>Hangouts（视频群聊）：视频对话的小组</li>
+<li>Posts（帖子）：用户和好友所发表的信息</li>
+<li>Comments（评论）：对帖子、照片、视频等的评论</li>
+<li>Photos（照片）：用户和好友所上传的照片</li>
+</ul>
+<p>组件可以看做功能列表的顶层元素，是产品核心功能的清单。《How Google Tests Software》建议Components列表要尽可能简单，10个Components很好，20个就太多了。其目的是重点考虑对产品、对用户最重要的功能与代码，并避免漫长的Components列表所导致的分析瘫痪。</p>
+<p>第三步是确定产品的Capabilities（能力）</p>
+<p>Google+的Capabilities矩阵如下：</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th></th>
+<th>社交</th>
+<th>表现力</th>
+<th>容易</th>
+<th>相关</th>
+<th>可扩展</th>
+<th>隐私</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>个人资料</td>
+<td>在好友中分享个人资料和兴趣爱好</td>
+<td>用户可以在网上表达自我</td>
+<td>很容易创建、更新、传播信息</td>
+<td></td>
+<td>向被批准的、拥有恰当访问权限的应用提供数据</td>
+<td>用户可以保密隐私信息 只向被批准、拥有恰当访问权限的应用提供信息</td>
+</tr>
+<tr>
+<td>人脉</td>
+<td>用户能够连接他的朋友</td>
+<td>用户可以定制个人资料，使自己与众不同</td>
+<td>提供工具让管理好友变得轻松</td>
+<td>用户可以用相关性规则过滤好友</td>
+<td>向应用提供好友数据</td>
+<td>只向被批准、拥有恰当访问权限的应用提供信息</td>
+</tr>
+<tr>
+<td>信息流</td>
+<td>向用户提示其好友的更新</td>
+<td></td>
+<td></td>
+<td>用户可以根据兴趣过滤好友更新</td>
+<td>向应用提供信息流</td>
+<td></td>
+</tr>
+<tr>
+<td>圈子</td>
+<td>将好友分组</td>
+<td>根据用户的语境创建新圈子</td>
+<td>鼓励创建和修改圈子</td>
+<td></td>
+<td>向应用提供圈子数据</td>
+<td></td>
+</tr>
+<tr>
+<td>通知</td>
+<td></td>
+<td></td>
+<td>简明地展示通知</td>
+<td></td>
+<td>向应用提供通知数据</td>
+<td></td>
+</tr>
+<tr>
+<td>视频群聊</td>
+<td>用户可以邀请他们的圈子加入群聊 用户可以公开其群聊 好友访问用户的信息流时，他们被告知群聊</td>
+<td>加入群聊前，用户可以预览自己的形象</td>
+<td>只要几次点击就可以创建并加入群聊 只要一次点击就可以关闭视频和音频输入 可将好友加入已有的群聊</td>
+<td></td>
+<td>用户可以在群聊中使用文字交流 YouTube视频可以加入群聊 在“设置”中可以配置群聊的硬件 没有摄像头的用户可以音频交谈</td>
+<td>只有被邀请的用户才能加入群聊 只有被邀请的用户才能收到群聊通知</td>
+</tr>
+<tr>
+<td>帖子</td>
+<td></td>
+<td>表达用户的想法</td>
+<td></td>
+<td></td>
+<td>向应用提供帖子数据</td>
+<td>帖子只向被批准用户公布</td>
+</tr>
+<tr>
+<td>评论</td>
+<td></td>
+<td>用评论表达用户的想法</td>
+<td></td>
+<td></td>
+<td>向应用提供评论数据</td>
+<td>评论只向被批准的用户公布</td>
+</tr>
+<tr>
+<td>照片</td>
+<td>用户可以分享他的照片</td>
+<td>用户能方便地上传照片 用户能方便的从其他来源导入照片</td>
+<td>与其他照片服务集成</td>
+<td>照片只向被批准的用户公布</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Capabilities通常是面向用户的（user-oriented），反映了用户视角的产品行为。测试人员也应该保持Capabilities矩阵的简洁，他们应该关注对用户而言最有价值、最有吸引力的能力，并在合适的抽象层次（right level of abstraction）记录Capabilities。最重要的是，Capabilities应该是可测的（testable），测试人员能够设计测试来检查产品实现了预期的Capabilities。</p>
+<p>有了Capabilities矩阵，测试团队就完成初始的测试计划。这就是前Google测试总监James Whittaker所说的10分钟测试计划（The Ten Minutes Test Plan）。其基本思路是专注于核心属性、核心功能和核心能力，而省略一切不必要的细节。之后，测试团队会利用矩阵去指导测试设计，通常矩阵中的一条Capability就是一个测试对象、测试策略或测试情景，而复杂的Capability会演化出更多的测试设计。</p>
+<p>总结来说，测试计划制定时可以参考ACC策略快速制定，在产品进行开发迭代时，再进行必要的调整和完善。</p>
+<h3 id="shi-li-er">示例二</h3>
+<p>如果Linux桌面系统按ACC建模，如何区分？</p>
+<p>Linux桌面系统的特质：</p>
+<ul>
+<li>易用性　良好的用户界面，包括图形用户界面、文本行界面</li>
+<li>安全性　多种安全措施，包括读写控制、审计跟踪、应用授权等</li>
+<li>可定制　可以根据应用场景进行定制</li>
+<li>易扩展　可以扩展丰富的应用</li>
+<li>兼容性　兼容多种硬件设备、基础软件</li>
+<li>支撑　　支持非法的系统调用、基础服务、基础库、开发组件等</li>
+</ul>
+<p>Linux桌面系统的顶层组，这里是组的分类，并不是组件的分类。linux系统组件过多，不再一一说明。</p>
+<ul>
+<li>安装程序 操作系统的安装程序</li>
+<li>firstboot　firstboot设置</li>
+<li>core组　核心组件</li>
+<li>framework组　框架组件</li>
+<li>KDE　桌面环境</li>
+<li>App　系统集成应用</li>
+<li>extra　系统扩展应用</li>
+</ul>
+<p>linux系统的组件过多，不再详细列出，举例说明。</p>
+<p>core组件包括kernel、gcc、bash、automake、make、xorg、syslinux、systemd、glibc...
+framework组件包括NetworkManager、QT、python、Perl、openvpn...
+KDE组件包括isoftapp、fcitx、kde-baseapps、kf5、kde-workspace、plasma、kwin、ark、dolphin、sddm...
+App组件包括chromium、bomi、isoft-safe-center、qt-creator、isoft-update...
+extra组件包括k3b、clouldmusic、bullet、opencv、golang...</p>
+<p>linux系统的Capabilities（能力）</p>
+<p>linux系统的能力矩阵，不再详细划分，这里只进行顶层分组进行简略划分。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th></th>
+<th>易用性</th>
+<th>安全性</th>
+<th>可定制</th>
+<th>易扩展</th>
+<th>兼容性</th>
+<th>支撑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>安装程序</td>
+<td>LiveCD、安装操作简便</td>
+<td></td>
+<td>分区数量、容量设置；</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>swap分区、文件系统类型、home分区设置；</td>
+<td>分区助手，还原、迁移助手</td>
+<td>UEFI、legacy、多系统、多硬盘、多种硬件平台(台式机、笔记本）</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>firstboot</td>
+<td>设置简便</td>
+<td></td>
+<td>定制语言、账户、登陆设置</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>core组</td>
+<td></td>
+<td>支持审计、读写控制</td>
+<td>各个组件可以进行裁剪和修改</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>framework组</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KDE组</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>app</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>extra</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>组件太多，不再详细列出每个组件的能力。每个组件都可以再根据ACC进行测试建模。</p>
+<h3 id="shi-li-er_1">示例二</h3>
+<p>此处，linux的包含组件过多，需要进行拆分，分别进行ACC测试建模</p>
+<p>以普华应用商店为例</p>
+<p>普华应用商店特质：</p>
+<ul>
+<li>容易　应用软件安装简单，操作容易</li>
+<li>可扩展　可以进行软件种类的丰富</li>
+<li>相关　　展示linux桌面用户常用软件</li>
+<li>独立性　安装对应应用软件，不影响系统及其他软件</li>
+<li>完整性　应用软件安装包完整</li>
+</ul>
+<p>普华应用商店的组件：</p>
+<ul>
+<li>首页</li>
+<li>升级</li>
+<li>卸载</li>
+<li>软件分类</li>
+<li>软件介绍</li>
+<li>软件操作</li>
+<li>搜索</li>
+<li>设置</li>
+<li>软件包</li>
+</ul>
+<p>普华应用商店的能力矩阵：</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th></th>
+<th>容易</th>
+<th>可扩展</th>
+<th>相关</th>
+<th>独立性</th>
+<th>完整性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首页</td>
+<td>打开简单；展示常用菜单</td>
+<td></td>
+<td>首页展示下载量大常用软件；首页新闻定期更新</td>
+<td></td>
+<td>显示完整，菜单功能正常</td>
+</tr>
+<tr>
+<td>升级</td>
+<td>直观显示可升级软件，支持一键升级、全部升级、软件选择性升级</td>
+<td></td>
+<td>只显示可升级软件</td>
+<td>软件升级，不影响其他功能或软件</td>
+<td>软件可正常升级，升级后不影响其他应用</td>
+</tr>
+<tr>
+<td>卸载</td>
+<td>直观显示可卸载软件，支持一键卸载、全部卸载、选择性卸载</td>
+<td></td>
+<td>只显示已安装软件</td>
+<td>软件卸载，不影响其他功能或软件</td>
+<td>软件卸载完整</td>
+</tr>
+<tr>
+<td>软件分类</td>
+<td>软件分类查看直观，分类清晰，支持按类全选，一键安装、选择性安装</td>
+<td>可以后台进行软件的增删</td>
+<td>分类准确，软件各组分类只包含本类相关软件</td>
+<td>同一软件只归属一个分类</td>
+<td>完整显示后台的软件分类</td>
+</tr>
+<tr>
+<td>软件介绍</td>
+<td>软件对应介绍页容易找到，介绍页包含软件的操作功能</td>
+<td>可以进行软件介绍的定制</td>
+<td>软件介绍内容和软件符合</td>
+<td>软件介绍页和软件一一对应，直接无干扰</td>
+<td>对软件介绍完整、准确，操作功能正常</td>
+</tr>
+<tr>
+<td>软件操作</td>
+<td>软件操作简单，安装、卸载、升级操作简单</td>
+<td></td>
+<td></td>
+<td>软件多种操作之间互不影响</td>
+<td></td>
+</tr>
+<tr>
+<td>搜索</td>
+<td>提供搜索框且容易找到，搜索简单便捷</td>
+<td></td>
+<td>搜索按照一定规则，并按用户搜索内容显示</td>
+<td></td>
+<td>完整显示用户查询条件下的内容</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>设置菜单直观</td>
+<td></td>
+<td>只包含相关菜单</td>
+<td>设置项之间互不干扰</td>
+<td>功能设置准确，包含全部相关设置</td>
+</tr>
+<tr>
+<td>软件包</td>
+<td></td>
+<td></td>
+<td>软件包和软件分类中的软件菜单一一对应</td>
+<td>软件菜单和软件包相对独立</td>
+<td>软件包全部能够正确安装、卸载、升级且之间互不干扰</td>
+</tr>
+</tbody>
+</table>
+<p>总结：</p>
+<p>ACC测试建模至上而下，从产品的特质到组件，再到能力（功能）进行解析，可以快速、准确的生成一个产品测试计划。另外，对于比较大的系统产品，比如linux发行版，可以先进行大模块的划分，然后再进行各个组件的建模。像操作系统产品是多个组件或产品集成而来。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="测试建模">测试建模</a><ul><li><a class="toc-href" href="#jian-jie" title="简介">简介</a></li><li><a class="toc-href" href="#shi-li-yi" title="示例一">示例一</a></li><li><a class="toc-href" href="#shi-li-er" title="示例二">示例二</a></li><li><a class="toc-href" href="#shi-li-er_1" title="示例二">示例二</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

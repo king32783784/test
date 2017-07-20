@@ -1,0 +1,2124 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="LTP" />
+        <meta name="description" content="syscalls ltp中kernel测试比重很大，尤其是syscalls，包括一下用例： 注：测试内容分析时补充。 用例名称 测试内容 abort accept accept4 access acct add_key adjtimex alarm asyncio bdflush bind brk cacheflush capget capset chdir chmod chown chroot clock_getres clock_nanosleep clock_nanosleep2 clone close cma confstr connect creat dup dup2 dup3 epoll epoll2 epoll_create1 epoll_ctl epoll_pwait epoll_wait eventfd eventfd2 execl execle execlp ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="LTP－kernel-syscalls"/>
+    <meta property="og:url" content="../../../../2016/08/01/LTP/"/>
+    <meta property="og:description" content="syscalls ltp中kernel测试比重很大，尤其是syscalls，包括一下用例： 注：测试内容分析时补充。 用例名称 测试内容 abort accept accept4 access acct add_key adjtimex alarm asyncio bdflush bind brk cacheflush capget capset chdir chmod chown chroot clock_getres clock_nanosleep clock_nanosleep2 clone close cma confstr connect creat dup dup2 dup3 epoll epoll2 epoll_create1 epoll_ctl epoll_pwait epoll_wait eventfd eventfd2 execl execle execlp ..."/>
+    <meta property="article:published_time" content="2016-08-01" />
+    <meta property="article:section" content="自动化测试-LTP" />
+        <meta property="article:tag" content="LTP" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>LTP－kernel-syscalls - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/08/01/LTP/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/08/01/LTP/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/08/01/LTP/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/08/01/LTP/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2016/08/01/LTP/"
+                           rel="bookmark"
+                           title="Permalink to LTP－kernel-syscalls">
+                            LTP－kernel-syscalls
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2016-08-01T00:00:00+08:00"> 2016-08-01 一</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">自动化测试-LTP</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/ltp.html">LTP</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h4 id="syscalls">syscalls</h4>
+<p>ltp中kernel测试比重很大，尤其是syscalls，包括一下用例：
+注：测试内容分析时补充。</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>用例名称</th>
+<th>测试内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>abort</td>
+<td></td>
+</tr>
+<tr>
+<td>accept</td>
+<td></td>
+</tr>
+<tr>
+<td>accept4</td>
+<td></td>
+</tr>
+<tr>
+<td>access</td>
+<td></td>
+</tr>
+<tr>
+<td>acct</td>
+<td></td>
+</tr>
+<tr>
+<td>add_key</td>
+<td></td>
+</tr>
+<tr>
+<td>adjtimex</td>
+<td></td>
+</tr>
+<tr>
+<td>alarm</td>
+<td></td>
+</tr>
+<tr>
+<td>asyncio</td>
+<td></td>
+</tr>
+<tr>
+<td>bdflush</td>
+<td></td>
+</tr>
+<tr>
+<td>bind</td>
+<td></td>
+</tr>
+<tr>
+<td>brk</td>
+<td></td>
+</tr>
+<tr>
+<td>cacheflush</td>
+<td></td>
+</tr>
+<tr>
+<td>capget</td>
+<td></td>
+</tr>
+<tr>
+<td>capset</td>
+<td></td>
+</tr>
+<tr>
+<td>chdir</td>
+<td></td>
+</tr>
+<tr>
+<td>chmod</td>
+<td></td>
+</tr>
+<tr>
+<td>chown</td>
+<td></td>
+</tr>
+<tr>
+<td>chroot</td>
+<td></td>
+</tr>
+<tr>
+<td>clock_getres</td>
+<td></td>
+</tr>
+<tr>
+<td>clock_nanosleep</td>
+<td></td>
+</tr>
+<tr>
+<td>clock_nanosleep2</td>
+<td></td>
+</tr>
+<tr>
+<td>clone</td>
+<td></td>
+</tr>
+<tr>
+<td>close</td>
+<td></td>
+</tr>
+<tr>
+<td>cma</td>
+<td></td>
+</tr>
+<tr>
+<td>confstr</td>
+<td></td>
+</tr>
+<tr>
+<td>connect</td>
+<td></td>
+</tr>
+<tr>
+<td>creat</td>
+<td></td>
+</tr>
+<tr>
+<td>dup</td>
+<td></td>
+</tr>
+<tr>
+<td>dup2</td>
+<td></td>
+</tr>
+<tr>
+<td>dup3</td>
+<td></td>
+</tr>
+<tr>
+<td>epoll</td>
+<td></td>
+</tr>
+<tr>
+<td>epoll2</td>
+<td></td>
+</tr>
+<tr>
+<td>epoll_create1</td>
+<td></td>
+</tr>
+<tr>
+<td>epoll_ctl</td>
+<td></td>
+</tr>
+<tr>
+<td>epoll_pwait</td>
+<td></td>
+</tr>
+<tr>
+<td>epoll_wait</td>
+<td></td>
+</tr>
+<tr>
+<td>eventfd</td>
+<td></td>
+</tr>
+<tr>
+<td>eventfd2</td>
+<td></td>
+</tr>
+<tr>
+<td>execl</td>
+<td></td>
+</tr>
+<tr>
+<td>execle</td>
+<td></td>
+</tr>
+<tr>
+<td>execlp</td>
+<td></td>
+</tr>
+<tr>
+<td>execv</td>
+<td></td>
+</tr>
+<tr>
+<td>execve</td>
+<td></td>
+</tr>
+<tr>
+<td>execvp</td>
+<td></td>
+</tr>
+<tr>
+<td>exit</td>
+<td></td>
+</tr>
+<tr>
+<td>exit_group</td>
+<td></td>
+</tr>
+<tr>
+<td>faccessat</td>
+<td></td>
+</tr>
+<tr>
+<td>fadvise</td>
+<td></td>
+</tr>
+<tr>
+<td>fallocate</td>
+<td></td>
+</tr>
+<tr>
+<td>fanotify</td>
+<td></td>
+</tr>
+<tr>
+<td>fchdir</td>
+<td></td>
+</tr>
+<tr>
+<td>fchmod</td>
+<td></td>
+</tr>
+<tr>
+<td>fchmodat</td>
+<td></td>
+</tr>
+<tr>
+<td>fchown</td>
+<td></td>
+</tr>
+<tr>
+<td>fchownat</td>
+<td></td>
+</tr>
+<tr>
+<td>fcntl</td>
+<td></td>
+</tr>
+<tr>
+<td>fdatasync</td>
+<td></td>
+</tr>
+<tr>
+<td>flock</td>
+<td></td>
+</tr>
+<tr>
+<td>fmtmsg</td>
+<td></td>
+</tr>
+<tr>
+<td>fork</td>
+<td></td>
+</tr>
+<tr>
+<td>fpathconf</td>
+<td></td>
+</tr>
+<tr>
+<td>fstat</td>
+<td></td>
+</tr>
+<tr>
+<td>fstatat</td>
+<td></td>
+</tr>
+<tr>
+<td>fstatfs</td>
+<td></td>
+</tr>
+<tr>
+<td>fsync</td>
+<td></td>
+</tr>
+<tr>
+<td>ftruncate</td>
+<td></td>
+</tr>
+<tr>
+<td>futex</td>
+<td></td>
+</tr>
+<tr>
+<td>futimesat</td>
+<td></td>
+</tr>
+<tr>
+<td>getcontext</td>
+<td></td>
+</tr>
+<tr>
+<td>getcpu</td>
+<td></td>
+</tr>
+<tr>
+<td>getcwd</td>
+<td></td>
+</tr>
+<tr>
+<td>getdents</td>
+<td></td>
+</tr>
+<tr>
+<td>getdomainname</td>
+<td></td>
+</tr>
+<tr>
+<td>getdtablesize</td>
+<td></td>
+</tr>
+<tr>
+<td>getegid</td>
+<td></td>
+</tr>
+<tr>
+<td>geteuid</td>
+<td></td>
+</tr>
+<tr>
+<td>getgid</td>
+<td></td>
+</tr>
+<tr>
+<td>getgroups</td>
+<td></td>
+</tr>
+<tr>
+<td>gethostbyname_r</td>
+<td></td>
+</tr>
+<tr>
+<td>gethostid</td>
+<td></td>
+</tr>
+<tr>
+<td>gethostname</td>
+<td></td>
+</tr>
+<tr>
+<td>getitimer</td>
+<td></td>
+</tr>
+<tr>
+<td>get_mempolicy</td>
+<td></td>
+</tr>
+<tr>
+<td>getpagesize</td>
+<td></td>
+</tr>
+<tr>
+<td>getpeername</td>
+<td></td>
+</tr>
+<tr>
+<td>getpgid</td>
+<td></td>
+</tr>
+<tr>
+<td>getpgrp</td>
+<td></td>
+</tr>
+<tr>
+<td>getpid</td>
+<td></td>
+</tr>
+<tr>
+<td>getppid</td>
+<td></td>
+</tr>
+<tr>
+<td>getpriority</td>
+<td></td>
+</tr>
+<tr>
+<td>getrandom</td>
+<td></td>
+</tr>
+<tr>
+<td>getresgid</td>
+<td></td>
+</tr>
+<tr>
+<td>getresuid</td>
+<td></td>
+</tr>
+<tr>
+<td>getrlimit</td>
+<td></td>
+</tr>
+<tr>
+<td>get_robust_list</td>
+<td></td>
+</tr>
+<tr>
+<td>getrusage</td>
+<td></td>
+</tr>
+<tr>
+<td>getsid</td>
+<td></td>
+</tr>
+<tr>
+<td>getsockname</td>
+<td></td>
+</tr>
+<tr>
+<td>getsockopt</td>
+<td></td>
+</tr>
+<tr>
+<td>gettid</td>
+<td></td>
+</tr>
+<tr>
+<td>gettimeofday</td>
+<td></td>
+</tr>
+<tr>
+<td>getuid</td>
+<td></td>
+</tr>
+<tr>
+<td>getxattr</td>
+<td></td>
+</tr>
+<tr>
+<td>inotify</td>
+<td></td>
+</tr>
+<tr>
+<td>inotify_init</td>
+<td></td>
+</tr>
+<tr>
+<td>io_cancel</td>
+<td></td>
+</tr>
+<tr>
+<td>ioctl</td>
+<td></td>
+</tr>
+<tr>
+<td>io_destroy</td>
+<td></td>
+</tr>
+<tr>
+<td>io_getevents</td>
+<td></td>
+</tr>
+<tr>
+<td>ioperm</td>
+<td></td>
+</tr>
+<tr>
+<td>iopl</td>
+<td></td>
+</tr>
+<tr>
+<td>io_setup</td>
+<td></td>
+</tr>
+<tr>
+<td>io_submit</td>
+<td></td>
+</tr>
+<tr>
+<td>ipc</td>
+<td></td>
+</tr>
+<tr>
+<td>kcmp</td>
+<td></td>
+</tr>
+<tr>
+<td>keyctl</td>
+<td></td>
+</tr>
+<tr>
+<td>kill</td>
+<td></td>
+</tr>
+<tr>
+<td>lchown</td>
+<td></td>
+</tr>
+<tr>
+<td>lgetxattr</td>
+<td></td>
+</tr>
+<tr>
+<td>link</td>
+<td></td>
+</tr>
+<tr>
+<td>linkat</td>
+<td></td>
+</tr>
+<tr>
+<td>listen</td>
+<td></td>
+</tr>
+<tr>
+<td>llistxattr</td>
+<td></td>
+</tr>
+<tr>
+<td>llseek</td>
+<td></td>
+</tr>
+<tr>
+<td>lseek</td>
+<td></td>
+</tr>
+<tr>
+<td>lstat</td>
+<td></td>
+</tr>
+<tr>
+<td>madvise</td>
+<td></td>
+</tr>
+<tr>
+<td>Makefile</td>
+<td></td>
+</tr>
+<tr>
+<td>mallopt</td>
+<td></td>
+</tr>
+<tr>
+<td>mbind</td>
+<td></td>
+</tr>
+<tr>
+<td>memcmp</td>
+<td></td>
+</tr>
+<tr>
+<td>memcpy</td>
+<td></td>
+</tr>
+<tr>
+<td>memmap</td>
+<td></td>
+</tr>
+<tr>
+<td>memset</td>
+<td></td>
+</tr>
+<tr>
+<td>migrate_pages</td>
+<td></td>
+</tr>
+<tr>
+<td>mincore</td>
+<td></td>
+</tr>
+<tr>
+<td>mkdir</td>
+<td></td>
+</tr>
+<tr>
+<td>mkdirat</td>
+<td></td>
+</tr>
+<tr>
+<td>mknod</td>
+<td></td>
+</tr>
+<tr>
+<td>mknodat</td>
+<td></td>
+</tr>
+<tr>
+<td>mlock</td>
+<td></td>
+</tr>
+<tr>
+<td>mlockall</td>
+<td></td>
+</tr>
+<tr>
+<td>mmap</td>
+<td></td>
+</tr>
+<tr>
+<td>modify_ldt</td>
+<td></td>
+</tr>
+<tr>
+<td>mount</td>
+<td></td>
+</tr>
+<tr>
+<td>move_pages</td>
+<td></td>
+</tr>
+<tr>
+<td>mprotect</td>
+<td></td>
+</tr>
+<tr>
+<td>mq_notify</td>
+<td></td>
+</tr>
+<tr>
+<td>mq_open</td>
+<td></td>
+</tr>
+<tr>
+<td>mq_timedreceive</td>
+<td></td>
+</tr>
+<tr>
+<td>mq_timedsend</td>
+<td></td>
+</tr>
+<tr>
+<td>mq_unlink</td>
+<td></td>
+</tr>
+<tr>
+<td>mremap</td>
+<td></td>
+</tr>
+<tr>
+<td>msync</td>
+<td></td>
+</tr>
+<tr>
+<td>munlock</td>
+<td></td>
+</tr>
+<tr>
+<td>munlockall</td>
+<td></td>
+</tr>
+<tr>
+<td>munmap</td>
+<td></td>
+</tr>
+<tr>
+<td>nanosleep</td>
+<td></td>
+</tr>
+<tr>
+<td>newuname</td>
+<td></td>
+</tr>
+<tr>
+<td>nftw</td>
+<td></td>
+</tr>
+<tr>
+<td>nice</td>
+<td></td>
+</tr>
+<tr>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>openat</td>
+<td></td>
+</tr>
+<tr>
+<td>paging</td>
+<td></td>
+</tr>
+<tr>
+<td>pathconf</td>
+<td></td>
+</tr>
+<tr>
+<td>pause</td>
+<td></td>
+</tr>
+<tr>
+<td>perf_event_open</td>
+<td></td>
+</tr>
+<tr>
+<td>personality</td>
+<td></td>
+</tr>
+<tr>
+<td>pipe</td>
+<td></td>
+</tr>
+<tr>
+<td>pipe2</td>
+<td></td>
+</tr>
+<tr>
+<td>poll</td>
+<td></td>
+</tr>
+<tr>
+<td>ppoll</td>
+<td></td>
+</tr>
+<tr>
+<td>prctl</td>
+<td></td>
+</tr>
+<tr>
+<td>pread</td>
+<td></td>
+</tr>
+<tr>
+<td>preadv</td>
+<td></td>
+</tr>
+<tr>
+<td>profil</td>
+<td></td>
+</tr>
+<tr>
+<td>pselect</td>
+<td></td>
+</tr>
+<tr>
+<td>ptrace</td>
+<td></td>
+</tr>
+<tr>
+<td>pwrite</td>
+<td></td>
+</tr>
+<tr>
+<td>pwritev</td>
+<td></td>
+</tr>
+<tr>
+<td>quotactl</td>
+<td></td>
+</tr>
+<tr>
+<td>read</td>
+<td></td>
+</tr>
+<tr>
+<td>readahead</td>
+<td></td>
+</tr>
+<tr>
+<td>readdir</td>
+<td></td>
+</tr>
+<tr>
+<td>readlink</td>
+<td></td>
+</tr>
+<tr>
+<td>readlinkat</td>
+<td></td>
+</tr>
+<tr>
+<td>readv</td>
+<td></td>
+</tr>
+<tr>
+<td>reboot</td>
+<td></td>
+</tr>
+<tr>
+<td>recv</td>
+<td></td>
+</tr>
+<tr>
+<td>recvfrom</td>
+<td></td>
+</tr>
+<tr>
+<td>recvmsg</td>
+<td></td>
+</tr>
+<tr>
+<td>remap_file_pages</td>
+<td></td>
+</tr>
+<tr>
+<td>removexattr</td>
+<td></td>
+</tr>
+<tr>
+<td>rename</td>
+<td></td>
+</tr>
+<tr>
+<td>renameat</td>
+<td></td>
+</tr>
+<tr>
+<td>renameat2</td>
+<td></td>
+</tr>
+<tr>
+<td>request_key</td>
+<td></td>
+</tr>
+<tr>
+<td>rmdir</td>
+<td></td>
+</tr>
+<tr>
+<td>rt_sigaction</td>
+<td></td>
+</tr>
+<tr>
+<td>rt_sigprocmask</td>
+<td></td>
+</tr>
+<tr>
+<td>rt_sigqueueinfo</td>
+<td></td>
+</tr>
+<tr>
+<td>rt_sigsuspend</td>
+<td></td>
+</tr>
+<tr>
+<td>rt_sigtimedwait</td>
+<td></td>
+</tr>
+<tr>
+<td>sbrk</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_getaffinity</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_getattr</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_getparam</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_get_priority_max</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_get_priority_min</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_getscheduler</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_rr_get_interval</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_setaffinity</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_setattr</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_setparam</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_setscheduler</td>
+<td></td>
+</tr>
+<tr>
+<td>sched_yield</td>
+<td></td>
+</tr>
+<tr>
+<td>select</td>
+<td></td>
+</tr>
+<tr>
+<td>send</td>
+<td></td>
+</tr>
+<tr>
+<td>sendfile</td>
+<td></td>
+</tr>
+<tr>
+<td>sendmsg</td>
+<td></td>
+</tr>
+<tr>
+<td>sendto</td>
+<td></td>
+</tr>
+<tr>
+<td>setdomainname</td>
+<td></td>
+</tr>
+<tr>
+<td>setegid</td>
+<td></td>
+</tr>
+<tr>
+<td>setfsgid</td>
+<td></td>
+</tr>
+<tr>
+<td>setfsuid</td>
+<td></td>
+</tr>
+<tr>
+<td>setgid</td>
+<td></td>
+</tr>
+<tr>
+<td>setgroups</td>
+<td></td>
+</tr>
+<tr>
+<td>sethostname</td>
+<td></td>
+</tr>
+<tr>
+<td>setitimer</td>
+<td></td>
+</tr>
+<tr>
+<td>setns</td>
+<td></td>
+</tr>
+<tr>
+<td>setpgid</td>
+<td></td>
+</tr>
+<tr>
+<td>setpgrp</td>
+<td></td>
+</tr>
+<tr>
+<td>setpriority</td>
+<td></td>
+</tr>
+<tr>
+<td>setregid</td>
+<td></td>
+</tr>
+<tr>
+<td>setresgid</td>
+<td></td>
+</tr>
+<tr>
+<td>setresuid</td>
+<td></td>
+</tr>
+<tr>
+<td>setreuid</td>
+<td></td>
+</tr>
+<tr>
+<td>setrlimit</td>
+<td></td>
+</tr>
+<tr>
+<td>set_robust_list</td>
+<td></td>
+</tr>
+<tr>
+<td>setsid</td>
+<td></td>
+</tr>
+<tr>
+<td>setsockopt</td>
+<td></td>
+</tr>
+<tr>
+<td>set_thread_area</td>
+<td></td>
+</tr>
+<tr>
+<td>set_tid_address</td>
+<td></td>
+</tr>
+<tr>
+<td>settimeofday</td>
+<td></td>
+</tr>
+<tr>
+<td>setuid</td>
+<td></td>
+</tr>
+<tr>
+<td>setxattr</td>
+<td></td>
+</tr>
+<tr>
+<td>sgetmask</td>
+<td></td>
+</tr>
+<tr>
+<td>sigaction</td>
+<td></td>
+</tr>
+<tr>
+<td>sigaltstack</td>
+<td></td>
+</tr>
+<tr>
+<td>sighold</td>
+<td></td>
+</tr>
+<tr>
+<td>signal</td>
+<td></td>
+</tr>
+<tr>
+<td>signalfd</td>
+<td></td>
+</tr>
+<tr>
+<td>signalfd4</td>
+<td></td>
+</tr>
+<tr>
+<td>sigpending</td>
+<td></td>
+</tr>
+<tr>
+<td>sigprocmask</td>
+<td></td>
+</tr>
+<tr>
+<td>sigrelse</td>
+<td></td>
+</tr>
+<tr>
+<td>sigsuspend</td>
+<td></td>
+</tr>
+<tr>
+<td>sigtimedwait</td>
+<td></td>
+</tr>
+<tr>
+<td>sigwait</td>
+<td></td>
+</tr>
+<tr>
+<td>sigwaitinfo</td>
+<td></td>
+</tr>
+<tr>
+<td>socket</td>
+<td></td>
+</tr>
+<tr>
+<td>socketcall</td>
+<td></td>
+</tr>
+<tr>
+<td>socketpair</td>
+<td></td>
+</tr>
+<tr>
+<td>sockioctl</td>
+<td></td>
+</tr>
+<tr>
+<td>splice</td>
+<td></td>
+</tr>
+<tr>
+<td>ssetmask</td>
+<td></td>
+</tr>
+<tr>
+<td>stat</td>
+<td></td>
+</tr>
+<tr>
+<td>statfs</td>
+<td></td>
+</tr>
+<tr>
+<td>statvfs</td>
+<td></td>
+</tr>
+<tr>
+<td>stime</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td>swapoff</td>
+<td></td>
+</tr>
+<tr>
+<td>swapon</td>
+<td></td>
+</tr>
+<tr>
+<td>switch</td>
+<td></td>
+</tr>
+<tr>
+<td>symlink</td>
+<td></td>
+</tr>
+<tr>
+<td>symlinkat</td>
+<td></td>
+</tr>
+<tr>
+<td>sync</td>
+<td></td>
+</tr>
+<tr>
+<td>sync_file_range</td>
+<td></td>
+</tr>
+<tr>
+<td>syscall</td>
+<td></td>
+</tr>
+<tr>
+<td>sysconf</td>
+<td></td>
+</tr>
+<tr>
+<td>sysctl</td>
+<td></td>
+</tr>
+<tr>
+<td>sysfs</td>
+<td></td>
+</tr>
+<tr>
+<td>sysinfo</td>
+<td></td>
+</tr>
+<tr>
+<td>syslog</td>
+<td></td>
+</tr>
+<tr>
+<td>tee</td>
+<td></td>
+</tr>
+<tr>
+<td>time</td>
+<td></td>
+</tr>
+<tr>
+<td>timerfd</td>
+<td></td>
+</tr>
+<tr>
+<td>timer_getoverrun</td>
+<td></td>
+</tr>
+<tr>
+<td>timer_gettime</td>
+<td></td>
+</tr>
+<tr>
+<td>times</td>
+<td></td>
+</tr>
+<tr>
+<td>tkill</td>
+<td></td>
+</tr>
+<tr>
+<td>truncate</td>
+<td></td>
+</tr>
+<tr>
+<td>ulimit</td>
+<td></td>
+</tr>
+<tr>
+<td>umask</td>
+<td></td>
+</tr>
+<tr>
+<td>umount</td>
+<td></td>
+</tr>
+<tr>
+<td>umount2</td>
+<td></td>
+</tr>
+<tr>
+<td>uname</td>
+<td></td>
+</tr>
+<tr>
+<td>unlink</td>
+<td></td>
+</tr>
+<tr>
+<td>unlinkat</td>
+<td></td>
+</tr>
+<tr>
+<td>unshare</td>
+<td></td>
+</tr>
+<tr>
+<td>ustat</td>
+<td></td>
+</tr>
+<tr>
+<td>utils</td>
+<td></td>
+</tr>
+<tr>
+<td>utime</td>
+<td></td>
+</tr>
+<tr>
+<td>utimensat</td>
+<td></td>
+</tr>
+<tr>
+<td>utimes</td>
+<td></td>
+</tr>
+<tr>
+<td>vfork</td>
+<td></td>
+</tr>
+<tr>
+<td>vhangup</td>
+<td></td>
+</tr>
+<tr>
+<td>vmsplice</td>
+<td></td>
+</tr>
+<tr>
+<td>wait</td>
+<td></td>
+</tr>
+<tr>
+<td>wait4</td>
+<td></td>
+</tr>
+<tr>
+<td>waitid</td>
+<td></td>
+</tr>
+<tr>
+<td>waitpid</td>
+<td></td>
+</tr>
+<tr>
+<td>write</td>
+<td></td>
+</tr>
+<tr>
+<td>writev</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>接下来按照顺序分析系统调用的每一个case,并将每个case的测试内容补充到本文。</p>
+<p><img class="img-responsive" height="280" src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/LK0U4TNURZ.jpg" width="420"/></p>
+<p>附linux系统主要系统调用列表</p>
+<p><strong>一、进程控制</strong></p>
+<p>fork    创建一个新进程</p>
+<p>clone   按指定条件创建子进程</p>
+<p>execve  运行可执行文件</p>
+<p>exit    中止进程</p>
+<p>_exit   立即中止当前进程</p>
+<p>getdtablesize   进程所能打开的最大文件数</p>
+<p>getpgid 获取指定进程组标识号</p>
+<p>setpgid 设置指定进程组标志号</p>
+<p>getpgrp 获取当前进程组标识号</p>
+<p>setpgrp 设置当前进程组标志号</p>
+<p>getpid  获取进程标识号</p>
+<p>getppid 获取父进程标识号</p>
+<p>getpriority 获取调度优先级</p>
+<p>setpriority 设置调度优先级</p>
+<p>modify_ldt  读写进程的本地描述表</p>
+<p>nanosleep   使进程睡眠指定的时间</p>
+<p>nice    改变分时进程的优先级</p>
+<p>pause   挂起进程，等待信号</p>
+<p>personality 设置进程运行域</p>
+<p>prctl   对进程进行特定操作</p>
+<p>ptrace  进程跟踪</p>
+<p>sched_get_priority_max  取得静态优先级的上限</p>
+<p>sched_get_priority_min  取得静态优先级的下限</p>
+<p>sched_getparam  取得进程的调度参数</p>
+<p>sched_getscheduler  取得指定进程的调度策略</p>
+<p>sched_rr_get_interval   取得按RR算法调度的实时进程的时间片长度</p>
+<p>sched_setparam  设置进程的调度参数</p>
+<p>sched_setscheduler  设置指定进程的调度策略和参数</p>
+<p>sched_yield 进程主动让出处理器,并将自己等候调度队列队尾</p>
+<p>vfork   创建一个子进程，以供执行新程序，常与execve等同时使用</p>
+<p>wait    等待子进程终止</p>
+<p>wait3   参见wait</p>
+<p>waitpid 等待指定子进程终止</p>
+<p>wait4   参见waitpid</p>
+<p>capget  获取进程权限</p>
+<p>capset  设置进程权限</p>
+<p>getsid  获取会晤标识号</p>
+<p>setsid  设置会晤标识号</p>
+<p><strong>二、文件系统控制</strong></p>
+<p><strong>1、文件读写操作</strong></p>
+<p>fcntl   文件控制</p>
+<p>open    打开文件</p>
+<p>creat   创建新文件</p>
+<p>close   关闭文件描述字</p>
+<p>read    读文件</p>
+<p>write   写文件</p>
+<p>readv   从文件读入数据到缓冲数组中</p>
+<p>writev  将缓冲数组里的数据写入文件</p>
+<p>pread   对文件随机读</p>
+<p>pwrite  对文件随机写</p>
+<p>lseek   移动文件指针</p>
+<p>_llseek 在64位地址空间里移动文件指针</p>
+<p>dup 复制已打开的文件描述字</p>
+<p>dup2    按指定条件复制文件描述字</p>
+<p>flock   文件加/解锁</p>
+<p>poll    I/O多路转换</p>
+<p>truncate    截断文件</p>
+<p>ftruncate   参见truncate</p>
+<p>umask   设置文件权限掩码</p>
+<p>fsync   把文件在内存中的部分写回磁盘</p>
+<p><strong>2、文件系统操作</strong></p>
+<p>access  确定文件的可存取性</p>
+<p>chdir   改变当前工作目录</p>
+<p>fchdir  参见chdir</p>
+<p>chmod   改变文件方式</p>
+<p>fchmod  参见chmod</p>
+<p>chown   改变文件的属主或用户组</p>
+<p>fchown  参见chown</p>
+<p>lchown  参见chown</p>
+<p>chroot  改变根目录</p>
+<p>stat    取文件状态信息</p>
+<p>lstat   参见stat</p>
+<p>fstat   参见stat</p>
+<p>statfs  取文件系统信息</p>
+<p>fstatfs 参见statfs</p>
+<p>readdir 读取目录项</p>
+<p>getdents    读取目录项</p>
+<p>mkdir   创建目录</p>
+<p>mknod   创建索引节点</p>
+<p>rmdir   删除目录</p>
+<p>rename  文件改名</p>
+<p>link    创建链接</p>
+<p>symlink 创建符号链接</p>
+<p>unlink  删除链接</p>
+<p>readlink    读符号链接的值</p>
+<p>mount   安装文件系统</p>
+<p>umount  卸下文件系统</p>
+<p>ustat   取文件系统信息</p>
+<p>utime   改变文件的访问修改时间</p>
+<p>utimes  参见utime</p>
+<p>quotactl    控制磁盘配额</p>
+<p><strong>三、系统控制</strong></p>
+<p>ioctl   I/O总控制函数</p>
+<p>_sysctl 读/写系统参数</p>
+<p>acct    启用或禁止进程记账</p>
+<p>getrlimit   获取系统资源上限</p>
+<p>setrlimit   设置系统资源上限</p>
+<p>getrusage   获取系统资源使用情况</p>
+<p>uselib  选择要使用的二进制函数库</p>
+<p>ioperm  设置端口I/O权限</p>
+<p>iopl    改变进程I/O权限级别</p>
+<p>outb    低级端口操作</p>
+<p>reboot  重新启动</p>
+<p>swapon  打开交换文件和设备</p>
+<p>swapoff 关闭交换文件和设备</p>
+<p>bdflush 控制bdflush守护进程</p>
+<p>sysfs   取核心支持的文件系统类型</p>
+<p>sysinfo 取得系统信息</p>
+<p>adjtimex    调整系统时钟</p>
+<p>alarm   设置进程的闹钟</p>
+<p>getitimer   获取计时器值</p>
+<p>setitimer   设置计时器值</p>
+<p>gettimeofday    取时间和时区</p>
+<p>settimeofday    设置时间和时区</p>
+<p>stime   设置系统日期和时间</p>
+<p>time    取得系统时间</p>
+<p>times   取进程运行时间</p>
+<p>uname   获取当前UNIX系统的名称、版本和主机等信息</p>
+<p>vhangup 挂起当前终端</p>
+<p>nfsservctl  对NFS守护进程进行控制</p>
+<p>vm86    进入模拟8086模式</p>
+<p>create_module   创建可装载的模块项</p>
+<p>delete_module   删除可装载的模块项</p>
+<p>init_module 初始化模块</p>
+<p>query_module    查询模块信息</p>
+<p>*get_kernel_syms    取得核心符号,已被query_module代替</p>
+<p><strong>四、内存管理</strong></p>
+<p>brk 改变数据段空间的分配</p>
+<p>sbrk    参见brk</p>
+<p>mlock   内存页面加锁</p>
+<p>munlock 内存页面解锁</p>
+<p>mlockall    调用进程所有内存页面加锁</p>
+<p>munlockall  调用进程所有内存页面解锁</p>
+<p>mmap    映射虚拟内存页</p>
+<p>munmap  去除内存页映射</p>
+<p>mremap  重新映射虚拟内存地址</p>
+<p>msync   将映射内存中的数据写回磁盘</p>
+<p>mprotect    设置内存映像保护</p>
+<p>getpagesize 获取页面大小</p>
+<p>sync    将内存缓冲区数据写回硬盘</p>
+<p>cacheflush  将指定缓冲区中的内容写回磁盘</p>
+<p><strong>五、网络管理</strong></p>
+<p>getdomainname   取域名</p>
+<p>setdomainname   设置域名</p>
+<p>gethostid   获取主机标识号</p>
+<p>sethostid   设置主机标识号</p>
+<p>gethostname 获取本主机名称</p>
+<p>sethostname 设置主机名称</p>
+<p><strong>六、socket控制</strong></p>
+<p>socketcall  socket系统调用</p>
+<p>socket  建立socket</p>
+<p>bind    绑定socket到端口</p>
+<p>connect 连接远程主机</p>
+<p>accept  响应socket连接请求</p>
+<p>send    通过socket发送信息</p>
+<p>sendto  发送UDP信息</p>
+<p>sendmsg 参见send</p>
+<p>recv    通过socket接收信息</p>
+<p>recvfrom    接收UDP信息</p>
+<p>recvmsg 参见recv</p>
+<p>listen  监听socket端口</p>
+<p>select  对多路同步I/O进行轮询</p>
+<p>shutdown    关闭socket上的连接</p>
+<p>getsockname 取得本地socket名字</p>
+<p>getpeername 获取通信对方的socket名字</p>
+<p>getsockopt  取端口设置</p>
+<p>setsockopt  设置端口参数</p>
+<p>sendfile    在文件或端口间传输数据</p>
+<p>socketpair  创建一对已联接的无名socket</p>
+<p><strong>七、用户管理</strong></p>
+<p>getuid  获取用户标识号</p>
+<p>setuid  设置用户标志号</p>
+<p>getgid  获取组标识号</p>
+<p>setgid  设置组标志号</p>
+<p>getegid 获取有效组标识号</p>
+<p>setegid 设置有效组标识号</p>
+<p>geteuid 获取有效用户标识号</p>
+<p>seteuid 设置有效用户标识号</p>
+<p>setregid    分别设置真实和有效的的组标识号</p>
+<p>setreuid    分别设置真实和有效的用户标识号</p>
+<p>getresgid   分别获取真实的,有效的和保存过的组标识号</p>
+<p>setresgid   分别设置真实的,有效的和保存过的组标识号</p>
+<p>getresuid   分别获取真实的,有效的和保存过的用户标识号</p>
+<p>setresuid   分别设置真实的,有效的和保存过的用户标识号</p>
+<p>setfsgid    设置文件系统检查时使用的组标识号</p>
+<p>setfsuid    设置文件系统检查时使用的用户标识号</p>
+<p>getgroups   获取后补组标志清单</p>
+<p>setgroups   设置后补组标志清单</p>
+<p><strong>八、进程间通信</strong></p>
+<p>ipc 进程间通信总控制调用</p>
+<p><strong>1、信号</strong></p>
+<p>sigaction   设置对指定信号的处理方法</p>
+<p>sigprocmask 根据参数对信号集中的信号执行阻塞/解除阻塞等操作</p>
+<p>sigpending  为指定的被阻塞信号设置队列</p>
+<p>sigsuspend  挂起进程等待特定信号</p>
+<p>signal  参见signal</p>
+<p>kill    向进程或进程组发信号</p>
+<p>*sigblock   向被阻塞信号掩码中添加信号,已被sigprocmask代替</p>
+<p>*siggetmask 取得现有阻塞信号掩码,已被sigprocmask代替</p>
+<p>*sigsetmask 用给定信号掩码替换现有阻塞信号掩码,已被sigprocmask代替</p>
+<p>*sigmask    将给定的信号转化为掩码,已被sigprocmask代替</p>
+<p>*sigpause   作用同sigsuspend,已被sigsuspend代替</p>
+<p>sigvec  为兼容BSD而设的信号处理函数,作用类似sigaction</p>
+<p>ssetmask    ANSI C的信号处理函数,作用类似sigaction</p>
+<p><strong>2、消息</strong></p>
+<p>msgctl  消息控制操作</p>
+<p>msgget  获取消息队列</p>
+<p>msgsnd  发消息</p>
+<p>msgrcv  取消息</p>
+<p><strong>3、管道</strong></p>
+<p>pipe    创建管道</p>
+<p><strong>4、信号量</strong></p>
+<p>semctl  信号量控制</p>
+<p>semget  获取一组信号量</p>
+<p>semop   信号量操作</p>
+<p><strong>5、共享内存</strong></p>
+<p>shmctl  控制共享内存</p>
+<p>shmget  获取共享内存</p>
+<p>shmat   连接共享内存</p>
+<p>shmdt   拆卸共享内存</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="LTP－kernel-syscalls">LTP－kernel-syscalls</a><ul><li><a class="toc-href" href="#syscalls" title="syscalls">syscalls</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="autotest" />
+        <meta name="description" content="Client Control files 主要内容 jobs 例子 扩展测试 流程控制 系统信息抓取 分析器 创建文件系统 job执行期间重启 并行运行多个测试 control file定义了一次test job 关键信息,它定义了一次测试的方方面面.control文件是一个python脚本,它驱动这个测试. job例子 可以添加一个job对象用来驱动测试和一些服务支持.一个job例子可以是这样: job.run_test(&#39;kernbench&#39;) 参数只有测试的名字(kernbench).autotest有很多测试用例,每个测试都有一个简单的control文件(tests//control 在autotestclient端的顶层目录下,你可以执行测试: $ client/autotest-local &lt;control_file_name&gt; 在control文件中同样可以指定测试参数 job.run_test(&#39;kernbench&#39;, iterations=2, threads=5) 第一个参数是测试名称; 第二个参数是执行次数和线程数,大多数你可以执行它的默认参数. 还可以指定一个tag参数,用来给测试结果目录命名 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Autotest-client control"/>
+    <meta property="og:url" content="../../../../2015/08/14/autotest/"/>
+    <meta property="og:description" content="Client Control files 主要内容 jobs 例子 扩展测试 流程控制 系统信息抓取 分析器 创建文件系统 job执行期间重启 并行运行多个测试 control file定义了一次test job 关键信息,它定义了一次测试的方方面面.control文件是一个python脚本,它驱动这个测试. job例子 可以添加一个job对象用来驱动测试和一些服务支持.一个job例子可以是这样: job.run_test(&#39;kernbench&#39;) 参数只有测试的名字(kernbench).autotest有很多测试用例,每个测试都有一个简单的control文件(tests//control 在autotestclient端的顶层目录下,你可以执行测试: $ client/autotest-local &lt;control_file_name&gt; 在control文件中同样可以指定测试参数 job.run_test(&#39;kernbench&#39;, iterations=2, threads=5) 第一个参数是测试名称; 第二个参数是执行次数和线程数,大多数你可以执行它的默认参数. 还可以指定一个tag参数,用来给测试结果目录命名 ..."/>
+    <meta property="article:published_time" content="2015-08-14" />
+    <meta property="article:section" content="自动化测试-Autotest" />
+        <meta property="article:tag" content="autotest" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Autotest-client control - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/08/14/autotest/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/08/14/autotest/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/08/14/autotest/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/08/14/autotest/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2015/08/14/autotest/"
+                           rel="bookmark"
+                           title="Permalink to Autotest-client control">
+                            Autotest-client control
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2015-08-14T00:00:00+08:00"> 2015-08-14 五</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">自动化测试-Autotest</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/autotest.html">autotest</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p><img class="img-responsive" height="280" src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/autotestlogo.png?raw=true" width="480"/></p>
+<h2 id="client-control-files">Client Control files</h2>
+<p><strong>主要内容</strong></p>
+<ul>
+<li>jobs 例子</li>
+<li>扩展测试</li>
+<li>流程控制</li>
+<li>系统信息抓取</li>
+<li>分析器</li>
+<li>创建文件系统</li>
+<li>job执行期间重启</li>
+<li>并行运行多个测试</li>
+</ul>
+<p>control file定义了一次test job 关键信息,它定义了一次测试的方方面面.control文件是一个python脚本,它驱动这个测试.</p>
+<h2 id="jobli-zi">job例子</h2>
+<p>可以添加一个job对象用来驱动测试和一些服务支持.一个job例子可以是这样:</p>
+<div class="highlight"><pre><span></span>job.run_test('kernbench')
+</pre></div>
+<p>参数只有测试的名字(kernbench).autotest有很多测试用例,每个测试都有一个简单的control文件(tests/<testname>/control
+在autotestclient端的顶层目录下,你可以执行测试:</testname></p>
+<div class="highlight"><pre><span></span>$ client/autotest-local &lt;control_file_name&gt;
+</pre></div>
+<p>在control文件中同样可以指定测试参数</p>
+<div class="highlight"><pre><span></span>job.run_test('kernbench', iterations=2, threads=5)
+</pre></div>
+<ul>
+<li>第一个参数是测试名称;</li>
+<li>第二个参数是执行次数和线程数,大多数你可以执行它的默认参数.</li>
+</ul>
+<p>还可以指定一个tag参数,用来给测试结果目录命名:</p>
+<div class="highlight"><pre><span></span>job.run_test('kernbench', iterations=2, threads=5, tag='mine')
+</pre></div>
+<p>测试时会创建结果目录"kernbench.mine"来替代之前的"kernbench".这个功能非常重要,当你执行了多次测试,可以用来区分测试结果.</p>
+<h2 id="kuo-zhan-ce-shi">扩展测试</h2>
+<p>当开发一个测试时,为了让它能正常的下载和执行时,需要符合扩展测试的要求.</p>
+<h2 id="liu-cheng-kong-zhi">流程控制</h2>
+<p>真正掌握一门语言用于脚本控制是学会它的控制结构和错误检查机制.这里给出一个kernbench运行不同threads的例子.</p>
+<div class="highlight"><pre><span></span>for t in [8, 16, 32]:
+    job.run_test('kernbench', iterations=2, threads=t, tag='%d' % t)
+</pre></div>
+<h2 id="xi-tong-xin-xi-zhua-qu">系统信息抓取</h2>
+<p>每次重启和测试时,autotest都会生成一个目录用来保存系统的信息.比如/proc/meminfo文件内容,"uname-a"的输出信息.可以在测试结果目录找那个查看.
+sysinfo/(每次重启前的数据), <testname>/sysinfo(每次测试前的数据)
+每次收集的信息列表的内容,可以通过查看<strong>clent/bin/base_sysinfo.py</strong>.当然autotest也提供了自定义收集系统信息的机制.可以通过这个方式进行自定义
+的系统信息收集:</testname></p>
+<div class="highlight"><pre><span></span>job.add_sysinfo_file("/proc/vmstat")
+</pre></div>
+<p>可以设置每次重启后,收集/proc/vmstat的信息.可以通过on_every_test参数实现:</p>
+<div class="highlight"><pre><span></span>job.add_sysinfo_file("/proc/vmstat", on_ervey_test=True)
+</pre></div>
+<p>另外一种方式:</p>
+<div class="highlight"><pre><span></span>job.add_sysinfo_command("lspci -v", logfile="lspci.txt")
+</pre></div>
+<p>这样每次重启都可以执行lspci -v,并把信息导入到lspci.txt. logfile的参数是可选的.如果不指定它,就会默认以lspci_ -v作为名字.这个方法,同样是每次reboot都会
+ 执行.</p>
+<h2 id="shi-yong-fen-xi-qi">使用分析器</h2>
+<p>你可以启用一个或多个分析器.下面是添加和移除的例子:
+    job.profilers.add('oprofile')
+    job.run_test('sleeptest')
+    job.profilers.delete('oprofile')</p>
+<p>多个测试使用方式:</p>
+<div class="highlight"><pre><span></span>job.profilers.add('oprofile')
+job.run_test('kernbench')
+job.run_test('dbench')
+job.profilers.delete('oprofile')
+</pre></div>
+<p>它会为每个测试生成独立的分析结果,以免不影响性能结果.分析结果会在测试结果目录下的<testname profiling="">
+当然,在profilers/<profiler-name>/control下有所有的示例.</profiler-name></testname></p>
+<h2 id="chuang-jian-wen-jian-xi-tong">创建文件系统</h2>
+<p>autotest内建支持创建文件系统.用来支持在不同文件系统中进行fsx测试:</p>
+<div class="highlight"><pre><span></span># uncomment this line, and replace the device with something sensible
+# for you ...
+# fs = job.filesystem('/dev/hda2', job.tmpdir)
+
+for fstype in ('ext2', 'ext3'):
+    fs.mkfs(fstype)
+    fs.mount()
+    try:
+        job.run_test('fsx', job.tmpdir, tag=fstype)
+    finally:
+        fs.unmount()
+</pre></div>
+<p>同样支持为不同的文件系统添加不同的挂载参数:</p>
+<div class="highlight"><pre><span></span>fs = job.filesystem('/dev/sda3', job.tmpdir)
+iters=10
+for fstype, mountopts, tag in (('ext2', '', 'ext2'),
+                               ('ext3', '-o data=writeback', 'ext3writeback'),
+                               ('ext3', '-o data=ordered', 'ext3ordered'),
+                               ('ext3', '-o data=journal', 'ext3journal')):
+    fs.mkfs(fstype)
+    fs.mount(args=mountopts)
+    try:
+        job.run_test('fsx', job.tmpdir, tag=tag)
+        job.run_test('iozone', job.tmpdir, iterations=iters, tag=tag)
+        job.run_test('dbench', iterations=iters, dir=job.tmpdir, tag=tag)
+        job.run_test('tiobench', dir=job.tmpdir, tag=tag)
+    finally:
+        fs.umount()
+</pre></div>
+<h2 id="jobce-shi-zhong-zhong-qi">job测试中重启</h2>
+<p>当一个job需要重启时,比如导入一个新的内核.这样就会导致control脚本执行中断.这样就需要分布执行的模块.</p>
+<div class="highlight"><pre><span></span>def step_init():
+    job.next_step([step_test])
+    testkernel = job.kernel('2.6.18')
+    testkernel.config('http://mbligj.org/congig/opteron2')
+    testkernel.build()
+    testkernel.boot()  #does autotest by default
+
+def step_test():
+    job.run_test('kernbench', iterations=2, threads=5)
+    job.run_test('dbench', iterations=5)
+</pre></div>
+<p>通过指定<strong>step_init</strong>表明控制脚本已一种分布模式执行.在执行中断时(如reboot)会保存测试环境.</p>
+<p>一个重要的提示是分布执行引擎并不意味支持这个测试过程的分步执行.只能支持再控制文件级别中实现.因为在测试程序执行时一些返回值.实现自动测试过程中中断测试
+不太现实.如果出现超时,会杀死子线程.
+因此,代码插入到control文件中是正确的:</p>
+<div class="highlight"><pre><span></span> def step_init():
+     job.next_step([step_test])
+     testkernel = job.kernel('testkernel.rpm')
+     testkernel.install()
+     testkernel.boot()
+
+def step_test()
+     job.run_test('ltp')
+</pre></div>
+<p>相关代码插入到测试模块中,是不行的.</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">Kerneltest</span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">test</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">execute</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">testkernel</span> <span class="o">=</span> <span class="nx">job</span><span class="p">.</span><span class="nx">kernel</span><span class="p">(</span><span class="s1">'testkernel.rpm'</span><span class="p">)</span>
+        <span class="nx">testkernel</span><span class="p">.</span><span class="nx">boot</span><span class="p">()</span>
+</pre></div>
+<p>直接的,当使用分布引擎时,控制文件不是简单的执行一次.而是循环执行,直到测试完成.在一个独立的情况下，当一个控制文件存在，在重启之后会自动启动执行.在托管环境中管理服务器将执行相同的作用.
+当面对分步执行时,循环会变得更加困难.</p>
+<div class="highlight"><pre><span></span>def step_init():
+    step_test(1)
+
+def step_test(iteration):
+    if (iteration &lt; 5):
+        job.next_step([step_test, iteration + 1])
+
+    print "boot: %d" % iteration
+
+    job.run_test('kernbench', tag="%s" % i)
+    job.reboot()
+</pre></div>
+<h2 id="bing-xing-yun-xing">并行运行</h2>
+<p>job对象同样提供一个并行运行多个测试的方法. 该方法采用可变数量的参数，分别代表不同的任务并行运行。 每个参数应该是一个列表，其中该列表中的第一项是一个函数的调用和所有其余元素都将被传递给函数被调用时的参数。</p>
+<div class="highlight"><pre><span></span>def first_task():
+    job.run_test('kernbench')
+
+def second_task():
+    job.run_test('dbench')
+
+job.parallel([first_task], [second_task])
+</pre></div>
+<p>控制文件会同时执行kernbench和dbench.代码还可以如此写:</p>
+<div class="highlight"><pre><span></span>job.parallel([job.run_test, 'kernbench', [job.run_test, 'dbench'])
+</pre></div>
+<p>如果你想这样更复杂的东西在你的任务中,而不是要求单一的功能，那么你就必须定义自己的函数来做到这一点，如在第一个例子。</p>
+<p>并行任务执行在自己的地址空间,你不比担心.但是毕竟是运行在同一台物理机中.仍然需要主要避免访问同一资源,如相同的文件.</p>
+<p>Top<a href="">^</a></p>
+<p>上一篇<a href="https://king32783784.github.io/2015/08/13/autotest02/">Autotest：Autotest-Local&gt;&gt;&gt;</a>
+下一篇<a href="https://king32783784.github.io/2015/08/15/autotest/">Autotest：Autotest-Control file specification&gt;&gt;&gt;</a></p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Autotest-client control">Autotest-client control</a><ul><li><a class="toc-href" href="#client-control-files" title="Client Control files">Client Control files</a></li><li><a class="toc-href" href="#jobli-zi" title="job例子">job例子</a></li><li><a class="toc-href" href="#kuo-zhan-ce-shi" title="扩展测试">扩展测试</a></li><li><a class="toc-href" href="#liu-cheng-kong-zhi" title="流程控制">流程控制</a></li><li><a class="toc-href" href="#xi-tong-xin-xi-zhua-qu" title="系统信息抓取">系统信息抓取</a></li><li><a class="toc-href" href="#shi-yong-fen-xi-qi" title="使用分析器">使用分析器</a></li><li><a class="toc-href" href="#chuang-jian-wen-jian-xi-tong" title="创建文件系统">创建文件系统</a></li><li><a class="toc-href" href="#jobce-shi-zhong-zhong-qi" title="job测试中重启">job测试中重启</a></li><li><a class="toc-href" href="#bing-xing-yun-xing" title="并行运行">并行运行</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

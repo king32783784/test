@@ -1,0 +1,1295 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="LTP" />
+        <meta name="description" content="从本文开始，开始分析kernel部分的测试用例，该部分测试用例大部分为Ｃ语言编写，因此会穿插加入一定的Ｃ语言或unix环境编程的知识。 abort 设计说明 测试策略 Fork child. Child出现abort,检查返回状态 限制 Core file大小的限制必须大于０ abort 函数名: abort 功 能: 异常终止一个进程 用 法: void abort(void); abort()是使异常程序终止，同时发送SIGABRT信号给调用进程。 #include &lt;stdlib.h&gt; void abort(void); 该函数不返回 此函数将SIGABRT信号发送给调用进程（进程不应忽略此信号).ISO C规定，调用abort将向主机环境递送一个未成功终止的通知，其方法是调用raise(SIGABRT)函数。 ISO C要求若捕捉此信号而且相应信号处理程序返回，abort仍不会返回其调用者。如果捕捉到此信号，则信号处理程序不能返回的唯一方法是它调用exit、_exit、_Exit ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="LTP－kernel-syscalls-abort"/>
+    <meta property="og:url" content="../../../../2016/08/02/LTP/"/>
+    <meta property="og:description" content="从本文开始，开始分析kernel部分的测试用例，该部分测试用例大部分为Ｃ语言编写，因此会穿插加入一定的Ｃ语言或unix环境编程的知识。 abort 设计说明 测试策略 Fork child. Child出现abort,检查返回状态 限制 Core file大小的限制必须大于０ abort 函数名: abort 功 能: 异常终止一个进程 用 法: void abort(void); abort()是使异常程序终止，同时发送SIGABRT信号给调用进程。 #include &lt;stdlib.h&gt; void abort(void); 该函数不返回 此函数将SIGABRT信号发送给调用进程（进程不应忽略此信号).ISO C规定，调用abort将向主机环境递送一个未成功终止的通知，其方法是调用raise(SIGABRT)函数。 ISO C要求若捕捉此信号而且相应信号处理程序返回，abort仍不会返回其调用者。如果捕捉到此信号，则信号处理程序不能返回的唯一方法是它调用exit、_exit、_Exit ..."/>
+    <meta property="article:published_time" content="2016-08-02" />
+    <meta property="article:section" content="自动化测试-LTP" />
+        <meta property="article:tag" content="LTP" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>LTP－kernel-syscalls-abort - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/08/02/LTP/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/08/02/LTP/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/08/02/LTP/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/08/02/LTP/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2016/08/02/LTP/"
+                           rel="bookmark"
+                           title="Permalink to LTP－kernel-syscalls-abort">
+                            LTP－kernel-syscalls-abort
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2016-08-02T00:00:00+08:00"> 2016-08-02 二</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">自动化测试-LTP</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/ltp.html">LTP</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p>从本文开始，开始分析kernel部分的测试用例，该部分测试用例大部分为Ｃ语言编写，因此会穿插加入一定的Ｃ语言或unix环境编程的知识。</p>
+<p><img class="img-responsive" height="280" src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/I0T0E4Y826.jpg" width="420"/></p>
+<h4 id="abort">abort</h4>
+<p>设计说明</p>
+<p><strong>测试策略</strong></p>
+<p>Fork child. Child出现abort,检查返回状态</p>
+<p><strong>限制</strong></p>
+<p>Core file大小的限制必须大于０</p>
+<p><strong>abort</strong></p>
+<p>函数名: abort</p>
+<p>功 能: 异常终止一个进程</p>
+<p>用 法: void abort(void);</p>
+<p>abort()是使异常程序终止，同时发送SIGABRT信号给调用进程。</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="kt">void</span> <span class="nf">abort</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="err">该函数不返回</span>
+</pre></div>
+<p>此函数将SIGABRT信号发送给调用进程（进程不应忽略此信号).ISO C规定，调用abort将向主机环境递送一个未成功终止的通知，其方法是调用raise(SIGABRT)函数。
+ISO C要求若捕捉此信号而且相应信号处理程序返回，abort仍不会返回其调用者。如果捕捉到此信号，则信号处理程序不能返回的唯一方法是它调用exit、_exit、_Exit、longjmp或sigloogjmp.POSIX.1也说明
+abort并不理会进程对此信号的阻塞和忽略。</p>
+<p>让进程捕捉SIGABRT的意图是：在进程终止之前由其执行所需的清理操作。如果进程并不在信号处理程序中终止自己，POSIX.1声明当信号处理程序返回时，abort终止该进程。</p>
+<p>ISO C针对此函数的规范将下列问题留由实现决定：　是否要冲洗输出流以及是否删除临时文件。POSIX.1的要求更进一步，要求如果abort调用终止进程，则它对所有打开标准I/O流的效果应当与进程终止前对每个流调用fclose相同。</p>
+<div class="highlight"><pre><span></span>系统V早期的版本中，abort函数产生SIGIOT信号。更进一步，进程忽略此信号，或者捕捉它并从信号处理程序返回都是可能的，在返回情况下，abort返回到它的调用者。
+4.3BSD产生SIGILL信号。在此之前，该函数解除对此信号的阻塞，将其配置恢复为SIG_DFL (终止并构造core文件)。这阻止一个进程忽略或捕捉此信号。
+SVR4在产生此信号之前关闭所有I/O流。在另一方面，4.3+BSD则不做此操作。对于保护性的程序设计，如果希望刷新标准I/O流，则在调用abort之前要做这种操作。在err_dump函数中实现了这一点
+因为大多数UNIX tmpfile(临时文件)的实现在创建该文件之后立即调用unlink，所以ANSI C关于临时文件的警告通常与我们无关。
+</pre></div>
+<p>abort的POSIX.1实现</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span>
+<span class="nf">abort</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>    <span class="cm">/*POSIX.1风格的abort()实现*/</span>
+<span class="p">{</span>
+    <span class="kt">sigset_t</span>    <span class="n">mask</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sigaction</span>   <span class="n">action</span><span class="p">;</span>
+    <span class="cm">/*</span>
+<span class="cm">     * Caller can't igore SIGABRT, if so reset to default.</span>
+<span class="cm">     */</span>
+    <span class="n">sigaction</span><span class="p">(</span><span class="n">SIGABRT</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">action</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">action</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">==</span> <span class="n">SIG_IGN</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">action</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">==</span> <span class="n">SIG_DFL</span><span class="p">;</span>
+        <span class="n">sigaction</span><span class="p">(</span><span class="n">SIGABRT</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">action</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">action</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">==</span> <span class="n">SIG_DFL</span><span class="p">)</span>
+       <span class="n">fflush</span><span class="p">(</span><span class="nb">NULL</span><span class="p">)</span>   <span class="cm">/* flush all open stdio stream */</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Caller can't block SIGABRT; make sure it's unblocked.</span>
+<span class="cm">     */</span>
+     <span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mask</span><span class="p">)</span>
+     <span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mask</span><span class="p">,</span> <span class="n">SIGABRT</span><span class="p">);</span> <span class="cm">/* mask has only SIGABRT turned off */</span>
+     <span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mask</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+     <span class="n">kill</span><span class="p">(</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">SIGABRT</span><span class="p">);</span> <span class="cm">/* send the signal */</span>
+
+     <span class="cm">/*</span>
+<span class="cm">      * if we're here, process caught SIGABRT and returned.</span>
+<span class="cm">      */</span>
+
+     <span class="n">fflush</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span> <span class="cm">/*flush all open stdio streams*/</span>
+     <span class="n">action</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">=</span> <span class="n">SIG_DFL</span><span class="p">;</span>
+     <span class="n">sigaction</span><span class="p">(</span><span class="n">SIGABRT</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">action</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> <span class="cm">/* reset to default */</span>
+     <span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mask</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> <span class="cm">/* just in case ...*/</span>
+     <span class="n">kill</span><span class="p">(</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">SIGABRT</span><span class="p">);</span> <span class="cm">/* and one more time*/</span>
+     <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="cm">/*this should never be executed...*/</span>
+</pre></div>
+<p>说明：首先查看是否将执行默认动作，若是则冲洗所有标准I/O流。这并不等价于对所有打开的流调用fclose(因为只冲洗，并不关闭它们），但是当进程终止时，系统会关闭所有打开的文件。如果进程捕捉此信号并返回，
+那么因为进程产生了更多的输出，所以再一次冲洗所有的流。不进行冲洗处理的唯一条件是如果进程捕捉此信号，然后调用_exit或_Exit.这种情况下，内存中任何未冲洗的标准I/O缓冲区都被丢弃。我们假定捕捉此信号，而且_exit或_Exit的调用者并不想要冲洗缓冲区。</p>
+<p>应用例子：</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">FILE</span> <span class="o">*</span><span class="n">stream</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">stream</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">"NOSUCHF.ILE"</span><span class="p">,</span> <span class="s">"r"</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">"Couldn't open file"</span><span class="p">);</span>
+        <span class="n">abort</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">else</span>
+    <span class="nf">fclose</span><span class="p">(</span><span class="n">stream</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>编译运行一下，看一下执行情况片段：</p>
+<div class="highlight"><pre><span></span>execve("./test.o", ["./test.o"], [/* 97 vars */]) = 0
+
+open("NOSUCHF.ILE", O_RDONLY)           = -1 ENOENT (No such file or directory)
+
+dup(2)                                  = 3
+
+fcntl(3, F_GETFL)                       = 0x8402 (flags O_RDWR|O_APPEND|O_LARGEFILE)
+
+fstat(3, {st_mode=S_IFCHR|0600, st_rdev=makedev(136, 3), ...}) = 0
+
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fd18aa86000
+
+write(3, "Couldn't open file: No such file"..., 46Couldn't open file: No such file or directory
+
+) = 46
+
+close(3)                                = 0
+
+munmap(0x7fd18aa86000, 4096)            = 0
+
+rt_sigprocmask(SIG_UNBLOCK, [ABRT], NULL, 8) = 0
+
+gettid()                                = 18489
+
+tgkill(18489, 18489, SIGABRT)           = 0
+
+SIGABRT {si_signo=SIGABRT, si_code=SI_TKILL, si_pid=18489, si_uid=0} ---
+
++++ killed by SIGABRT +++
+
+已放弃
+</pre></div>
+<p><strong>abort测试代码说明</strong></p>
+<p>代码大体结构</p>
+<div class="highlight"><pre><span></span>|-   macro                                                                                                           
+||     NUM                                                                                                     
+||     MIN_RLIMIT_CORE                                                                                                                           
+|                                                                                                                         
+|-   variable                                                                                                                            
+||     TCID                                                                                                           
+||     TST_TOTAL                                                                                                                 
+|                                                                                                      
+|-   function                                                                                                    
+||     main                                                                                         
+||     setup                                                              
+||     cleanup                                                                 
+||     do_child                                                                                    
+||     instress
+</pre></div>
+<p>先看一下头文件：</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;sys/wait.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;errno.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;sys/resource.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">"test.h"</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">"safe_macros.h"</span><span class="cp"></span>
+</pre></div>
+<p><strong>什么是头文件呢？</strong></p>
+<p>在C语言家族程序中，头文件被大量使用。一般而言，每个C++/C程序通常由头文件(header files)和定义文件(definition files)组成。头文件作为一种包含功能函数、数据接口声明的载体文件，主要用于保存程序的声明(declaration)，而定义文件用于保存程序的实现 (implementation)</p>
+<p _="
+" printf_hello="printf(“Hello" world_="world!”);
+">让我们来看，经典程序 “Hello world!”　
+定义文件名“First.c”
+    main()</p>
+<div class="highlight"><pre><span></span>&lt;sample-1&gt;
+</pre></div>
+<p>看看上面的程序，没有.h文件,因为程序太简单，没有需要保存的声明。</p>
+<p>文件名 First.c　变形</p>
+<div class="highlight"><pre><span></span>printStr()
+{
+    printf(“Hello world!”);
+}
+main()
+{
+printStr()
+}
+
+&lt;sample-2&gt;
+</pre></div>
+<p>还是没有, 那就让我们把这个程序再稍微改动一下.</p>
+<p>文件名 First.c</p>
+<div class="highlight"><pre><span></span>main()
+{
+    printStr()
+}
+
+printStr()
+{
+    printf(“Hello world!”);
+}
+
+&lt;sample-3&gt;
+</pre></div>
+<p>sample3和sample2是不同的，pritStr()函数定义的顺序不同。sample3是编译不通过的。这里面涉及作用域的问题。在这里只讲述与.h文件相关的顶层作用域。 顶层作用域就是从声明点延伸到源程序文本结束, 就printStr()这个函数来说，他没有单独的声明,只有定义,那么就从他定义的行开始,到first.c文件结束。sample2中，printStr的定义在main函数前面，所以作用域覆盖main函数，而sample3则没有。
+这种情况怎么办呢? 有两种方法 ,一个pritStr函数定义到main函数之前，那就让我们来看另一个例子,让我们看看这个方法是不是在任何时候都会起作用.
+文件名 First.c</p>
+<div class="highlight"><pre><span></span>play2()
+{
+  ……………….
+  play1()
+  ………………..
+}
+play1()
+{
+    ……………………..
+    play2()
+    ……………………
+}
+main()
+{
+    play1()
+}
+
+&lt;sample-4&gt;
+</pre></div>
+<p>函数嵌套, 那么play1和play2这两个函数哪个放到前面呢?</p>
+<p>这时就需要我们来使用第二种方法,使用声明.</p>
+<p>文件名 First.c</p>
+<div class="highlight"><pre><span></span>play1();
+play2();
+play2()
+{
+    ……………….
+    play1()
+    ………………..
+}
+play1()
+{
+    ……………………..
+    play2()
+    ……………………
+);
+}
+main()
+{
+    play1()
+}
+
+&lt;sample-5&gt;
+</pre></div>
+<p>一个大型的软件项目,可能有几千个,上万个play, 而不只是play1,play2这么简单, 这样就可能有N个类似 play1(); play2(); 这样的声明, 这个时候就需要我们想办法把这样的play1(); play2(); 也另行管理, 而不是把他放在.c文件中, 于是.h文件出现了.</p>
+<p>文件名 First.h</p>
+<div class="highlight"><pre><span></span>play1();
+play2();
+</pre></div>
+<p>文件名 First.C</p>
+<div class="highlight"><pre><span></span>#include “first.h”
+play2()
+{
+    ……………….
+    play1()
+    ………………..
+}
+play1()
+{
+    ……………………..
+    play2()
+    ……………………
+);
+}
+main()
+{
+play1()
+}
+
+&lt;sample-6&gt;
+</pre></div>
+<p>如在second.c中还有一个函数需要调用first.c文件中的play1函数, 如何实现呢?</p>
+<p>Sencond.h 文件</p>
+<div class="highlight"><pre><span></span>play1();
+</pre></div>
+<p>sencond.c文件</p>
+<div class="highlight"><pre><span></span>***()
+{
+    …………….
+    Play();
+    ……………….
+}
+
+&lt;sample-7&gt;
+</pre></div>
+<p>在sencond.h文件内声明play1函数，怎么能调用到first.c文件中的哪个play1函数中呢? 是不是搞错了，没有搞错, 这里涉及到c语言的另一个特性:存储类说明符.
+C语言的存储类说明符有以下几个, 我来列表说明一下</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>说明符</th>
+<th>用法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto</td>
+<td>只在块内变量声明中被允许, 表示变量具有本地生存期.</td>
+</tr>
+<tr>
+<td>Extern</td>
+<td>出现在顶层或块的外部变量函数与变量声明中，表示声明的对象具有静态生存期, 连接程序知道其名字.</td>
+</tr>
+<tr>
+<td>Static</td>
+<td>可以放在函数与变量声明中. 在函数定义时, 其只用于指定函数名,而不将函数导出到连接程序. 在函数声明中,表示其后面会有定义声明的函数, 存储类为static. 在数据声明中, 总是表示定义的声明不导出到连接程序.</td>
+</tr>
+</tbody>
+</table>
+<p>无疑, 在sample7中的second.h和first.h中,需要我们用extern标志符来修饰play1函数的声明,这样,play1()函数就可以被导出到连接程序, 也就是实现了无论在first.c文件中调用,还是在second.c文件中调用,连接程序都会很聪明的按照我们的意愿,把他连接到first.c文件中的play1函数的定义上去, 而不必我们在second.c文件中也要再写一个一样的play1函数.</p>
+<p>但随之有一个小问题, 在sample7中,我们并没有用extern标志符来修饰play1啊, 这里涉及到另一个问题, C语言中有默认的存储类标志符. C99中规定, 所有顶层的默认存储类标志符都是extern .</p>
+<p>那么我们如何来区分哪个头文件中的声明在其对应的.c文件中有定义,而哪个又没有呢? 这也许不是必须的，因为无论在哪个文件中定义，聪明的连接程序都会义无返顾的帮我们找到，并导出到连接程序, 但我觉得他确实必要的. </p>
+<p>因为我们需要知道这个函数的具体内容是什么,有什么功能, 有了新需求后我也许要修改他， 我需要在短时间内能找到这个函数的定义, 那么我来介绍一下在C语言中一个人为的规范:</p>
+<p>在.h文件中声明的函数,如果在其对应的.c文件中有定义,那么我们在声明这个函数时,不使用extern修饰符, 如果反之,则必须显示使用extern修饰符.</p>
+<p>这样,在C语言的.h文件中,我们会看到两种类型的函数声明. 带extern的,还不带extern的, 简单明了,一个是引用外部函数，一个是自己声明并定义的函数.
+最终如下:
+Sencond.h 文件</p>
+<p>Extern play1();</p>
+<p>那么多都是针对函数的，而实际上.h文件却不是为函数所专用的，还有全局变量. </p>
+<p>在大型项目中，对全局变量的使用不可避免, 比如,在first.c中需要使用一个全局变量G_test, 那么我们可以在first.h中,定义 TPYE G_test. 与对函数的使用类似, 在second.c中我们的开发人员发现他也需要使用这个全局变量, 而且要与first.c中一样的那个, 如何处理? 对,我们可以仿照函数中的处理方法, 在second.h中再次声明TPYE G_test, 根据extern的用法,以及c语言中默认的存储类型, 在两个头文件中声明的TPYE G_test,其实其存储类型都是extern, 也就是说不必我们操心, 连接程序会帮助我们处理一切. 但我们又如何区分全局变量哪个是定义声明,哪个是引用声明呢?这个比函数要复杂一些, 一般在C语言中有如下几种模型来区分:</p>
+<p><strong>1、 初始化语句模型</strong></p>
+<p>顶层声明中，存在初始化语句是，表示这个声明是定义声明，其他声明是引用声明。C语言的所有文件之中，只能有一个定义声明。
+按照这个模型，我们可以在first.h中定义如下TPYE G_test=1；那么就确定在first中的是定义声明，在其他的所有声明都是引用声明。</p>
+<p><strong>2、 省略存储类型说明</strong></p>
+<p>在这个模型中，所有引用声明要显示的包括存储类extern， 而每个外部变量的唯一定义声明中省略存储类说明符。
+这个与我们对函数的处理方法类似，不再举例说明。</p>
+<p>这里还有一个需要说明，数组全局变量。</p>
+<p>在声明定义时，定义数组如下：
+int G_glob[100];</p>
+<p>在另一个文件中引用声明如下：
+int * G_glob;</p>
+<p>在vc中，是可以编译通过的， 这种情况大家都比较模糊并且需要注意，数组与指针类似，但并不等于说对数组的声明起变量就是指针。 上面所说的的程序在运行时发现了问题，在引用声明的那个文件中，使用这个指针时总是提示内存访问错误，原来我们的连接程序并不把指针与数组等同，连接时，也不把他们当做同一个定义，而是认为是不相关的两个定义，当然会出现错误。正确的使用方法是在引用声明中声明如下：</p>
+<p>int G_glob[10];</p>
+<p>并且最好再加上一个extern，更加明了。</p>
+<p>extern int G_glob[10];</p>
+<p>另外需要说明的是，在引用声明中由于不需要涉及到内存分配，可以简化如下，这样在需要对全局变量的长度进行修改时，不用把所有的引用声明也全部修改了。</p>
+<p>extern int G_glob[];</p>
+<p>接下来，看一下linux环境编程头文件常用的有哪些？</p>
+<p><strong>linux常用头文件</strong></p>
+<p><strong>POSIX标准定义的头文件</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+| dirent.h |       目录项
+| fcntl.h  |       文件控制
+| fnmatch.h |   文件名匹配类型
+| glob.h   |  路径名模式匹配类型
+| grp.h    |     组文件
+| &lt;netdb.h&gt;  |   网络数据库操作
+| &lt;pwd.h&gt;    |     口令文件
+| &lt;regex.h&gt;   |  正则表达式
+| &lt;tar.h&gt;    |     TAR归档值
+| &lt;termios.h&gt; |    终端I/O
+| &lt;unistd.h&gt;  |   符号常量
+| &lt;utime.h&gt;   |  文件时间
+| &lt;wordexp.h&gt;  |   字符扩展类型
+| &lt;arpa/inet.h&gt;  |   INTERNET定义
+| &lt;net/if.h&gt;  |   套接字本地接口
+| &lt;netinet/in.h&gt;   |  INTERNET地址族
+| &lt;netinet/tcp.h&gt;  |   传输控制协议定义
+| &lt;sys/mman.h&gt;  |   内存管理声明
+| &lt;sys/select.h&gt;   |  Select函数
+| &lt;sys/socket.h&gt; |    套接字借口
+| &lt;sys/stat.h&gt;    | 文件状态
+| &lt;sys/times.h&gt; |    进程时间
+| &lt;sys/types.h&gt;   |  基本系统数据类型
+| &lt;sys/un.h&gt; |    UNIX域套接字定义
+| &lt;sys/utsname.h&gt;   |  系统名
+| &lt;sys/wait.h&gt;   |  进程控制
+</pre></div>
+<hr/>
+<p><strong>POSIX定义的XSI扩展头文件</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+| &lt;cpio.h&gt; |    cpio归档值 
+| &lt;dlfcn.h&gt; |   动态链接
+| &lt;fmtmsg.h&gt; |   消息显示结构
+| &lt;ftw.h&gt;  |      文件树漫游
+| &lt;iconv.h&gt; |   代码集转换使用程序
+| &lt;langinfo.h&gt; |   语言信息常量
+| &lt;libgen.h&gt; |   模式匹配函数定义
+| &lt;monetary.h&gt;  |  货币类型
+| &lt;ndbm.h&gt;  |  数据库操作
+| &lt;nl_types.h&gt; |   消息类别
+| &lt;poll.h&gt; |   轮询函数
+| &lt;search.h&gt;|     搜索表
+| &lt;strings.h&gt; |    字符串操作
+| &lt;syslog.h&gt; |    系统出错日志记录
+| &lt;ucontext.h&gt;  |   用户上下文
+| &lt;ulimit.h&gt; |    用户限制
+| &lt;utmpx.h&gt;   |  用户帐户数据库
+
+| &lt;sys/ipc.h&gt; |    IPC(命名管道)
+| &lt;sys/msg.h&gt;  |   消息队列
+| &lt;sys/resource.h&gt;| 资源操作
+| &lt;sys/sem.h&gt;  |   信号量
+| &lt;sys/shm.h&gt;   |  共享存储
+| &lt;sys/statvfs.h&gt;   |  文件系统信息
+| &lt;sys/time.h&gt;   |  时间类型
+| &lt;sys/timeb.h&gt;  |   附加的日期和时间定义
+| &lt;sys/uio.h&gt;    | 矢量I/O操作
+</pre></div>
+<hr/>
+<p><strong>POSIX定义的可选头文件</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+| &lt;aio.h&gt;    |     异步I/O
+| &lt;mqueue.h&gt;  |   消息队列
+| &lt;pthread.h&gt;   |  线程
+| &lt;sched.h&gt;   |  执行调度
+| &lt;semaphore.h&gt;  |   信号量
+| &lt;spawn.h&gt;    |  实时spawn接口
+| &lt;stropts.h&gt;  |   XSI STREAMS接口
+| &lt;trace.h&gt;   |   事件跟踪
+</pre></div>
+<p><strong>C/C++头文件一览</strong></p>
+<p><strong>C语言</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+| &lt;assert.h&gt;|　设定插入点
+| &lt;ctype.h&gt;　　| 字符处理
+| &lt;errno.h&gt;　　| 定义错误码
+| &lt;float.h&gt;　　| 浮点数处理
+| &lt;iso646.h&gt;   | 对应各种运算符的宏
+| &lt;limits.h&gt;　　| 定义各种数据类型最值的常量
+| &lt;locale.h&gt;　　| 定义本地化C函数
+| &lt;math.h&gt;　　　| 定义数学函数
+| &lt;setjmp.h&gt; | 异常处理支持
+|  &lt;signal.h&gt;   | 信号机制支持
+|  &lt;stdarg.h&gt;   | 不定参数列表支持
+|  &lt;stddef.h&gt;    | 常用常量
+| &lt;stdio.h&gt;　　| 定义输入／输出函数
+|  &lt;stdlib.h&gt;| 定义杂项函数及内存分配函数
+|  &lt;string.h&gt;　　| 字符串处理
+| &lt;time.h&gt;　　　　| 定义关于时间的函数
+| &lt;wchar.h&gt;　　　| 宽字符处理及输入／输出
+| &lt;wctype.h&gt;　　| 宽字符分类
+</pre></div>
+<p><strong>传统C++</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+|  &lt;fstream.h&gt;　| 改用&lt;fstream&gt;
+| &lt;iomanip.h&gt;　| 改用&lt;iomainip&gt;
+|  &lt;iostream.h&gt;　| 改用&lt;iostream&gt;
+| &lt;strstrea.h&gt;　　| 该类不再支持，改用&lt;sstream&gt;中的stringstream
+</pre></div>
+<p><strong>标准C++</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+|  &lt;algorithm&gt;　　　 | 通用算法
+| &lt;bitset&gt;　　　　| 位集容器
+| &lt;cctype&gt;         | 字符处理
+|  &lt;cerrno&gt; 　　　　| 定义错误码
+|  &lt;cfloat&gt;　　　| 浮点数处理
+| &lt;ciso646&gt;        | 对应各种运算符的宏
+|  &lt;climits&gt; 　　　| 定义各种数据类型最值的常量
+|  &lt;clocale&gt; 　　　| 定义本地化函数
+| &lt;cmath&gt; 　　　　| 定义数学函数
+| &lt;complex&gt;　　　　| 复数类
+| &lt;csignal&gt;       | 信号机制支持
+|  &lt;csetjmp&gt;       | 异常处理支持
+|  &lt;cstdarg&gt;       | 不定参数列表支持
+|  &lt;cstddef&gt;       | 常用常量
+| &lt;cstdio&gt; 　　| 定义输入／输出函数
+|  &lt;cstdlib&gt; 　　| 定义杂项函数及内存分配函数
+|  &lt;cstring&gt; 　| 字符串处理
+| &lt;ctime&gt; 　　| 定义关于时间的函数
+|  &lt;cwchar&gt; 　| 宽字符处理及输入／输出
+|  &lt;cwctype&gt; 　　| 宽字符分类
+|  &lt;deque&gt;　　　　　| STL 双端队列容器
+|  &lt;exception&gt;　　　| 异常处理类
+| &lt;fstream&gt; 　　　 | 文件输入／输出
+|  &lt;al&gt;　　| STL 定义运算函数（代替运算符）
+|  &lt;limits&gt; 　　　　| 定义各种数据类型最值常量
+|  &lt;list&gt;　　　　　　| STL 线性列表容器
+|  &lt;locale&gt;        | 本地化特定信息
+|  &lt;map&gt;　　　　　　| STL 映射容器
+|  &lt;memory&gt;        | STL通过分配器进行的内存分配
+|  &lt;new&gt;           | 动态内存分配
+|  &lt;numeric&gt;      | STL常用的数字操作
+|  &lt;iomanip&gt; 　　| 参数化输入／输出
+|  &lt;iOS&gt;　　　　　　 | 基本输入／输出支持
+|  &lt;iosfwd&gt;　　　　| 输入／输出系统使用的前置声明
+|  &lt;iostream&gt; 　　| 数据流输入／输出
+|  &lt;istream&gt;　　　　| 基本输入流
+|  &lt;iterator&gt;       | STL迭代器
+| &lt;ostream&gt;　　　　 | 基本输出流
+| &lt;queue&gt;　　　　　 | STL 队列容器
+|  &lt;set&gt;　　　　　| STL 集合容器
+| &lt;sstream&gt;　　　　 | 基于字符串的流
+|  &lt;stack&gt;　　　　　| STL 堆栈容器
+|  &lt;stdexcept&gt;　　　| 标准异常类
+|  &lt;streambuf&gt;　　　 | /底层输入／输出支持
+|  &lt;string&gt;　　　　| 字符串类
+|  &lt;typeinfo&gt;      | 运行期间类型信息
+|  &lt;utility&gt;　　　　| STL 通用模板类
+|  &lt;valarray&gt;       | 对包含值的数组的操作
+|  &lt;vector&gt;　　　　　| STL 动态数组容器
+</pre></div>
+<p><strong>C99增加的部分</strong></p>
+<div class="highlight"><pre><span></span>|　文件名　| 内容　|
+| ------- | --------
+|  &lt;complex.h&gt;　| 复数处理
+|  &lt;fenv.h&gt;　　　　| 浮点环境
+|  &lt;inttypes.h&gt;　　| 整数格式转换
+|  &lt;stdbool.h&gt;　　 | 布尔环境
+|  &lt;stdint.h&gt;　　　| 整型环境
+|  &lt;tgmath.h&gt;　　　| 通用类型数学宏
+</pre></div>
+<p>回到abort01的测试上来。先看一下执行情况：</p>
+<div class="highlight"><pre><span></span>abort01     0  TINFO  :  Adjusting RLIMIT_CORE to 1048576                                                                                            
+abort01     1  TPASS  :  abort dumped core                                                                                                           
+abort01     2  TPASS  :  abort raised SIGIOT                                                                                                         
+abort01     3  TPASS  :  abort dumped core                                                                                                           
+abort01     4  TPASS  :  abort raised SIGIOT                                                                                                         
+abort01     5  TPASS  :  abort dumped core                                                                                                           
+abort01     6  TPASS  :  abort raised SIGIOT
+</pre></div>
+<p>程序后台执行片段</p>
+<div class="highlight"><pre><span></span>chdir("/tmp/aboeHLyFk")                 = 0
+clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb05157a9d0) = 19587
+wait4(-1, [{WIFSIGNALED(s) &amp;&amp; WTERMSIG(s) == SIGABRT &amp;&amp; WCOREDUMP(s)}], 0, NULL) = 19587
+SIGCHLD {si_signo=SIGCHLD, si_code=CLD_DUMPED, si_pid=19587, si_uid=0, si_status=SIGABRT, si_utime=0, si_stime=0} ---
+wait4(-1, 0x7ffd43788f30, 0, NULL)      = -1 ECHILD (No child processes)
+write(1, "abort01     1  TPASS  :  abort d"..., 43abort01     1  TPASS  :  abort dumped core
+) = 43
+write(1, "abort01     2  TPASS  :  abort r"..., 45abort01     2  TPASS  :  abort raised SIGIOT
+) = 45
+clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb05157a9d0) = 19588
+wait4(-1, [{WIFSIGNALED(s) &amp;&amp; WTERMSIG(s) == SIGABRT &amp;&amp; WCOREDUMP(s)}], 0, NULL) = 19588
+SIGCHLD {si_signo=SIGCHLD, si_code=CLD_DUMPED, si_pid=19588, si_uid=0, si_status=SIGABRT, si_utime=0, si_stime=0} ---
+wait4(-1, 0x7ffd43788f30, 0, NULL)      = -1 ECHILD (No child processes)  
+write(1, "abort01     3  TPASS  :  abort d"..., 43abort01     3  TPASS  :  abort dumped core
+) = 43
+write(1, "abort01     4  TPASS  :  abort r"..., 45abort01     4  TPASS  :  abort raised SIGIOT
+) = 45
+clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb05157a9d0) = 19589
+wait4(-1, [{WIFSIGNALED(s) &amp;&amp; WTERMSIG(s) == SIGABRT &amp;&amp; WCOREDUMP(s)}], 0, NULL) = 19589
+SIGCHLD {si_signo=SIGCHLD, si_code=CLD_DUMPED, si_pid=19589, si_uid=0, si_status=SIGABRT, si_utime=0, si_stime=0} ---
+wait4(-1, 0x7ffd43788f30, 0, NULL)      = -1 ECHILD (No child processes)
+write(1, "abort01     5  TPASS  :  abort d"..., 43abort01     5  TPASS  :  abort dumped core
+) = 43
+write(1, "abort01     6  TPASS  :  abort r"..., 45abort01     6  TPASS  :  abort raised SIGIOT
+) = 45
+unlink("core")
+</pre></div>
+<p>从测试log来看，abort01主要进行abort"dumped core"、和"raised SIGIOT"两种测试，并且测试了３遍。０为setup打印信息。</p>
+<div class="highlight"><pre><span></span>#define NUM 3 /*定义fork进程的数量*/
+char *TCID;         /* tescase的名字*/
+int TST_TOTAL;          /* testcases数量 */
+</pre></div>
+<p>主要函数</p>
+<div class="highlight"><pre><span></span>static void setup(void);
+static void cleanup(void);                                                                                            
+static void do_child();                                                                                               
+static int instress();
+int main(int argc, char *argv[])
+</pre></div>
+<p>分别分析这几个函数</p>
+<p><strong>setup</strong></p>
+<div class="highlight"><pre><span></span>#define MIN_RLIMIT_CORE (1024 * 1024)
+static void setup(void)
+{
+    struct rlimit rlim;
+    SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &amp;rlim);
+
+    if (rlim.rlim_cur &lt; MIN_RLIMIT_CORE) {
+        test_resm(TINFO, "Adjusting RLIMIT_CORE to %i", MIN_RLIMIT_CORE);
+        rlim.rlim_cur = MIN_RLIMIT_CORE;
+        SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &amp;rlim);
+    }
+    tst_tmpdir()
+}
+</pre></div>
+<p>setup函数的目的是为了调整RLIMIT_CORE的大小。在Linux系统中，Resouce limit指在一个进程的执行过程中，它所能得到的资源的限制，比如进程的core file的最大值，虚拟内存的最大值等。Resouce limit的大小可以直接影响进程的执行状况。其有两个最重要的概念：soft limit 和 hard limit。</p>
+<div class="highlight"><pre><span></span>struct rlimit {
+rlim_t rlim_cur;
+rlim_t rlim_max;
+};
+</pre></div>
+<p>是指内核所能支持的资源上限。比如对于RLIMIT_NOFILE(一个进程能打开的最大文件 数，内核默认是1024)，soft limit最大也只能达到1024。对于RLIMIT_CORE(core文件的大小，内核不做限制)，soft limit最大能是unlimited。hard limit在资源中只是作为soft limit的上限。当你设置hard limit后，你以后设置的soft limit只能小于hard limit。要说明的是，hard limit只针对非特权进程，也就是进程的有效用户ID(effective user ID)不是0的进程。具有特权级别的进程(具有属性CAP_SYS_RESOURCE)，soft limit则只有内核上限。</p>
+<p>tst_tmpdir函数说明一下，该函数用来为ltp测试程序创建临时目录，目录名case名称＋随机字母。</p>
+<p><strong>cleanup函数</strong></p>
+<div class="highlight"><pre><span></span>static void cleanup(void)
+{
+    unlink("core")
+    tst_rmdir();
+}
+</pre></div>
+<p>该函数比较简单，用来清理产生的临时文件和软连接。可以做下试验，将main函数中的该函数注释掉，会在tmp下看到产生的core文件。</p>
+<p><strong>do_child函数</strong></p>
+<div class="highlight"><pre><span></span>static void do_child(void)
+{
+    abort()
+    fprintf(stderr, "\tchild - abort failed.\n");
+    exit(1);
+}
+</pre></div>
+<p>abort的调用，进程退出。</p>
+<p><strong>instress函数</strong></p>
+<div class="highlight"><pre><span></span>static int instress(void)
+{
+    test_resm(TINFO,
+        "System resources may be too low; fork(), select() etc are likely to fail.");
+    return 1;
+}
+</pre></div>
+<p>系统资源比较低的情况，　出现fork()等调用失败时的处理。也是为兼容UCLINUK测试（如嵌入式系统）。</p>
+<p><strong>main函数</strong>
+控制测试流程和主要的测试代码，以下将重点介绍一些代码片段。</p>
+<div class="highlight"><pre><span></span><span class="cp">#ifdef WCOREDUMP</span>
+    <span class="kt">int</span> <span class="n">core</span><span class="p">;</span>
+    <span class="n">core</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="cp">#endif</span>
+</pre></div>
+<p>WCOREDUMP(status)
+如果孩子进程产生核心转储文件则返回真。这个宏只应该在 WIFSIGNALED 返回真时调用。这个没有在 POSIX.1-2001 里指定并且在一些 UNIX 实现(如 AIX、SunOS)里也没有提供。只在 #ifdef WCOREDUMP ... #endif 内部使用。</p>
+<div class="highlight"><pre><span></span><span class="cp">#ifdef UCLINUX</span>
+    <span class="n">maybe_run_child</span><span class="p">(</span><span class="o">&amp;</span><span class="n">do_child</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span>  <span class="cm">/* UCLINUX的情况　*/</span>
+<span class="cp">#endif</span>
+
+    <span class="n">setup</span><span class="p">();</span> <span class="cm">/*调用setup函数*/</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>   <span class="cm">/*连续创建３个进程调用do_child函数*/</span>
+        <span class="n">kidpid</span> <span class="o">=</span> <span class="n">FORK_OR_VFORK</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">kidpid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+<span class="cp">#ifdef UCLINUX</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">self_exec</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">""</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">instress</span><span class="p">())</span> <span class="p">{</span>
+                    <span class="n">perror</span><span class="p">(</span><span class="s">"fork failed"</span><span class="p">);</span>
+                    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+<span class="cp">#else</span>
+            <span class="n">do_child</span><span class="p">();</span><span class="err">　　</span><span class="c1">//调用do_child()函数</span>
+
+<span class="cp">#endif</span>
+        <span class="p">}</span>  
+                <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">kidpid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">instress</span><span class="p">())</span>
+            <span class="n">tst_brkm</span><span class="p">(</span><span class="n">TBROK</span> <span class="o">|</span> <span class="n">TERRNO</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">,</span>
+                 <span class="s">"fork failed"</span><span class="p">);</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">child</span> <span class="o">=</span> <span class="n">wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">status</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tst_brkm</span><span class="p">(</span><span class="n">TBROK</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">,</span>
+             <span class="s">"wrong # children waited on; got %d, expected 1"</span><span class="p">,</span>
+             <span class="n">count</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="cp">#ifdef WCOREDUMP</span>
+        <span class="n">core</span> <span class="o">=</span> <span class="n">WCOREDUMP</span><span class="p">(</span><span class="n">status</span><span class="p">);</span><span class="c1">//WCOFEDUMP情况</span>
+<span class="cp">#endif</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">WTERMSIG</span><span class="p">(</span><span class="n">status</span><span class="p">);</span>
+
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">WIFEXITED</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+        <span class="n">ex</span> <span class="o">=</span> <span class="n">WEXITSTATUS</span><span class="p">(</span><span class="n">status</span><span class="p">);</span>
+
+<span class="cp">#ifdef WCOREDUMP</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">core</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tst_brkm</span><span class="p">(</span><span class="n">TFAIL</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">,</span>
+             <span class="s">"Child did not dump core; exit code = %d, "</span>
+             <span class="s">"signal = %d"</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">sig</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">core</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tst_resm</span><span class="p">(</span><span class="n">TPASS</span><span class="p">,</span> <span class="s">"abort dumped core"</span><span class="p">);</span><span class="err">　</span><span class="c1">//core值等于０，则没有正常产生core文件，如果core不等于０且不等于-1，说明正常产生了core文件</span>
+    <span class="p">}</span>
+<span class="cp">#endif</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sig</span> <span class="o">==</span> <span class="n">SIGIOT</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tst_resm</span><span class="p">(</span><span class="n">TPASS</span><span class="p">,</span> <span class="s">"abort raised SIGIOT"</span><span class="p">);</span><span class="err">　　</span><span class="c1">//发出的信号如果为SIGIOT说明信号触发正常</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">tst_brkm</span><span class="p">(</span><span class="n">TFAIL</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">,</span>
+             <span class="s">"Child did not raise SIGIOT (%d); exit code = %d, "</span>
+             <span class="s">"signal = %d"</span><span class="p">,</span> <span class="n">SIGIOT</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">sig</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+<p>abort测试分析结束。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="LTP－kernel-syscalls-abort">LTP－kernel-syscalls-abort</a><ul><li><a class="toc-href" href="#abort" title="abort">abort</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

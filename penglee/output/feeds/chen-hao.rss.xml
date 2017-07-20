@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>路漫求索</title><link>http://king32783784.github.io/</link><description>生活不止眼前的苟且，还有诗和远方 &lt;a href="pages/aboutme.html"&gt;More...&lt;/a&gt;</description><lastBuildDate>Fri, 03 Mar 2017 00:00:00 +0800</lastBuildDate><item><title>DOCKER基础技术：LINUX CGROUP(转载）</title><link>http://king32783784.github.io/2017/03/03/docker/</link><description>&lt;p&gt;前面，我们介绍了Linux Namespace，但是Namespace解决的问题主要是环境隔离的问题，这只是虚拟化中最最基础的一步，我们还需要解决对计算机资源使用上的隔离。也就是说，虽然你通过Namespace把我Jail到一个特定的环境中去了，但是我在其中的进程使用用CPU、内存、磁盘等这些计算资源其实还是可以随心所欲的。所以，我们希望对进程进行资源利用上的限制或控制。这就是Linux CGroup出来了的原因。&lt;/p&gt;
+&lt;p&gt;Linux CGroup全称Linux Control Group， 是Linux内核的一个功能，用来限制，控制与分离一个进程组群的资源（如CPU、内存、磁盘输入输出等）。这个项目最早是由Google的工程师在2006年发起（主要是Paul Menage和Rohit Seth），最早的名称为进程容器（process containers）。在2007年时，因为在Linux内核中，容器（container）这个名词太过广泛，为避免混乱，被重命名为cgroup，并且被合并到2.6.24版的内核中去。然后，其它开始了他的发展。
+Linux CGroupCgroup 可​​​让​​​您​​​为​​​系​​​统​​​中​​​所​​​运​​​行​​​任​​​务​​​（进​​​程​​​）的​​​用​​​户​​​定​​​义​​​组​​​群​​​分​​​配​​​资​​​源​​​ — 比​​​如​​​ CPU 时​​​间​​​、​​​系​​​统​​​内​​​存​​​、​​​网​​​络​​​带​​​宽​​​或​​​者​​​这​​​些​​​资​​​源​​​&lt;/p&gt;
+&lt;p&gt;的​​​组​​​合​​​。​​​您​​​可​​​以​​​监​​​控​​​您​​​配​​​置​​​的​​​ cgroup，拒​​​绝​​​ cgroup 访​​​问​​​某​​​些​​​资​​​源​​​，甚​​​至​​​在​​​运​​​行​​​的​​​系​​​统​​​中​​​动​​​态​​​配​​​置​​​您​​​的​​​ cgroup。&lt;/p&gt;
+&lt;p&gt;主要提供了如下功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Resource limitation: 限制资源使用，比如内存使用上限以及文件系统的缓存限制。&lt;/li&gt;
+&lt;li&gt;Prioritization: 优先级控制，比如：CPU利用和磁盘IO吞吐。&lt;/li&gt;
+&lt;li&gt;Accounting: 一些审计或一些统计，主要目的是为了计费。&lt;/li&gt;
+&lt;li&gt;Control: 挂起进程，恢复执行进程。
+使​​​用​​​ cgroup，系​​​统​​​管​​​理​​​员​​​可​​​更​​​具​​​体​​​地​​​控​​​制​​​对​​​系​​​统​​​资​​​源​​​的​​​分​​​配​​​、​​​优​​​先​​​顺​​​序​​​、​​​拒​​​绝​​​、​​​管​​​理​​​和​​​监​​​控​​​。​​​可​​​更​​​好​​​地​​​根​​​据​​​任​​​务​​​和​​​用​​​户​​​分​​​配​​​硬​​​件​​​资​​​源​​​，提​​​高​​​总​​​体​​​效​​​率​​​。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在实践中，系统管理员一般会利用CGroup做下面这些事（有点像为某个虚拟机分配资源似的）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;隔离一个进程集合（比如：nginx的所有进程），并限制他们所消费的资源，比如绑定CPU的核。&lt;/li&gt;
+&lt;li&gt;为这组进程 分配其足够使用的内存&lt;/li&gt;
+&lt;li&gt;为这组进程分配相应的网络带宽和磁盘存储限制&lt;/li&gt;
+&lt;li&gt;限制访问某些设备（通过设置设备的白名单）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;那么CGroup是怎么干的呢？我们先来点感性认识吧。&lt;/p&gt;
+&lt;p&gt;首先，Linux把CGroup这个事实现成了一个file system，你可以mount。在我的Ubuntu 14.04下，你输入以下命令你就可以看到cgroup已为你mount好了。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;hchen@ubuntu:~$ mount -t cgroup
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,relatime,cpuset)
+cgroup on /sys/fs/cgroup/cpu type cgroup (rw,relatime,cpu)
+cgroup on /sys/fs/cgroup/cpuacct type cgroup (rw,relatime,cpuacct)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,relatime,memory)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,relatime,devices)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,relatime,freezer)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,relatime,blkio)
+cgroup on /sys/fs/cgroup/net_prio type cgroup (rw,net_prio)
+cgroup on /sys/fs/cgroup/net_cls type cgroup (rw,net_cls)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,relatime,perf_event)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,relatime,hugetlb)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;或者使用lssubsys命令：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ lssubsys  -m
+cpuset /sys/fs/cgroup/cpuset
+cpu /sys/fs/cgroup/cpu
+cpuacct /sys/fs/cgroup/cpuacct
+memory /sys/fs/cgroup/memory
+devices /sys/fs/cgroup/devices
+freezer /sys/fs/cgroup/freezer
+blkio /sys/fs/cgroup/blkio
+net_cls /sys/fs/cgroup/net_cls
+net_prio /sys/fs/cgroup/net_prio
+perf_event /sys/fs/cgroup/perf_event
+hugetlb /sys/fs/cgroup/hugetlb
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我们可以看到，在/sys/fs下有一个cgroup的目录，这个目录下还有很多子目录，比如： cpu，cpuset，memory，blkio……这些，这些都是cgroup的子系统。分别用于干不同的事的。&lt;/p&gt;
+&lt;p&gt;如果你没有看到上述的目录，你可以自己mount，下面给了一个示例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mkdir cgroup
+mount -t tmpfs cgroup_root ./cgroup
+mkdir cgroup/cpuset
+mount -t cgroup -ocpuset cpuset ./cgroup/cpuset/
+mkdir cgroup/cpu
+mount -t cgroup -ocpu cpu ./cgroup/cpu/
+mkdir cgroup/memory
+mount -t cgroup -omemory memory ./cgroup/memory/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;一旦mount成功，你就会看到这些目录下就有好多文件了，比如，如下所示的cpu和cpuset的子系统：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;hchen@ubuntu:~$ ls /sys/fs/cgroup/cpu /sys/fs/cgroup/cpuset/
+/sys/fs/cgroup/cpu
+cgroup.clone_children  cgroup.sane_behavior  cpu.shares         release_agent
+cgroup.event_control   cpu.cfs_period_us     cpu.stat           tasks
+cgroup.procs           cpu.cfs_quota_us      notify_on_release  user
+
+/sys/fs/cgroup/cpuset/:
+cgroup.clone_children  cpuset.mem_hardwall             cpuset.sched_load_balance
+cgroup.event_control   cpuset.memory_migrate           cpuset.sched_relax_domain_level
+cgroup.procs           cpuset.memory_pressure          notify_on_release
+cgroup.sane_behavior   cpuset.memory_pressure_enabled  release_agent
+cpuset.cpu_exclusive   cpuset.memory_spread_page       tasks
+cpuset.cpus            cpuset.memory_spread_slab       user
+cpuset.mem_exclusive   cpuset.mems
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;你可以到/sys/fs/cgroup的各个子目录下去make个dir，你会发现，一旦你创建了一个子目录，这个子目录里又有很多文件了。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;hchen@ubuntu:/sys/fs/cgroup/cpu$ sudo mkdir haoel
+[sudo] password for hchen:
+hchen@ubuntu:/sys/fs/cgroup/cpu$ ls ./haoel
+cgroup.clone_children  cgroup.procs       cpu.cfs_quota_us  cpu.stat           tasks
+cgroup.event_control   cpu.cfs_period_us  cpu.shares        notify_on_release
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;好了，我们来看几个示例。&lt;/p&gt;
+&lt;h3&gt;CPU 限制&lt;/h3&gt;
+&lt;p&gt;假设，我们有一个非常吃CPU的程序，叫deadloop，其源码如下：&lt;/p&gt;
+&lt;p&gt;DEADLOOP.C&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;int main(void)
+{
+    int i = 0;
+    for(;;) i++;
+    return 0;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;用sudo执行起来后，毫无疑问，CPU被干到了100%（下面是top命令的输出）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND    
+3529 root      20   0    4196    736    656 R 99.6  0.1   0:23.13 deadloop
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后，我们这前不是在/sys/fs/cgroup/cpu下创建了一个haoel的group。我们先设置一下这个group的cpu利用的限制：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;hchen@ubuntu:~# cat /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us
+-1
+root@ubuntu:~# echo 20000 &amp;gt; /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我们看到，这个进程的PID是3529，我们把这个进程加到这个cgroup中：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# echo 3529 &amp;gt;&amp;gt; /sys/fs/cgroup/cpu/haoel/tasks
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后，就会在top中看到CPU的利用立马下降成20%了。（前面我们设置的20000就是20%的意思）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND    
+3529 root      20   0    4196    736    656 R 19.9  0.1   8:06.11 deadloop
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;下面的代码是一个线程的示例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#define _GNU_SOURCE         &lt;/span&gt;&lt;span class="cm"&gt;/* See feature_test_macros(7) */&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;pthread.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/syscall.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+
+&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;NUM_THREADS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nf"&gt;thread_main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;threadid&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="cm"&gt;/* 把自己加入cgroup中（syscall(SYS_gettid)为得到线程的系统tid） */&lt;/span&gt;
+    &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;128&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+    &lt;span class="n"&gt;sprintf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;echo %ld &amp;gt;&amp;gt; /sys/fs/cgroup/cpu/haoel/tasks&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;syscall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SYS_gettid&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+    &lt;span class="n"&gt;system&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;sprintf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;echo %ld &amp;gt;&amp;gt; /sys/fs/cgroup/cpuset/haoel/tasks&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;syscall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SYS_gettid&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+    &lt;span class="n"&gt;system&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="kt"&gt;long&lt;/span&gt; &lt;span class="n"&gt;tid&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;tid&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;long&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;threadid&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Hello World! It&amp;#39;s me, thread #%ld, pid #%ld!&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tid&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;syscall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;SYS_gettid&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="n"&gt;pthread_exit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;num_threads&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argc&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;num_threads&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;atoi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num_threads&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;num_threads&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;num_threads&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;NUM_THREADS&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="cm"&gt;/* 设置CPU利用率为50% */&lt;/span&gt;
+    &lt;span class="n"&gt;mkdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/sys/fs/cgroup/cpu/haoel&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;755&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;system&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;echo 50000 &amp;gt; /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="n"&gt;mkdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/sys/fs/cgroup/cpuset/haoel&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;755&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="cm"&gt;/* 限制CPU只能使用#2核和#3核 */&lt;/span&gt;
+    &lt;span class="n"&gt;system&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;echo &lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;2,3&lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; &amp;gt; /sys/fs/cgroup/cpuset/haoel/cpuset.cpus&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="n"&gt;pthread_t&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;threads&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pthread_t&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;malloc&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;sizeof&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pthread_t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;num_threads&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;rc&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;long&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;num_threads&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+        &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;In main: creating thread %ld&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="n"&gt;rc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pthread_create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;threads&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;thread_main&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rc&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+            &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;ERROR; return code from pthread_create() is %d&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;rc&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+            &lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="cm"&gt;/* Last thing that main() should do */&lt;/span&gt;
+    &lt;span class="n"&gt;pthread_exit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;free&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;threads&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;内存使用限制&lt;/h3&gt;
+&lt;p&gt;我们再来看一个限制内存的例子（下面的代码是个死循环，其它不断的分配内存，每次512个字节，每次休息一秒）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;chunk_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;malloc&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;chunk_size&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;out of memory!!&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+            &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="n"&gt;memset&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;chunk_size&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;chunk_size&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;[%d] - memory is allocated [%8d] bytes &lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;getpid&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后，在我们另外一边：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# 创建memory cgroup
+$ mkdir /sys/fs/cgroup/memory/haoel
+$ echo 64k &amp;gt; /sys/fs/cgroup/memory/haoel/memory.limit_in_bytes
+
+# 把上面的进程的pid加入这个cgroup
+$ echo [pid] &amp;gt; /sys/fs/cgroup/memory/haoel/tasks
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;你会看到，一会上面的进程就会因为内存问题被kill掉了。&lt;/p&gt;
+&lt;h3&gt;磁盘I/O限制&lt;/h3&gt;
+&lt;p&gt;我们先看一下我们的硬盘IO，我们的模拟命令如下：（从/dev/sda1上读入数据，输出到/dev/null上）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo dd if=/dev/sda1 of=/dev/null
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我们通过iotop命令我们可以看到相关的IO速度是55MB/s（虚拟机内）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO&amp;gt;    COMMAND         
+8128 be/4 root       55.74 M/s    0.00 B/s  0.00 % 85.65 % dd if=/de~=/dev/null...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后，我们先创建一个blkio（块设备IO）的cgroup&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mkdir /sys/fs/cgroup/blkio/haoel
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;并把读IO限制到1MB/s，并把前面那个dd命令的pid放进去（注：8:0 是设备号，你可以通过ls -l /dev/sda1获得）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@ubuntu:~# echo &amp;#39;8:0 1048576&amp;#39;  &amp;gt; /sys/fs/cgroup/blkio/haoel/blkio.throttle.read_bps_device
+root@ubuntu:~# echo 8128 &amp;gt; /sys/fs/cgroup/blkio/haoel/tasks
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;再用iotop命令，你马上就能看到读速度被限制到了1MB/s左右。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO&amp;gt;    COMMAND         
+8128 be/4 root      973.20 K/s    0.00 B/s  0.00 % 94.41 % dd if=/de~=/dev/null...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;CGroup的子系统
+好了，有了以上的感性认识我们来，我们来看看control group有哪些子系统：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;* blkio 这个子系统为块设备设定输入/输出限制，比如物理设备（磁盘，固态硬盘，USB等）
+* cpu 这个子系统使用调度程序提供对CPU的cgroup任务访问
+* cpuacct 这个子系统自动生成cgroup中任务所使用的cpu报告
+* cpuset 这个子系统为cgroup中的任务分配独立CPU(在多核系统）和内存节点
+* devices 这个子系统可允许或拒绝cgroup中任务访问设备
+* freezer 这个子系统挂起或恢复cgroup中的任务
+* memory 这个子系统设定cgroup中任务使用的内存限制，并自动生成内存资源使用报告
+* net_cls 这个子系统使用等级识别符（classid)标记网络数据包，可允许linux流量控制程序tc识别从具体cgroup中生成的数据包。
+* net_prio 这个子系统用来设计网络流量的优先级
+* hugetlb 这个子系统主要针对
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注意，你可能在Ubuntu 14.04下看不到net_cls和net_prio这两个cgroup，你需要手动mount一下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ sudo modprobe cls_cgroup
+$ sudo mkdir /sys/fs/cgroup/net_cls
+$ sudo mount -t cgroup -o net_cls none /sys/fs/cgroup/net_cls
+
+$ sudo modprobe netprio_cgroup
+$ sudo mkdir /sys/fs/cgroup/net_prio
+$ sudo mount -t cgroup -o net_prio none /sys/fs/cgroup/net_prio
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;关于各个子系统的参数细节，以及更多的Linux CGroup的文档，你可以看看下面的文档：&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/6/html-single/Resource_Management_Guide/index.html#ch-Subsystems_and_Tunable_Parameters"&gt;Redhat的官方文档&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;CGroup的术语&lt;/h3&gt;
+&lt;p&gt;CGroup有下述术语：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;任务（Tasks）：就是系统的一个进程。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;控制组（Control Group）：一组按照某种标准划分的进程，比如官方文档中的Professor和Student，或是WWW和System之类的，其表示了某进程组。Cgroups中的资源控制都是以控制组为单位实现。一个进程可以加入到某个控制组。而资源的限制是定义在这个组上，就像上面示例中我用的haoel一样。简单点说，cgroup的呈现就是一个目录带一系列的可配置文件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;层级（Hierarchy）：控制组可以组织成hierarchical的形式，既一颗控制组的树（目录结构）。控制组树上的子节点继承父结点的属性。简单点说，hierarchy就是在一个或多个子系统上的cgroups目录树。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;子系统（Subsystem）：一个子系统就是一个资源控制器，比如CPU子系统就是控制CPU时间分配的一个控制器。子系统必须附加到一个层级上才能起作用，一个子系统附加到某个层级以后，这个层级上的所有控制族群都受到这个子系统的控制。Cgroup的子系统可以有很多，也在不断增加中。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;下一代的CGroup&lt;/h3&gt;
+&lt;p&gt;上面，我们可以看到，CGroup的一些常用方法和相关的术语。一般来说，这样的设计在一般情况下还是没什么问题的，除了操作上的用户体验不是很好，但基本满足我们的一般需求了。&lt;/p&gt;
+&lt;p&gt;不过，对此，有个叫Tejun Heo的同学非常不爽，他在Linux社区里对cgroup吐了一把槽，还引发了内核组的各种讨论。&lt;/p&gt;
+&lt;p&gt;对于Tejun Heo同学来说，cgroup设计的相当糟糕。他给出了些例子，大意就是说，如果有多种层级关系，也就是说有多种对进程的分类方式，比如，我们可以按用户来分，分成Professor和Student，同时，也有按应用类似来分的，比如WWW和NFS等。那么，当一个进程即是Professor的，也是WWW的，那么就会出现多层级正交的情况，从而出现对进程上管理的混乱。另外，一个case是，如果有一个层级A绑定cpu，而层级B绑定memory，还有一个层级C绑定cputset，而有一些进程有的需要AB，有的需要AC，有的需要ABC，管理起来就相当不易。&lt;/p&gt;
+&lt;p&gt;层级操作起来比较麻烦，而且如果层级变多，更不易于操作和管理，虽然那种方式很好实现，但是在使用上有很多的复杂度。你可以想像一个图书馆的图书分类问题，你可以有各种不同的分类，分类和图书就是一种多对多的关系。&lt;/p&gt;
+&lt;p&gt;所以，在Kernel 3.16后，引入了unified hierarchy的新的设计，这个东西引入了一个叫__DEVEL__sane_behavior的特性（这个名字很明显意味目前还在开发试验阶段），它可以把所有子系统都挂载到根层级下，只有叶子节点可以存在tasks，非叶子节点只进行资源控制。&lt;/p&gt;
+&lt;p&gt;我们mount一下看看：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ sudo mount -t cgroup -o __DEVEL__sane_behavior cgroup ./cgroup
+
+$ ls ./cgroup
+cgroup.controllers  cgroup.procs  cgroup.sane_behavior  cgroup.subtree_control
+
+$ cat ./cgroup/cgroup.controllers
+cpuset cpu cpuacct memory devices freezer net_cls blkio perf_event net_prio hugetlb
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我们可以看到有四个文件，然后，你在这里mkdir一个子目录，里面也会有这四个文件。&lt;strong&gt;上级的cgroup.subtree_control控制下级的cgroup.controllers&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;举个例子：假设我们有以下的目录结构，b代表blkio，m代码memory，其中，A是root，包括所有的子系统（）。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# A(b,m) - B(b,m) - C (b)
+#               \ - D (b) - E
+
+# 下面的命令中， +表示enable， -表示disable
+
+# 在B上的enable blkio
+# echo +blkio &amp;gt; A/cgroup.subtree_control
+
+# 在C和D上enable blkio
+# echo +blkio &amp;gt; A/B/cgroup.subtree_control
+
+# 在B上enable memory 
+# echo +memory &amp;gt; A/cgroup.subtree_control
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;在上述的结构中，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;cgroup只有上线控制下级，无法传递到下下级。所以，C和D中没有memory的限制，E中没有blkio和memory的限制。而本层的cgroup.controllers文件是个只读的，其中的内容就看上级的subtree_control里有什么了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;任何被配置过subtree_control的目录都不能绑定进程，根结点除外。所以，A,C,D,E可以绑上进程，但是B不行。
+我们可以看到，这种方式干净的区分开了两个事，一个是进程的分组，一个是对分组的资源控制（以前这两个事完全混在一起），在目录继承上增加了些限制，这样可以避免一些模棱两可的情况。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当然，这个事还在演化中，cgroup的这些问题这个事目前由cgroup的吐槽人Tejun Heo和华为的Li Zefan同学负责解决中。总之，这是一个系统管理上的问题，而且改变会影响很多东西，但一旦方案确定，老的cgroup方式将一去不复返。&lt;/p&gt;
+&lt;p&gt;参考
+Linux Kernel Cgroup Documents
+Reahat Resource Management Guide
+Fixing control groups
+The unified control group hierarchy in 3.16
+Cgroup v2(PDF)&lt;/p&gt;
+&lt;p&gt;转自&lt;a href="http://coolshell.cn/articles/17049.html"&gt;酷 壳 – COOLSHELL&lt;/a&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">陈皓</dc:creator><pubDate>Fri, 03 Mar 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-03-03:2017/03/03/docker/</guid><category>docker</category></item><item><title>技术人员的发展之路</title><link>http://king32783784.github.io/2016/12/30/%E5%85%B6%E4%BB%96/</link><description>&lt;p&gt;2012年的时候写过一篇叫《程序算法与人生选择》的文章，我用算法来类比如何做选择，说白了就是怎么去计算，但是并没有讲程序员可以发展的方向有哪些。 所以，就算是有这些所谓的方法论，我们可能对自己的
+  发展还是会很纠结和无所事从，尤其是人到了30岁，这种彷徨和迷惑越来越重。虽然我之前也写过一篇《编程年龄和编程技能》的文章，但是还是有很多做技术的人对于自己能否在年纪大时还能去做技术感到没有信心。我猜测，这其中，最大的问题的是，目前从事技术工作的种种负面的经历（比如经常性的加班，被当成棋子或劳动力等等），让人完全看不到希望和前途，尤其是随着年纪越来越大，对未来的越来越没有信心。&lt;/p&gt;
+&lt;p&gt;同时，也是因为在GIAC的大会被问到，程序员老了怎么办？而在年底这段时间，也和几个朋友在交流中不断地重复谈到个人发展的这个话题。我的人生过半，活到“不惑”的年纪，自然经常性的对什么事都会回头看看总结归纳，所以，在交谈过程中和交谈过后，自己也有一些思考想记录下来。因为我本人也是在这条路上的人，所以，谈不上给他人指导，我同样也是在瞎乱折腾同样每天在思考自己要去哪儿的“一尘世间迷途老生”。况且，我的经历和眼界非常有限，因此，下面的这些关于个人发展的文字和思考必然是受我的眼界和经历所局限的。也欢迎大家补充和指正。&lt;/p&gt;
+&lt;p&gt;这些东西不一定对，也不一定就是全部，期许可以让你在年底的时候有所思考，在明年的时候有所计划。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;一个重要阶段和标志&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在讲个人发展之前，我需要先说一下人生中的一个非常重要的阶段——20到30岁！&lt;/p&gt;
+&lt;p&gt;这个阶段的首要任务，就是提升自己学习能力和解决难题的能力。这是一个非常非常关键的时间段！这个时间段几乎决定着你的未来。&lt;/p&gt;
+&lt;p&gt;30岁以前，这个时间段，应该是人学习和积累的时间段，这个时间段，就是努力学习的时间段。这个时间段，你一定要把时间花在解决问题的技能上。就是说，你一定要练就成的技能是——你能解决大多数人不能解决的问题。使蛮力埋头加班苦干，当一个搬砖老黄牛的是肯定没有前途的。如果你不幸呆在了一个搬砖的地方，天天被业务压得喘不过气来，我建议你宁可让你的项目延期被老板骂，也要把时间挤出来努力学习基础知识，多掌握一些技术（很多技术在思路上是相通的），然后才能有机会改变自己目前的状况。因为，比起你的个人未来，项目延期被老板骂、绩效不好拿不到奖金，都不是什么事儿。&lt;/p&gt;
+&lt;p&gt;总结一下，你在30岁前，工作5-7年，你需要拥有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;高效的学习能力。这意味着——基础知识扎实、触类旁通、读英文文档不费劲、有寻找前沿知识的能力、能够看到问题和技术的本质、善于思辩、能独立思考。&lt;/li&gt;
+&lt;li&gt;解决问题的能力。这意味着——你要高效的学习能力、见过很多的场景、犯过或是处理很多错误、能够防火而不是救火。&lt;/li&gt;
+&lt;li&gt;如果你拥有这两个能力的现象是—— 在团队或身边的人群中的显现出Leadership。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Leadership并不是当领导和经理，而是一种特征，这种特征有如下两个简单的表象：&lt;/p&gt;
+&lt;p&gt;帮人解问题。团队或身边中大多数人都在问：“这问题怎么办？”，而总是你能站出来告诉大家这事该怎么办？
+被人所依赖。团队或身边中大多数人在做比较关键的决定时，都会来找你咨询你的意见和想法。
+一但你在在30岁之间出现了Leadership这样的特征，那么，你会进入一个正循环的阶段：&lt;/p&gt;
+&lt;p&gt;因为你学习能力强，所以，你会有更多的机会解决难题。
+你有更多的机会解决难题，你就会学更多的东西，于是你就会更强。
+上面这个循环，只要循环上几年，就会让你人生的各种可能性大大的增加。
+【 注意 】&lt;/p&gt;
+&lt;p&gt;要达到这样的特质，需要找到自己的长处、以及适合自己的环境。就像鱼的特长是呆在水里，让鱼儿去追求陆上动物的刺激生活并不靠谱。
+一般说来，有这样的潜质的人，在学校中就应该要出现。如果你在大学中还没有出现这样的潜质，那么，你在工作当中要加倍努力了（注：所谓的加倍努力，不是让你使蛮力加班，而是让你多学习成长，使蛮力拼命是弥补不了能力、思维、眼界上的缺陷的）。
+Leadership也有范围的，比如，身边的朋友，工作中的团队/部分，圈内，整个行业。Leadership的范围越大，你的个人发展的选择性就越高。反之则越小。
+如果已到了30岁左右，还是没有出现这样的特征。那么，可能未来你也很难有这样的Leadership了。而你的个人发展的可能性可能也就不多了（sigh…）
+读到这里，我必需要说一下，如果你已开始显现出你的Leadership，那么你才谈得上个人发展，这篇文章后续的内容也可能才会对你有意义。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;个人发展的三个方向&lt;/strong&gt;
+以我个人短浅的经历和视野，目前只看到的人的发展有如下三个大方向（他们之间可能会有重叠）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1）在职场中打拼&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;2）去经历有意义有价值的事&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;3）追求一种自由的生活&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这三个方向，我个人或多或少都体验过，我也见过身边的很多人走这三个方向走的比较成功。也许还有别的方向，没办法，现在，我的视野就这么大，所以，我在这里，我主要就是谈谈这三个方向。Again，人有资格去走这三个方向的前提是——已有了上面我说的Leadership那种特质！&lt;/p&gt;
+&lt;h3&gt;一、在职场中发展&lt;/h3&gt;
+&lt;p&gt;在职场中发展应该是绝大多数人的选择。通过加入公司来达到人生的发展。&lt;/p&gt;
+&lt;p&gt;我们经常可以看到很多所谓的“职业规划”，但是大多数职业规划只不过人力资源搞出来的东西，和实际其实是有很大出入的。我的人生经历中，有18年左右是在公司中度过的，在过银行，小公司，大公司，民营公司，外国公司，传统IT公司，互联网公司，不同的公司完全有不同的玩法和文化，我的经历还算丰富，但也不算特别成功，这里只分享一些我在职场中的心得（不一定对，仅供参考）。&lt;/p&gt;
+&lt;h4&gt;1、去顶尖公司&lt;/h4&gt;
+&lt;p&gt;去顶尖公司的一个目的就是让你的Leadership的范围的可能性扩大。&lt;/p&gt;
+&lt;p&gt;因为公司和公司的差距也不小，所以，就算你在低端公司里是骨干份子，但在高端公司里可能只是一个普通员工（就像中国足球队的主力到了英超可能都无法入选）。所以，在职场中，如果你要让你的个人价值最大化的话，你一定要去顶尖的公司。因为顶尖公司里有非常不错的工作方法和场景，这并不是能看书或是交流得来的，这是必需要去亲身体验的。所以说，在顶尖公司掌握的技能，开阔的眼界，通常来说都会比低端公司的要多得多。&lt;/p&gt;
+&lt;p&gt;另外，每个公司的工作级别都是有相互对标的，比如：阿里的P几对应于百度的T几。国内的一线公司职位还相当，但是如果和国外一线公司的比，那就有差距了，而且差距还很大。比如，Google或Facebook的某个高级工程师，可能就对应于阿里的P8/P9甚至更高。&lt;/p&gt;
+&lt;p&gt;是的，对于职场来说，如果你在顶尖公司是骨干，那么，你去低端公司，则有很大机会会成为他们高管和核心。就好像你在Facebook里干三五年成为他们的技术骨干，那么你到BAT去成成为高管概率是非常大的。反过来，如果你毕业主去了BAT成为了一个螺丝钉，在天天加班中度过你的青春，你干个十年能成为BAT的高管的概率可能会非常的低。&lt;/p&gt;
+&lt;h4&gt;2、去真正的创业公司&lt;/h4&gt;
+&lt;p&gt;去顶尖公司和去创业公司在某些时候并不冲突。不过，这里我想讲的是，一个技术能力强的人在大公司可能会被埋没掉。因为大公司业务成功后，&lt;/p&gt;
+&lt;p&gt;成功的公司在招聘各种高级技术人才都不会成为问题，于是少你一个不少，多你一个不多。
+成功的公司其整个技术体系已经完成，Legacy的问题也比较多，所以，可以供你发挥的余地不大。
+成功的公司更多的可能会想要稳定的系统，稳定必然会产生保守，而保守则产生不思进取。
+所以，对于中高级人才来说，在大公司里的能产生的个人价值，可能远远不如那些求贤若渴、没有包袱、可以尽情施展、相对更为灵活和自由的创业型公司。&lt;/p&gt;
+&lt;p&gt;不过，去创业公司需要小心仔细的挑选和评估，创业公司的不确定因素很多，也和创始人的因素太大了，所以，你需要小心了解创始人和他们的业务情况，想法和理念差不多才能更好的共事。&lt;/p&gt;
+&lt;p&gt;好多创业公司其实并不是真正的创业公司，他们创业有很大的侥幸和驱利心理，要小心甄别。因为那不是真正的创业公司。&lt;/p&gt;
+&lt;h4&gt;3、职业生涯的发展阶段&lt;/h4&gt;
+&lt;p&gt;首先，有一个不争事实——整个社会是会把最重要的工作交给30岁左右的这群人的。也就是说，30岁左右这群人是这个社会的做事的中坚力量。&lt;/p&gt;
+&lt;p&gt;所以，这是一个机遇！如果你有了Leadership，你就一定能在这个时间段内赶得上这个机遇——公司和领导对你寄于信任和厚望，并把重要的团队和工作交给你。&lt;/p&gt;
+&lt;p&gt;于是，你的30岁到40岁就成了一个职业生涯的发展期，也就是你的事业上升期。如果你到40岁都没有赶上，那么你的职业生涯也就这样了，老有所成的人是少数。&lt;/p&gt;
+&lt;p&gt;在你事业的上升期，你需要更多的软技能，比如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;带领产品和业务的发展的能力
+推行自己喜欢的文化的能力
+项目管理的能力——在任务重、时间紧中求全
+沟通和说服别人的能力
+解决冲突的能力 
+管理和发展团队的能力
+解决突发事件的应急能力
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;…… ……&lt;/p&gt;
+&lt;p&gt;另外，你还要明白在职场里的几个冷酷的事实：&lt;/p&gt;
+&lt;p&gt;你开始要关心并处理复杂的人事。尤其在大公司，大量的人都是屁股决定脑袋，利益关系复杂，目标不一致，每个人心里都有不一样的想法。这个时候再也不是talk is cheap, show me the code！而是，code is cheap，talk is the matter。你需要花大量的时间去思考和观察形形色色的人。需要耗费大量的精力在不同的人之间周旋，而不是花时间去创造些什么有价值的东西。
+你要开始学会使用各种政治手段。办公室政治不可避免，越大的公司越重，自从你开始成为一线的leader的那一天起，你就开始成为“里外不是人”的角色，需要在下属和领导，员工和公司之间周旋。随而你的级别越来越高，你需要使用更多的政治手段，你会学会审时度世的站队，学会迎合员工和领导，学会用官员的语言说话，学会此一时彼一时，学会妥协和交换，学会忍气吞声，学会在在适当的时机表现自己，学会波澜不惊，学会把自己隐藏起来，甚至你还会迷失自我，开始学会一些厚黑学，比如不得不在适当的时机在背后捅人刀子……你可能会成为一个你自己都讨厌的人
+听上去真的好无聊，所以，你现在也明白为什么高层们都看上去很忙很累，而且抽不出时间来关心细节问题，因为，他们更多的是要协调整个组织和系统来运转，甚至还要四处周旋，各种博弈，没办法，这是职场的必需的东西！听起来是不是感觉人类很愚蠢？这真是没办法的事。如果你不想或是也没有能力玩这些东西，那么你需要去那些可以让技术人员安安心心做技术的公司。这类的公司，我见过Microsoft、Google、Amazon或是一些创业公司里都有。国内的大公司中也有让技术人员成长的职业成长线，但老实说，表面上看似是一个让人专心做技术的升职成长线，但其实还是管理岗位。&lt;/p&gt;
+&lt;p&gt;所以，技术人员在职场中的归宿有两条路 —— 到真正的技术公司成为一个专心做技术的人，或是在成为一个职业的经理人。&lt;/p&gt;
+&lt;h3&gt;二、追求人生的经历&lt;/h3&gt;
+&lt;p&gt;先说三个故事，&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;第一个，是在阿里的时候，有一天在内网里看到一个贴子，一个做产品的女孩说自己准备离职要去法国学烘培厨艺，引得大家热评。
+第二个，是在亚马逊的美国老板，他每年都要去报个培训班学一个技能，比如：厨艺、开双翼飞机、夜总会里的DJ……、甚至去华盛顿去学当一个政客。
+第三个，是在汤森路透工作时，一个英国的同事，有一天他说他离职了，和自己的老婆准备用余生去周游世界，我问他是不是有足够多的钱了？他和我说，钱不够，他俩口子的计划是，边旅游边打工，打工打够到下一站的钱就走。他还说，那种用假期去另一个城市的旅游太没意思了，如果你不在那个地方生活上一段时间 ，你怎么能算是好的旅游体验呢？好吧，无法反驳。
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我是觉得他们把自己的人生过得如此有意思，令我很佩服。虽然跨界跨得有点猛，但是 Why Not？&lt;/p&gt;
+&lt;p&gt;在这里，我想说，去追求一种和众人不一样的人生经历也是一件挺好的事，我个人感觉，比起在职场里有趣地多多了。如果你厌倦了职场，其实为什么不去追求一下不同的人生经历呢。就算你不想去追求跨度比较大的人生经历，那么，在技术圈里，也有很多有价值有意思的经历也可以去的。追求刺激有意义的与众不同的经历的人，其实也能算是一种人生的成功，不是吗？&lt;/p&gt;
+&lt;p&gt;如果只说技术方面，我个人看到的去追求经历的人，有两种追求的人其实也很成功的：&lt;/p&gt;
+&lt;p&gt;到技术创新的发源地去经历创新。计算机互联网各种技术的创新引擎，基本上来说，就是在美国了。我们赶上了这个时代，也选对了这个时代最火热的行业，那么，有什么理由不去这个时代的技术发动机那里去经历呢？在美国硅谷湾区，无论是大公司，还是创业公司，都在迸发着各式各样的创新，如果有能力有机会，为什么不努力去经历一下呢？不经历一下，老了不会觉得错过了是一种后悔吗？
+去经历下一个热点技术的发展。从IT，到互联网、再到移动互联网、云计算、大数据，再到未来的AI，VR，IoT……，技术创新的浪潮一波接一波的过来，你是想在那继续搬砖搬下去，是想迎浪而上去经历浪潮，还是想成为一个随波逐流的人？&lt;/p&gt;
+&lt;p&gt;打工也好，创业也好，在国内也好，在国外也好，这些都是形式，不是内容。内容则是你有没有和有想法的人去经历有意义有价值事？人生苦短，白驹过隙，我们技术人员最大的幸运就是生在这样一个刺激的时代，那么，你还有什么理由不去追逐这些前沿刺激的经历呢？&lt;/p&gt;
+&lt;h3&gt;三、追求自由的生活&lt;/h3&gt;
+&lt;p&gt;我相信“自由”这个事，是所有人的心中都会想去追求的。“生命诚可贵，爱情价更高，…… ”（哈哈）&lt;/p&gt;
+&lt;p&gt;但一说起自由，绝大多数人都想到的是“财富自由”或是“财务自由”，其实，并不完全是这样的，在自由的通路上，我个人的经历告诉我，其实，你会有很多的不同类型的自由。下面，是我对几个层次的“自由”的理解。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;第一层自由——工作自由。人的第一层自由的境界是——“工作自由”，我到不是说你在工作单位上可以很自由，虽然有特例，但并不普遍。我想说的“工作自由”是——你不会有失业危机感了。也就是说，你成了各个公司的抢手货，你不但不愁找不到工作，而且你是完全不愁找不到好工作。试想一下，如果是工作来找你，一方面，你就有真正意义上的工作选择权了，另一方面，你都不愁工作了，你完全就可以随时离职去干你想干的事了。此时，你就达到了“工作自由”。
+
+第二层自由——技能自由。工作自由已是不错，不过前提是你还是需要依赖于别人提供的工作机会。而技能自由则是你可以用自己的技能养活自己，而不需要去公司里工作。也就是所谓的自由职业者了，社会上，这样的人也不少，比如，一些健身体育教练、设计师、翻译者、作者……这些都可以算是自由职业者，程序员这个职业中只要不是搬砖的，有想法的，就有可以成为自由积业者的潜质，想一想，你拥有的编程能力，其实是一种创造的能力，也就是创造力，只要你Make Something People Want（YC创业公司的slogan），你是完全可以通过自己的技能来养活自己的。如果你通过某些自动化的东西，或是你在App上做了一个软件个体户，让自己的收入不断，甚至你做了一个开源软件，社区每个月都给你捐款捐到比你打工挣的还多，那么你就真正的有了技能自由了。
+
+第三层自由——物质自由。我把财务自由换了一种说法。我个人觉得，除了有个好爸爸之外这种特例的情况，如果你想有物质自由的话，本质上来说，你一定要学会投资，投资不一定是你的钱，时间也是一种财富，年轻更是，你怎么投资你的时间还有你的青春？你要把你的投资投到什么样的事，什么样的人？对于投资这个事，风险也比较大。但是，人生不敢冒险可能才是最大的冒险。这个世界有很多技术不是你能看书学来的，而要只能在实战中学会的，比如：游泳。投资可能也是一种。只有真正懂投资的人，或是运气非常好的人，才可能实现物质自由。
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;追求自由的生活，其实也是个人发展道路上的一个不错的选择。通常来说，自由的人，能力都不差，钱也不会少。因为，他们懂得投资。&lt;/p&gt;
+&lt;p&gt;也就是说，拥有追求自由能力的的人，&lt;/p&gt;
+&lt;p&gt;不但有领导力和创造力（也可指导大多数人并走在大多数人前面）
+同时他还懂得怎么投资（知道时间和精力和金钱应该投在什么地方）
+（注：这里我没有提精神自由，老实说，精神上的自由我也不清楚是什么东西，因为我还没有见过，眼界有限，所以先按不表了，不然真成鸡汤文了）&lt;/p&gt;
+&lt;h3&gt;总结&lt;/h3&gt;
+&lt;p&gt;无论是在职场中打拼，还是追求精彩的经历，还是去实现自由，我觉得都是不错的个人发展的方向。&lt;/p&gt;
+&lt;p&gt;他们都有重叠，比如：&lt;/p&gt;
+&lt;p&gt;你可以在职场中去追求那些刺激的经历的公司。
+同样也可以通过加入有潜力高速发展的公司来达到自由。
+你也可以通过追寻不一样的经历来达到人生的自由。
+……
+总之，这里的逻辑是——&lt;/p&gt;
+&lt;p&gt;能够去规划自己的个人发展的人，通常都是有很多机会和可能性的人。
+有很多机会和可能性的人，通常都是有Leadership，喜欢冒险的人。
+有Leadership喜欢冒险的人，通常都是学习能力强，思维活跃，喜欢折腾，懂得“投资”的人。
+学习能力强思维活跃的人，通常来说，都是喜欢看书，喜欢实践和新鲜事物，不怕艰难和挑战，用智力而不是使蛮力的人。
+懂得“投资”的人，通常来说，他们更多的关注的是未来和长远的成长，而不是当下的KPI、奖金和晋升。&lt;/p&gt;
+&lt;p&gt;本文来源于coolshell,个人认为在１６年底，转载此文，对之前和之后都有不错的总结和警示的意义。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/LYRMWV25YX.jpg" height="280" width="420"&gt;&lt;/p&gt;
+&lt;p&gt;图片来源：网络随机爬取&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">陈皓</dc:creator><pubDate>Fri, 30 Dec 2016 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2016-12-30:2016/12/30/其他/</guid><category>其他</category></item><item><title>转载：程序员技术练级攻略</title><link>http://king32783784.github.io/2012/01/01/other/</link><description>&lt;p&gt;原文：&lt;/p&gt;
+&lt;p&gt;月光博客6月12日发表了《写给新手程序员的一封信》，翻译自《An open letter to those who want to start programming》，我的朋友（他在本站的id是Mailper）告诉我，他希望在酷壳上看到一篇更具操作性的文章。因为他也是喜欢编程和技术的家伙，于是，我让他把他的一些学习Python和Web编程的一些点滴总结一下。于是他给我发来了一些他的心得和经历，我在把他的心得做了不多的增改，并根据我的经历增加了“进阶”一节。这是一篇由新手和我这个老家伙根据我们的经历完成的文章。&lt;/p&gt;
+&lt;p&gt;我的这个朋友把这篇文章取名叫Build Your Programming Technical Skills，我实在不知道用中文怎么翻译，但我在写的过程中，我觉得这很像一个打网游做任务升级的一个过程，所以取名叫“技术练级攻略”，题目有点大，呵呵，这个标题纯粹是为了好玩。这里仅仅是在分享Mailper和我个人的学习经历。（注：省去了我作为一个初学者曾经学习过的一些技术(今天明显过时了)，如：Delphi/Power builder，也省去了我学过的一些我觉得没意思的技术Lotus Notes/ActiveX/COM/ADO/ATL/.NET ……）&lt;/p&gt;
+&lt;h3&gt;前言&lt;/h3&gt;
+&lt;p&gt;你是否觉得自己从学校毕业的时候只做过小玩具一样的程序？走入职场后哪怕没有什么经验也可以把以下这些课外练习走一遍（朋友的抱怨：学校课程总是从理论出发，作业项目都看不出有什么实际作用，不如从工作中的需求出发）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;建议：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;不要乱买书，不要乱追新技术新名词，基础的东西经过很长时间积累而且还会在未来至少10年通用。
+回顾一下历史，看看历史上时间线上技术的发展，你才能明白明天会是什么样。
+一定要动手，例子不管多么简单，建议至少自己手敲一遍看看是否理解了里头的细枝末节。
+一定要学会思考，思考为什么要这样，而不是那样。还要举一反三地思考。
+注：你也许会很奇怪为什么下面的东西很偏Unix/Linux，这是因为我觉得Windows下的编程可能会在未来很没有前途，原因如下：&lt;/p&gt;
+&lt;p&gt;现在的用户界面几乎被两个东西主宰了，1）Web，2）移动设备iOS或Android。Windows的图形界面不吃香了。
+越来越多的企业在用成本低性能高的Linux和各种开源技术来构架其系统，Windows的成本太高了。
+微软的东西变得太快了，很不持久，他们完全是在玩弄程序员。详情参见《Windows编程革命史》
+所以，我个人认为以后的趋势是前端是Web+移动，后端是Linux+开源。开发这边基本上没Windows什么事。&lt;/p&gt;
+&lt;h3&gt;启蒙入门&lt;/h3&gt;
+&lt;h4&gt;1、学习一门脚本语言，例如Python/Ruby&lt;/h4&gt;
+&lt;p&gt;可以让你摆脱对底层语言的恐惧感，脚本语言可以让你很快开发出能用得上的小程序。实践项目:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;处理文本文件，或者csv (关键词 python csv, python open, python sys) 读一个本地文件，逐行处理（例如 word count，或者处理log）&lt;/li&gt;
+&lt;li&gt;遍历本地文件系统 (sys, os, path)，例如写一个程序统计一个目录下所有文件大小并按各种条件排序并保存结果&lt;/li&gt;
+&lt;li&gt;跟数据库打交道 (python sqlite)，写一个小脚本统计数据库里条目数量&lt;/li&gt;
+&lt;li&gt;学会用各种print之类简单粗暴的方式进行调试&lt;/li&gt;
+&lt;li&gt;学会用Google (phrase, domain, use reader to follow tech blogs)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为什么要学脚本语言，因为他们实在是太方便了，很多时候我们需要写点小工具或是脚本来帮我们解决问题，你就会发现正规的编程语言太难用了。&lt;/p&gt;
+&lt;h4&gt;2、用熟一种程序员的编辑器(不是IDE) 和一些基本工具&lt;/h4&gt;
+&lt;p&gt;Vim / Emacs / Notepad++，学会如何配置代码补全，外观，外部命令等。
+Source Insight (或 ctag)&lt;/p&gt;
+&lt;p&gt;使用这些东西不是为了Cool，而是这些编辑器在查看、修改代码/配置文章/日志会更快更有效率。&lt;/p&gt;
+&lt;h4&gt;3、熟悉Unix/Linux Shell和常见的命令行&lt;/h4&gt;
+&lt;p&gt;如果你用windows，至少学会用虚拟机里的linux， vmware player是免费的，装个Ubuntu吧
+一定要少用少用图形界面。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;学会使用man来查看帮助&lt;/li&gt;
+&lt;li&gt;文件系统结构和基本操作 ls/chmod/chown/rm/find/ln/cat/mount/mkdir/tar/gzip …&lt;/li&gt;
+&lt;li&gt;学会使用一些文本操作命令 sed/awk/grep/tail/less/more …&lt;/li&gt;
+&lt;li&gt;学会使用一些管理命令 ps/top/lsof/netstat/kill/tcpdump/iptables/dd…&lt;/li&gt;
+&lt;li&gt;了解/etc目录下的各种配置文章，学会查看/var/log下的系统日志，以及/proc下的系统运行信息&lt;/li&gt;
+&lt;li&gt;了解正则表达式，使用正则表达式来查找文件。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于程序员来说Unix/Linux比Windows简单多了。（参看我四年前CSDN的博文《其实Unix很简单》）学会使用Unix/Linux你会发现图形界面在某些时候实在是太难用了，相当地相当地降低工作效率。&lt;/p&gt;
+&lt;h4&gt;4、学习Web基础（HTML/CSS/JS) + 服务器端技术 (LAMP)&lt;/h4&gt;
+&lt;p&gt;未来必然是Web的世界，学习WEB基础的最佳网站是W3School。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;学习HTML基本语法&lt;/li&gt;
+&lt;li&gt;学习CSS如何选中HTML元素并应用一些基本样式（关键词：box model）&lt;/li&gt;
+&lt;li&gt;学会用  Firefox + Firebug 或 chrome 查看你觉得很炫的网页结构，并动态修改。&lt;/li&gt;
+&lt;li&gt;学习使用Javascript操纵HTML元件。理解DOM和动态网页（http://oreilly.com/catalog/9780596527402) 网上有免费的章节，足够用了。或参看 DOM 。&lt;/li&gt;
+&lt;li&gt;学会用  Firefox + Firebug 或 chrome 调试Javascript代码（设置断点，查看变量，性能，控制台等）
+  在一台机器上配置Apache 或 Nginx&lt;/li&gt;
+&lt;li&gt;学习PHP，让后台PHP和前台HTML进行数据交互，对服务器相应浏览器请求形成初步认识。实现一个表单提交和反显的功能。
+  把PHP连接本地或者远程数据库 MySQL（MySQL 和 SQL现学现用够了）跟完一个名校的网络编程课程（例如：http://www.stanford.edu/~ouster/cgi-bin/cs142-fall10/index.php ) 不要觉得需要多于一学期时间，大学生是全职一学期选3-5门课，你业余时间一定可以跟上&lt;/li&gt;
+&lt;li&gt;学习一个javascript库（例如jQuery 或 ExtJS）+  Ajax (异步读入一个服务器端图片或者数据库内容）+JSON数据格式。&lt;/li&gt;
+&lt;li&gt;HTTP: The Definitive Guide 读完前4章你就明白你每天上网用浏览器的时候发生的事情了(proxy, gateway, browsers)&lt;/li&gt;
+&lt;li&gt;做个小网站（例如：一个小的留言板，支持用户登录，Cookie/Session，增、删、改、查，上传图片附件，分页显示）&lt;/li&gt;
+&lt;li&gt;买个域名，租个空间，做个自己的网站。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;进阶加深&lt;/h3&gt;
+&lt;h4&gt;1、 C语言和操作系统调用&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;重新学C语言，理解指针和内存模型，用C语言实现一下各种经典的算法和数据结构。推荐《计算机程序设计艺术》、《算法导论》和《编程珠玑》。&lt;/li&gt;
+&lt;li&gt;学习（麻省理工免费课程）计算机科学和编程导论&lt;/li&gt;
+&lt;li&gt;学习（麻省理工免费课程）C语言内存管理&lt;/li&gt;
+&lt;li&gt;学习Unix/Linux系统调用（Unix高级环境编程），，了解系统层面的东西。&lt;/li&gt;
+&lt;li&gt;用这些系统知识操作一下文件系统，用户（实现一个可以拷贝目录树的小程序）&lt;/li&gt;
+&lt;li&gt;用fork/wait/waitpid写一个多进程的程序，用pthread写一个多线程带同步或互斥的程序。多进程多进程购票的程序。&lt;/li&gt;
+&lt;li&gt;用signal/kill/raise/alarm/pause/sigprocmask实现一个多进程间的信号量通信的程序。&lt;/li&gt;
+&lt;li&gt;学会使用gcc和gdb来编程和调试程序（参看我的《用gdb调试程序》）&lt;/li&gt;
+&lt;li&gt;学会使用makefile来编译程序。（参看我的《跟我一起写makefile》）&lt;/li&gt;
+&lt;li&gt;IPC和Socket的东西可以放到高级中来实践。&lt;/li&gt;
+&lt;li&gt;学习Windows SDK编程（Windows 程序设计 ，MFC程序设计）&lt;/li&gt;
+&lt;li&gt;写一个窗口，了解WinMain/WinProcedure，以及Windows的消息机制。&lt;/li&gt;
+&lt;li&gt;写一些程序来操作Windows SDK中的资源文件或是各种图形控件，以及作图的编程。&lt;/li&gt;
+&lt;li&gt;学习如何使用MSDN查看相关的SDK函数，各种WM_消息以及一些例程。
+这本书中有很多例程，在实践中请不要照抄，试着自己写一个自己的例程。
+不用太多于精通这些东西，因为GUI正在被Web取代，主要是了解一下Windows 图形界面的编程。@virushuo 说：“ 我觉得GUI确实不那么热门了，但充分理解GUI工作原理是很重要的。包括移动设备开发，如果没有基础知识仍然很吃力。或者说移动设备开发必须理解GUI工作，或者在win那边学，或者在mac/iOS上学”。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2、学习Java&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Java 的学习主要是看经典的Core Java 《Java 核心技术编程》和《Java编程思想》（有两卷，我仅链了第一卷，足够了，因为Java的图形界面了解就可以了）&lt;/li&gt;
+&lt;li&gt;学习JDK，学会查阅Java API Doc http://download.oracle.com/javase/6/docs/api/&lt;/li&gt;
+&lt;li&gt;了解一下Java这种虚拟机语言和C和Python语言在编译和执行上的差别。从C、Java、Python思考一下“跨平台”这种技术。&lt;/li&gt;
+&lt;li&gt;学会使用IDE Eclipse，使用Eclipse 编译，调试和开发Java程序。&lt;/li&gt;
+&lt;li&gt;建一个Tomcat的网站，尝试一下JSP/Servlet/JDBC/MySQL的Web开发。把前面所说的那个PHP的小项目试着用JSP和Servlet实现一下。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;3、Web的安全与架构&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;学习HTML5，网上有很多很多教程，以前酷壳也介绍过很多，我在这里就不罗列了。&lt;/li&gt;
+&lt;li&gt;学习Web开发的安全问题（参考新浪微博被攻击的这个事，以及Ruby的这篇文章）&lt;/li&gt;
+&lt;li&gt;学习HTTP Server的rewrite机制，Nginx的反向代理机制，fast-cgi（如：PHP-FPM）&lt;/li&gt;
+&lt;li&gt;学习Web的静态页面缓存技术。&lt;/li&gt;
+&lt;li&gt;学习Web的异步工作流处理，数据Cache，数据分区，负载均衡，水平扩展的构架。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用HTML5的canvas 制作一些Web动画。&lt;/li&gt;
+&lt;li&gt;尝试在前面开发过的那个Web应用中进行SQL注入，JS注入，以及XSS攻击。&lt;/li&gt;
+&lt;li&gt;把前面开发过的那个Web应用改成构造在Nginx + PHP-FPM + 静态页面缓存的网站&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;4、学习关系型数据库&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;你可以安装MSSQLServer或MySQL来学习数据库。&lt;/li&gt;
+&lt;li&gt;学习教科书里数据库设计的那几个范式，1NF，2NF，3NF，……&lt;/li&gt;
+&lt;li&gt;学习数据库的存过，触发器，视图，建索引，游标等。&lt;/li&gt;
+&lt;li&gt;学习SQL语句，明白表连接的各种概念（参看《SQL  Join的图示》）&lt;/li&gt;
+&lt;li&gt;学习如何优化数据库查询（参看《MySQL的优化》）
+&lt;strong&gt;实践任务：&lt;/strong&gt;
+  设计一个论坛的数据库，至少满足3NF，使用SQL语句查询本周，本月的最新文章，评论最多的文章，最活跃用户。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;5、一些开发工具&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;学会使用SVN或Git来管理程序版本。&lt;/li&gt;
+&lt;li&gt;学会使用JUnit来对Java进行单元测试。&lt;/li&gt;
+&lt;li&gt;学习C语言和Java语言的coding standard 或 coding guideline。（我N年前写过一篇关C语言非常简单的文章——《编程修养》，这样的东西你可以上网查一下，一大堆）。&lt;/li&gt;
+&lt;li&gt;推荐阅读《代码大全》《重构》《代码整洁之道》&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;高级深入&lt;/h3&gt;
+&lt;h4&gt;1、C++ / Java 和面向对象&lt;/h4&gt;
+&lt;p&gt;我个人以为学好C++，Java也就是举手之劳。但是C++的学习曲线相当的陡。不过，我觉得C++是最需要学好的语言了。参看两篇趣文“C++学习信心图” 和“21天学好C++”&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;学习（麻省理工免费课程）C++面向对象编程&lt;/li&gt;
+&lt;li&gt;读我的 “如何学好C++”中所推荐的那些书至少两遍以上（如果你对C++的理解能够深入到像我所写的《C++虚函数表解析》或是《C++对象内存存局》，或是《C/C++返回内部静态成员的陷阱》那就非常不错了）&lt;/li&gt;
+&lt;li&gt;然后反思为什么C++要干成这样，Java则不是？你一定要学会对比C++和Java的不同。比如，Java中的初始化，垃圾回收，接口，异常，虚函数，等等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用C++实现一个BigInt，支持128位的整形的加减乘除的操作。&lt;/li&gt;
+&lt;li&gt;用C++封装一个数据结构的容量，比如hash table。&lt;/li&gt;
+&lt;li&gt;用C++封装并实现一个智能指针（一定要使用模板）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;《设计模式》必须一读，两遍以上，思考一下，这23个模式的应用场景。
+主要是两点：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;1）钟爱组合而不是继承，
+2）钟爱接口而不是实现。（也推荐《深入浅出设计模式》）
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用工厂模式实现一个内存池。&lt;/li&gt;
+&lt;li&gt;使用策略模式制做一个类其可以把文本文件进行左对齐，右对齐和中对齐。&lt;/li&gt;
+&lt;li&gt;使用命令模式实现一个命令行计算器，并支持undo和redo。&lt;/li&gt;
+&lt;li&gt;使用修饰模式实现一个酒店的房间价格订价策略——旺季，服务，VIP、旅行团、等影响价格的因素。&lt;/li&gt;
+&lt;li&gt;学习STL的用法和其设计概念  – 容器，算法，迭代器，函数子。如果可能，请读一下其源码。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;尝试使用面向对象、STL，设计模式、和WindowsSDK图形编程的各种技能&lt;/li&gt;
+&lt;li&gt;做一个贪吃蛇或是俄罗斯方块的游戏。支持不同的级别和难度。&lt;/li&gt;
+&lt;li&gt;做一个文件浏览器，可以浏览目录下的文件，并可以对不同的文件有不同的操作，文本文件可以打开编辑，执行文件则执行之，mp3或avi文件可以播放，图片文件可以展示图片。&lt;/li&gt;
+&lt;li&gt;学习C++的一些类库的设计，如： MFC（看看候捷老师的《深入浅出MFC》） ，Boost, ACE,  CPPUnit，STL （STL可能会太难了，但是如果你能了解其中的设计模式和设计那就太好了，如果你能深入到我写的《STL string类的写时拷贝技术》那就非常不错了，ACE需要很强在的系统知识，参见后面的“加强对系统的了解”）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Java是真正的面向对象的语言，Java的设计模式多得不能再多，也是用来学习面向对象的设计模式的最佳语言了（参看Java中的设计模式）。&lt;/p&gt;
+&lt;p&gt;推荐阅读《Effective Java》 and 《Java解惑》&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;学习Java的框架，Java的框架也是多，如Spring, Hibernate，Struts 等等，主要是学习Java的设计，如IoC等。
+Java的技术也是烂多，重点学习J2EE架构以及JMS， RMI, 等消息传递和远程调用的技术。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;学习使用Java做Web Service （官方教程在这里）&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;尝试在Spring或Hibernate框架下构建一个有网络的Web Service的远程调用程序，并可以在两个Service中通过JMS传递消息。&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;C++和Java都不是能在短时间内能学好的，C++玩是的深，Java玩的是广，我建议两者选一个。我个人的学习经历是：&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;深究C++（我深究C/C++了十来年了）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;学习Java的各种设计模式。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2、加强系统了解&lt;/h4&gt;
+&lt;p&gt;重要阅读下面的几本书：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;《Unix编程艺术》了解Unix系统领域中的设计和开发哲学、思想文化体系、原则与经验。你一定会有一种醍醐灌顶的感觉。&lt;/li&gt;
+&lt;li&gt;《Unix网络编程卷1，套接字》这是一本看完你就明白网络编程的书。重要注意TCP、UDP，以及多路复用的系统调用select/poll/epoll的差别。&lt;/li&gt;
+&lt;li&gt;《TCP/IP详解 卷1:协议》- 这是一本看完后你就可以当网络黑客的书。了解以太网的的运作原理，了解TCP/IP的协议，运作原理以及如何TCP的调优。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;理解什么是阻塞（同步IO），非阻塞（异步IO），多路复用（select, poll, epoll）的IO技术。&lt;/li&gt;
+&lt;li&gt;写一个网络聊天程序，有聊天服务器和多个聊天客户端（服务端用UDP对部分或所有的的聊天客户端进Multicast或Broadcast）。&lt;/li&gt;
+&lt;li&gt;写一个简易的HTTP服务器。
+《Unix网络编程卷2，进程间通信》信号量，管道，共享内存，消息等各种IPC…… 这些技术好像有点老掉牙了，不过还是值得了解。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;主要实践各种IPC进程序通信的方法。&lt;/li&gt;
+&lt;li&gt;尝试写一个管道程序，父子进程通过管道交换数据。&lt;/li&gt;
+&lt;li&gt;尝试写一个共享内存的程序，两个进程通过共享内存交换一个C的结构体数组。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;学习《Windows核心编程》一书。把CreateProcess，Windows线程、线程调度、线程同步（Event,  信号量，互斥量）、异步I/O，内存管理，DLL，这几大块搞精通。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用CreateProcess启动一个记事本或IE，并监控该程序的运行。把前面写过的那个简易的HTTP服务用线程池实现一下。写一个DLL的钩子程序监控指定窗口的关闭事件，或是记录某个窗口的按键。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;有了多线程、多进程通信，TCP/IP，套接字，C++和设计模式的基本，你可以研究一下ACE了。使用ACE重写上述的聊天程序和HTTP服务器（带线程池）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实践任务：&lt;/strong&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过以上的所有知识，尝试&lt;/li&gt;
+&lt;li&gt;写一个服务端给客户端传大文件，要求把100M的带宽用到80%以上。（注意，磁盘I/O和网络I/O可能会很有问题，想一想怎么解决，另外，请注意网络传输最大单元MTU）&lt;/li&gt;
+&lt;li&gt;了解BT下载的工作原理，用多进程的方式模拟BT下载的原理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;3、系统架构&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;负载均衡。HASH式的，纯动态式的。（可以到Google学术里搜一些关于负载均衡的文章读读）&lt;/li&gt;
+&lt;li&gt;多层分布式系统 – 客户端服务结点层、计算结点层、数据cache层，数据层。J2EE是经典的多层结构。&lt;/li&gt;
+&lt;li&gt;CDN系统 – 就近访问，内容边缘化。&lt;/li&gt;
+&lt;li&gt;P2P式系统，研究一下BT和电驴的算法。比如：DHT算法。&lt;/li&gt;
+&lt;li&gt;服务器备份，双机备份系统（Live-Standby和Live-Live系统），两台机器如何通过心跳监测对方？集群主结点备份。&lt;/li&gt;
+&lt;li&gt;虚拟化技术，使用这个技术，可以把操作系统当应用程序一下切换或重新配置和部署。&lt;/li&gt;
+&lt;li&gt;学习Thrift，二进制的高性能的通讯中间件，支持数据(对象)序列化和多种类型的RPC服务。&lt;/li&gt;
+&lt;li&gt;学习Hadoop。Hadoop框架中最核心的设计就是：MapReduce和HDFS。MapReduce的思想是由Google的一篇论文所提及而被广为流传的，简单的一句话解释MapReduce就是“任务的分解与结果的汇总”。HDFS是Hadoop分布式文件系统（Hadoop Distributed File System）的缩写，为分布式计算存储提供了底层支持。&lt;/li&gt;
+&lt;li&gt;了解NoSQL数据库（有人说可能是一个过渡炒作的技术），不过因为超大规模以及高并发的纯动态型网站日渐成为主流，而SNS类网站在数据存取过程中有着实时性等刚性需求，这使得目前NoSQL数据库慢慢成了人们所关注的焦点，并大有成为取代关系型数据库而成为未来主流数据存储模式的趋势。当前NoSQL数据库很多，大部分都是开源的，其中比较知名的有：MemcacheDB、Redis、Tokyo Cabinet(升级版为Kyoto Cabinet)、Flare、MongoDB、CouchDB、Cassandra、Voldemort等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;写了那么多，回顾一下，觉得自己相当的有成就感。希望大家不要吓着，我自己这十来年也在不断地学习，今天我也在学习中，人生本来就是一个不断学习和练级的过程。不过，一定有漏的，也有不对的，还希望大家补充和更正。（我会根据大家的反馈随时更新此文）欢迎大家通过我的微博（@左耳朵耗子）和twitter（@haoel）和我交流。&lt;/p&gt;
+&lt;p&gt;—– 更新  2011/07/19 —–&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1）有朋友奇怪为什么我在这篇文章开头说了web+移动，却没有在后面提到iOS/Android的前端开发。因为我心里有一种感觉，移动设备上的UI最终也会被Javascript取代。大家可以用iPhone或Android看看google+，你就会明白了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;2）有朋友说我这里的东西太多了，不能为了学习而学习，我非常同意。我在文章的前面也说了要思考。另外，千万不要以为我说的这些东西是一些新的技术，这份攻略里95%以上的全是基础。而且都是久经考验的基础技术。即是可以让你一通百通的技术，也是可以让你找到一份不错工作的技术。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;3）有朋友说学这些东西学完都40了，还不如想想怎么去挣钱。我想告诉大家，一是我今年还没有40岁，二是学无止境啊，三是我不觉得挣钱有多难，难的是怎么让你值那么多钱？无论是打工还是创业，是什么东西让你自己的价值，让你公司的价值更值钱？别的地方我不敢说，对于互联网或IT公司来说，技术实力绝对是其中之一。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;4）有朋友说技术都是工具，不应该如此痴迷这句话没有错，有时候我们需要更多的是抬起头来看看技术以外的事情，或者是说我们在作技术的时候不去思考为什么会有这个技术，为什么不是别的，问题不在于技术，问题在于我们死读书，读死书，成了技术的书呆子。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;5） 对于NoSQL，最近比较火，但我对其有点保守，所以，我只是说了解就可以。对于Hadoop，我觉得其在分布式系统上有巨大的潜力，所以需要学习。 对于关系型数据库，的确是很重要的东西，这点是我的疏忽，在原文里补充。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href="http://coolshell.cn/articles/4990.html"&gt;原文链接&lt;/a&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">陈皓</dc:creator><pubDate>Sun, 01 Jan 2012 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2012-01-01:2012/01/01/other/</guid><category>练级</category></item></channel></rss>

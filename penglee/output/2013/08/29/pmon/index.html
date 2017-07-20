@@ -1,0 +1,2285 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="pmon" />
+        <meta name="description" content="启动过程： PMON2000 MIPS Initializing. Standby... /*CPU Initializing*/ 0xbfe00190 : 00008062f0f8f0f0 CPU CLK SEL : 00000002 CPU clk frequency = SYSCLK x 0x00000020 / 1 /×CPU的频率×/ MEM CLK SEL : 00000003 DDR clk frequency = MEMCLK x 0x00000021 / 3 /*DDR的频率×/ CPU 1 READ TEST... CPU 1 READ TEST OK./×CPU 读测试×/ HT0 frequency reconfig /×总线时钟重新设置×/ Fix L1xbar ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="PMON启动信息详解"/>
+    <meta property="og:url" content="../../../../2013/08/29/pmon/"/>
+    <meta property="og:description" content="启动过程： PMON2000 MIPS Initializing. Standby... /*CPU Initializing*/ 0xbfe00190 : 00008062f0f8f0f0 CPU CLK SEL : 00000002 CPU clk frequency = SYSCLK x 0x00000020 / 1 /×CPU的频率×/ MEM CLK SEL : 00000003 DDR clk frequency = MEMCLK x 0x00000021 / 3 /*DDR的频率×/ CPU 1 READ TEST... CPU 1 READ TEST OK./×CPU 读测试×/ HT0 frequency reconfig /×总线时钟重新设置×/ Fix L1xbar ..."/>
+    <meta property="article:published_time" content="2013-08-29" />
+    <meta property="article:section" content="其他" />
+        <meta property="article:tag" content="pmon" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>PMON启动信息详解 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2013/08/29/pmon/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2013/08/29/pmon/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2013/08/29/pmon/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2013/08/29/pmon/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2013/08/29/pmon/"
+                           rel="bookmark"
+                           title="Permalink to PMON启动信息详解">
+                            PMON启动信息详解
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2013-08-29T00:00:00+08:00"> 2013-08-29 四</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/qi-ta.html">其他</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/pmon.html">pmon</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p><img class="img-responsive" height="280" src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/P5LS1TUY3V.jpg" width="420"/></p>
+<p>启动过程：</p>
+<div class="highlight"><pre><span></span>PMON2000 MIPS Initializing. Standby... /*CPU  Initializing*/
+
+ 0xbfe00190 : 00008062f0f8f0f0 
+CPU CLK SEL : 00000002
+CPU clk frequency = SYSCLK x 0x00000020 /  1 /×CPU的频率×/
+MEM CLK SEL : 00000003
+DDR clk frequency = MEMCLK x 0x00000021 /  3 /*DDR的频率×/
+</pre></div>
+<p>CPU 1 READ TEST...
+CPU 1 READ TEST OK./×CPU 读测试×/
+HT0 frequency reconfig  /×总线时钟重新设置×/
+Fix L1xbar illegal access at NODE 0
+Fix L1xbar illegal access at NODE 1 /×修复节点的一级缓存×/</p>
+<p>Fix L2xbar in NODE 0
+Fix L2xbar in NODE 1  /×修复节点的二级缓存×/
+Init tlb...  /×初始化TLB×/
+Init htpcitlb.../×初始化PCI总线TLB×/
+godson2 caches found /×初始化缓存×/
+Jump to 9fc /×跳转到9fc<em>/
+scache init done /×chache 初始化完成</em>/</p>
+<p>Start Init Memory, wait a while......
+NODE 0 MEMORY CONFIG BEGIN/*开始初始化内存，首先是节点0的内存×/</p>
+<p>Open SMBUS controller/*开启SMBUS控制器×/</p>
+<p>Probing DDR MC1 SLOT:    /<em>侦测 DDR控制器MC1 插槽</em>/ 
+Probe MC1 slot 0.       /*侦测到MC1 slot0 内存颗粒×/
+Probe MC1 slot 1.
+NO DIMM in this slot. /×MC1 slot 1 没有内存颗粒×/</p>
+<p>Probing DDR MC0 SLOT: 
+Probe MC0 slot 0.
+Probe MC0 slot 1.
+NO DIMM in this slot./×MC0同MC1*/</p>
+<p>s1 = 0xf0a10400__f0a10400
+/*</p>
+<p>new s1 = 0xf0a10400__f0a10400
+Disable cpu buffered read  /*关闭CPU缓存读×/
+Disable read buffer      </p>
+<p>Enable register space of MEMORY   /×设置内存寄存器模块使能×/</p>
+<p>The MC param is:
+00000100  00000100
+00000001  00010001
+...</p>
+<p>/×写入内存参数×/</p>
+<p>Disable register space of MEMORY
+/<em>关闭内存的寄存器模块</em>/</p>
+<p>NODE ID:00000000
+Lock Scache Node x--9800?01000000000~4K...
+Lock Scache Done.      </p>
+<p>Start ARB Leveling....
+/<em>启动ARB训练</em>/</p>
+<p>Start Write Leveling. Wait a while...
+Min value: 0x0000000000000000
+Max value: 0x4e46443c44484e50
+Cal Mid value: 0x120a0800080c1214
+/×写入练习×/</p>
+<p>Start read leveling..</p>
+<p>Level slice: 0x00000007
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003a3c
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003a3a
+This Slice level success, use first value.
+/*这一级片训练成功，采用第一个值×/</p>
+<p>Level slice: 0x00000006
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003a3a
+RDLVL_DELAYN_GD_MIN: 0x00000808
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>Level slice: 0x00000005
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003a3a
+RDLVL_DELAYN_GD_MIN: 0x00000808
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>Level slice: 0x00000004
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003a3a
+RDLVL_DELAYN_GD_MIN: 0x00000808
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>Level slice: 0x00000003
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00003c3c
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>Level slice: 0x00000002
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00003e3e
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003e3e
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>Level slice: 0x00000001
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00003e3e
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>Level slice: 0x00000000
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00003e3e
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.
+/*这一级片训练成功，采用第二个值×/</p>
+<p>ARB Leveling Finished./<em>ARB训练完成，MC设置如下：</em>/
+After ARB level. The MC configuration is:<br/>
+...
+00000c2d  00000c2d</p>
+<p>Unlock Scache Node x--9800?01000000000~4K...
+Unlock Scache Done.</p>
+<p>Disable register space of MEMORY</p>
+<p>MC0 Config DONE</p>
+<p>Enable register space of MEMORY</p>
+<p>The MC param is:
+00000100  00000100</p>
+<p>00000000  00000000</p>
+<p>...
+Disable register space of MEMORY</p>
+<p>NODE ID:00000000
+Lock Scache Node x--9800?01000000000~4K...
+Lock Scache Done.</p>
+<p>Start ARB Leveling....</p>
+<p>Start Write Leveling. Wait a while...
+Wrlvl Error: This Byte Window not found.
+Failed byte is byte: 00000006
+Try another pad compensation.</p>
+<p>Start Write Leveling. Wait a while...
+Wrlvl Error: This Byte Window not found.
+Failed byte is byte: 00000006
+Try another pad compensation.</p>
+<p>Start Write Leveling. Wait a while...
+Wrlvl Error: This Byte Window not found.
+Failed byte is byte: 00000006
+Try another pad compensation.</p>
+<p>Write level failed. Write default value(0x30).</p>
+<p>/*写训练失败×/</p>
+<p>Start read leveling..</p>
+<p>Level slice: 0x00000007
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x0000383a
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use first value.</p>
+<p>Level slice: 0x00000006
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000003
+RDLVL_GATE_CFG: 0x00000000
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00000000
+RDLVL_DELAYP_GD_MIN: 0x00000000
+RDLVL_DELAYP_GD_MAX: 0x00000000
+RDLVL_DELAYN_GD_MIN: 0x00000000
+RDLVL_DELAYN_GD_MAX: 0x00000000
+Try another pad compensation.</p>
+<p>ERROR: This Slice level failed, write default value.</p>
+<p>/×读训练失败×/</p>
+<p>Level slice: 0x00000005
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00001c1c
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003a3a
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003e3e
+This Slice level success, use second value.</p>
+<p>Level slice: 0x00000004
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00001818
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003a3a
+RDLVL_DELAYN_GD_MIN: 0x00000808
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.</p>
+<p>Level slice: 0x00000003
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00001a1a
+RDLVL_DELAYP_GD_MIN: 0x00000808
+RDLVL_DELAYP_GD_MAX: 0x00003e3e
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003e3e
+This Slice level success, use second value.</p>
+<p>Level slice: 0x00000002
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00001e1e
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00003e3e
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003c3c
+This Slice level success, use second value.</p>
+<p>Level slice: 0x00000001
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002020
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00004040
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003e3e
+This Slice level success, use second value.</p>
+<p>Level slice: 0x00000000
+Wait a while...
+RDLVL_FAIL_MARK: 0x00000000
+RDLVL_GATE_CFG: 0x00000101
+RDLVL_GATE_GD_MIN: 0x00000000
+RDLVL_GATE_GD_MAX: 0x00002222
+RDLVL_DELAYP_GD_MIN: 0x00000404
+RDLVL_DELAYP_GD_MAX: 0x00003c3c
+RDLVL_DELAYN_GD_MIN: 0x00000404
+RDLVL_DELAYN_GD_MAX: 0x00003e3e
+This Slice level success, use second value.</p>
+<p>ERROR!!!: ARB Leveling Fail</p>
+<p>/*内存训练失败×/</p>
+<p>RW Diff 0x0010000000000000
+RD Diff 0x0010000000000000
+Unlock Scache Node x--9800?01000000000~4K...
+Unlock Scache Done.</p>
+<p>Disable register space of MEMORY</p>
+<p>MC1 Config DONE</p>
+<p>msize = 0x00000008
+!!!MEM is at NO_INTERLEAVE mode. If this is not the expected setting, 
+please check whether the two MC_MEMSIZE is equal
+DDR space open : 0x00000000 - 0x0FFFFFFF
+PCI space open: 0x80000000 - 0x8FFFFFFF
+MC0 space open : 0x80000000 - 0xFFFFFFFF
+MC1 space open : 0x100000000 - 0x17FFFFFFF
+DDR space open : 0x080000000 - 0x17FFFFFFF
+Full PCI space opened as cpu.
+NODE 1 MEMORY CONFIG BEGIN
+/节点1 开始内存训练×/</p>
+<p>Open SMBUS controller</p>
+<p>Probing DDR MC1 SLOT: 
+Probe MC1 slot 0.
+Probe MC1 slot 1.
+NO DIMM in this slot.</p>
+<p>Probing DDR MC0 SLOT: 
+Probe MC0 slot 0.
+Probe MC0 slot 1.
+NO DIMM in this slot.</p>
+<p>s1 = 0xf0a10400__f0a10401</p>
+<p>new s1 = 0xf0a10400__f0a10401
+Disable cpu buffered read
+Disable read buffer</p>
+<p>MC1 Config DONE</p>
+<p>msize = 0x00000800
+!!!MEM is at NO_INTERLEAVE mode. If this is not the expected setting, /×内存未启用交错模式×/
+please check whether the two MC_MEMSIZE is equal
+DDR space open : 0x00000000 - 0x0FFFFFFF
+PCI space open: 0x80000000 - 0x8FFFFFFF
+MC0 space open : 0x80000000 - 0xFFFFFFFF
+MC1 space open : 0x100000000 - 0x17FFFFFFF
+DDR space open : 0x080000000 - 0x17FFFFFFF
+Full PCI space opened as cpu.</p>
+<p>system msize = 0x00000808
+system s3 = 0x0003030f76543210
+Init Memory done.</p>
+<p>store DIMM info of MC0</p>
+<p>store DIMM info of MC1
+32 bit PCI space translate to 64 bit HT space
+Waiting HyperTransport bus to be up.&gt;
+00110020
+HT RX DMA address ENABLE
+HT RX DMA address ENABLE done 1
+HT RX DMA address ENABLE done 2
+Setting HyperTransport Controller to be 8-bit width
+00110020
+Setting HyperTransport Controller to be 800Mhz
+80258523
+SET HT as HOST
+2001000820010008
+Setting HyperTransport Southbridge to be 8-bit width
+00110020
+Setting HyperTransport Southbridge to be 800M
+1c750060
+Setting Watch Dog to make a WARM RESET
+Watch dog Enable</p>
+<p>Watch dog decode enable
+00000000
+Watch dog control value
+00000000
+00000000
+Set Watch dog control value
+Waiting HyperTransport bus to be down.&gt;
+00110010
+Waiting HyperTransport bus to be up.&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=
+00110020
+Setting HyperTransport Southbridge back to be 8-bit width and 200Mhz for next RESET
+1c750560
+Checking HyperTransport bus CRC error bit.
+Checking HyperTransport SouthBridge CRC error bit.
+Done
+Read HT Channel priority
+00904321</p>
+<p>======This is cww's world:1</p>
+<p>enable rs780 dev8...</p>
+<p>test GPPSB</p>
+<p>Enabled GPPSB success...</p>
+<p>sb700 lpc init...</p>
+<p>set boottimerdisable</p>
+<p>enable lpc controller</p>
+<p>enable port 80 LPC decode</p>
+<p>Decode port 0x3f8-0x3ff</p>
+<p>Decode port 0x60-0x66</p>
+<p>SuperIO RTC</p>
+<p>======This is cww's world:2</p>
+<p>======X1 core0 map windows:
+900000003ff02000: 0000000018000000
+900000003ff02008: 00000e0000000000
+900000003ff02010: 0000000000000000
+900000003ff02018: 0000000040000000
+900000003ff02020: 000000001e000000
+900000003ff02028: 00000c0000000000
+900000003ff02030: 0000200000000000
+900000003ff02038: 000000fdfe000000
+900000003ff02040: fffffffffc000000
+900000003ff02048: ffffff0000000000
+900000003ff02050: 0000000000000000
+900000003ff02058: ffffffffc0000000
+900000003ff02060: ffffffffff000000
+900000003ff02068: 00000c0000000000
+900000003ff02070: 0000200000000000
+900000003ff02078: 000000fffe000000
+900000003ff02080: 00000efdfc0000f7
+900000003ff02088: 00000e00000000f7
+900000003ff02090: 0000000000000000
+900000003ff02098: 00000e00400000f7
+900000003ff020a0: 00000e00000000f7
+900000003ff020a8: 00000c00000000f7
+900000003ff020b0: 00002000000000f7
+900000003ff020b8: 000000fdfe0000f7</p>
+<p>======X2 cpu map windows:
+900000003ff00000: 000000001fc00000
+900000003ff00008: 0000000010000000
+900000003ff00010: 0000000000000000
+900000003ff00018: 0000000000000000
+900000003ff00020: 0000000080000000
+900000003ff00028: 0000000100000000
+900000003ff00030: 0000000000000000
+900000003ff00038: 0000000000000000
+900000003ff00040: fffffffffff00000
+900000003ff00048: fffffffff0000000
+900000003ff00050: fffffffff0000000
+900000003ff00058: 0000000000000000
+900000003ff00060: ffffffff80000000
+900000003ff00068: ffffffff80000000
+900000003ff00070: 0000000000000000
+900000003ff00078: 0000000000000000
+900000003ff00080: 000000001fc000f2
+900000003ff00088: 0000000010000082
+900000003ff00090: 00000000000000f0
+900000003ff00098: 0000000000000000
+900000003ff000a0: 00000000000000f0
+900000003ff000a8: 00000000000000f1
+900000003ff000b0: 0000000000000000
+900000003ff000b8: 0000000000000000</p>
+<p>======X2 pci map windows:
+900000003ff00100: 0000000080000000
+900000003ff00108: 0000000000000000
+900000003ff00110: 0000000080000000
+900000003ff00118: 0000000080000000
+900000003ff00120: 0000000080000000
+900000003ff00128: 0000000100000000
+900000003ff00130: 0000000000000000
+900000003ff00138: 0000000000000000
+900000003ff00140: ffffffff80000000
+900000003ff00148: 0000000000000000
+900000003ff00150: fffffffff0000000
+900000003ff00158: 0000000000000000
+900000003ff00160: ffffffff80000000
+900000003ff00168: ffffffff80000000
+900000003ff00170: 0000000000000000
+900000003ff00178: 0000000000000000
+900000003ff00180: 0000000000000000
+900000003ff00188: 0000000000000000
+900000003ff00190: 00000000000000f0
+900000003ff00198: 0000000000000000
+900000003ff001a0: 00000000000000f0
+900000003ff001a8: 00000000000000f1
+900000003ff001b0: 0000000000000000
+900000003ff001b8: 0000000000000000</p>
+<p>======read HT config reg:
+90000efdfb000000: 0000000000000000
+90000efdfb000060: 0080fff0c0000000
+90000efdfb000068: 00008000c0000000
+90000efdfb000070: 0000000000000000</p>
+<p>======X1 core0 map windows:
+900010003ff02000: 0000000000000000
+900010003ff02008: 0000000000000000
+900010003ff02010: 0000000000000000
+900010003ff02018: 0000000000000000
+900010003ff02020: 0000000000000000
+900010003ff02028: 00001c0000000000
+900010003ff02030: 0000200000000000
+900010003ff02038: 00000efdfe000000
+900010003ff02040: 0000000000000000
+900010003ff02048: 0000000000000000
+900010003ff02050: 0000000000000000
+900010003ff02058: 0000000000000000
+900010003ff02060: 0000000000000000
+900010003ff02068: 00001c0000000000
+900010003ff02070: 0000200000000000
+900010003ff02078: 0000fffffe000000
+900010003ff02080: 0000000000000000
+900010003ff02088: 0000000000000000
+900010003ff02090: 0000000000000000
+900010003ff02098: 0000000000000000
+900010003ff020a0: 0000000000000000
+900010003ff020a8: 00001c00000000f7
+900010003ff020b0: 00002000000000f7
+900010003ff020b8: 000000fdfe0000f6</p>
+<p>======X2 cpu map windows:
+900010003ff00000: 0000000000000000
+900010003ff00008: 0000100010000000
+900010003ff00010: 0000100000000000
+900010003ff00018: 0000000000000000
+900010003ff00020: 0000100080000000
+900010003ff00028: 0000100100000000
+900010003ff00030: 0000000000000000
+900010003ff00038: 0000000000000000
+900010003ff00040: fffffffff0000000
+900010003ff00048: fffffffff0000000
+900010003ff00050: fffffffff0000000
+900010003ff00058: 0000000000000000
+900010003ff00060: ffffffff80000000
+900010003ff00068: ffffffff80000000
+900010003ff00070: 0000000000000000
+900010003ff00078: 0000000000000000
+900010003ff00080: 0000000000000000
+900010003ff00088: 0000000010000082
+900010003ff00090: 00000000000000f0
+900010003ff00098: 0000000000000000
+900010003ff000a0: 00000000000000f0
+900010003ff000a8: 00000000000000f1
+900010003ff000b0: 0000000000000000
+900010003ff000b8: 0000000000000000</p>
+<p>======X2 pci map windows:
+900010003ff00100: 0000000080000000
+900010003ff00108: 0000000000000000
+900010003ff00110: 0000100080000000
+900010003ff00118: 0000000080000000
+900010003ff00120: 0000100080000000
+900010003ff00128: 0000100100000000
+900010003ff00130: 0000000000000000
+900010003ff00138: 0000000000000000
+900010003ff00140: ffffffff80000000
+900010003ff00148: 0000000000000000
+900010003ff00150: fffffffff0000000
+900010003ff00158: 0000000000000000
+900010003ff00160: ffffffff80000000
+900010003ff00168: ffffffff80000000
+900010003ff00170: 0000000000000000
+900010003ff00178: 0000000000000000
+900010003ff00180: 0000000000000000
+900010003ff00188: 0000000000000000
+900010003ff00190: 00000000000000f0
+900010003ff00198: 0000000000000000
+900010003ff001a0: 00000000000000f0
+900010003ff001a8: 00000000000000f1
+900010003ff001b0: 0000000000000000
+900010003ff001b8: 0000000000000000</p>
+<p>======read HT config reg:
+90001efdfb000000: 0000000000000000
+90001efdfb000060: 0080fff0c0000000
+90001efdfb000068: 00008000c0000000
+90001efdfb000070: 0000000000000000</p>
+<p>spd_info_store begain.</p>
+<p>spd_info_store done.
+Copy PMON to execute location...
+  start = 0x81000000
+  s0 = 0x3ec00000
+81000000
+81010000
+81020000
+81030000
+81040000
+81050000
+81060000
+81070000
+81080000
+81090000
+810a0000
+810b0000
+copy text section done.
+Copy PMON to execute location done.
+sp=80ffc000
+Uncompressing Bios..................................................................................OK,Booting Bios
+memorysize_high_n1 0xf0000000
+FREQ
+RTC: 12-15-03 08:40:12
+FREI
+cpu fre 799980000
+DONE
+DEVI
+ENVI
+MAPV
+in envinit
+nvram=bfc00000
+NVRAM@bfcfd800
+STDV
+80100000:  memory between 82fff000-83000000  is already been allocated,heap is already above this point
+SBDD
+rs780_early_setup
+sb700_early_setup
+rs780_before_pci_fixup
+sb700_before_pci_fixup
+rs780_enable
+sb700_enable
+disable bus0 device pcie bridges
+disable OHCI and EHCI controller
+enable OHCI controller
+P12PCIH
+PCIH
+pcie-slot device: vendor:ffff product:ffff
+PCIS
+PCIR
+PCIW
+vga_dev =:0
+pcie_dev :0 vga_dev ==:82fff348
+vga_dev =:82fff348
+pcie_dev :0 vga_dev ==:82fff348
+sb700_after_pci_fixup
+NETI
+RTCL
+PCID
+VGAI
+memorysize=b000000,base=82efe4f0,sysMem=82eee4e8,vram=be0a0000
+in setup_int_vect!done!USE inter-graphic device: vendor:1002, device=0x:9615
+vgarom romaddress:0x8014a940
+Rom base addr: 8014a940
+VGA bios found
+rom size is 59k
+PCI data structure at offset 1c0
+video bios address: c7f00000
+lock vga
+starting bios emu...
+ax=0,bx=0,cx=0,dx=0
+just before emu done ax(0x128)
+bios emu done</p>
+<dl>
+<dt>vesa_mode : 0x0</dt>
+<dt>ax 4f02 bx 4114</dt>
+<dt>run_bios_int,intno=10,ret=1</dt>
+<dt>VESA</dt>
+<dt>VESA FB init complete.</dt>
+<dt>fbaddress 0x40000000 ioaddress 0x48000000</dt>
+<dt>fbaddress = c0000000</dt>
+<dt>begin fb_init</dt>
+<dt>cfb_console init,fb=c0000000</dt>
+<dt>CONSOLE_SIZE 960000</dt>
+<dt>after fb_init</dt>
+<dt>in configure</dt>
+<dt>mainbus0 (root)</dt>
+<dt>localbus0 at mainbus0</dt>
+<dt>loopdev0 at mainbus0pcibr0 at mainbus0</dt>
+<dt>pci0 at pcibr0 bus 0</dt>
+<dt>ppb0 at pci0 dev 1 function 0 vendor/product: 0x1022/0x9602 (bridge, PCI)</dt>
+<dt>pci1 at ppb0 bus 1</dt>
+<dt>vendor/product: 0x1002/0x9615 (display, VGA) at pci1 dev 5 function 0 not configured</dt>
+<dt>ppb1 at pci0 dev 2 function 0 vendor/product: 0x1022/0x9603 (bridge, PCI)</dt>
+<dt>pci2 at ppb1 bus 2</dt>
+<dt>ppb2 at pci0 dev 3 function 0 vendor/product: 0x1022/0x960b (bridge, PCI)</dt>
+<dt>pci3 at ppb2 bus 3</dt>
+<dt>ppb3 at pci0 dev 4 function 0 vendor/product: 0x1022/0x9604 (bridge, PCI)</dt>
+<dt>pci4 at ppb3 bus 4</dt>
+<dt>ppb4 at pci0 dev 9 function 0 vendor/product: 0x1022/0x9608 (bridge, PCI)</dt>
+<dt>pci5 at ppb4 bus 5</dt>
+<dt>em0 at pci5 dev 0 function 0 vendor/product: 0x8086/0x10d3 (network, ethernet)ent-&gt;driver_data is 0x3</dt>
+<dt>em_probe done!</dt>
+<dd>
+<dl>
+<dt>generic poll, address 00:23:90:10:96:93</dt>
+<dt>in if attach</dt>
+<dt>ppb5 at pci0 dev 10 function 0 vendor/product: 0x1022/0x9609 (bridge, PCI)</dt>
+<dt>pci6 at ppb5 bus 6</dt>
+<dt>em1 at pci6 dev 0 function 0 vendor/product: 0x8086/0x10d3 (network, ethernet)ent-&gt;driver_data is 0x3</dt>
+<dt>em_probe done!</dt>
+<dd>generic poll, address 00:23:90:10:20:59
+in if attach
+pciide0 at pci0 dev 17 function 0 vendor/product: 0x1002/0x4390 (mass storage, IDE): DMA, (partial support), ch 0 cfg to native-PCI, ch 1 cfg to native-PCI
+pciide0: using generic poll for native-PCI interrupt
+wd0 at pciide0 channel 0 drive 0: <wdc wd5000aakx-221ca1="">
+wd0: can use 16-bit, PIO mode 4, DMA mode 2
+wd0: 16-sector PIO, LBA, 131071MB, 16383 cyl, 16 head, 63 sec, 268435455 sectors
+wd1 at pciide0 channel 1 drive 0: <wdc wd5000aakx-221ca1="">
+wd1: can use 16-bit, PIO mode 4, DMA mode 2
+wd1: 16-sector PIO, LBA, 131071MB, 16383 cyl, 16 head, 63 sec, 268435455 sectors
+pciide0:0:0: using DMA data transfers
+pciide0:1:0: using DMA data transfers
+ohci0 at pci0 dev 18 function 0 vendor/product: 0x1002/0x4397 (serialbus, USB)usb base addr : 0xc8708000, bus_base is : 0xc0000000
+OHCI revision: 0x00000110
+  RH: a: 0x02000b03 b: 0x00000000
+early period(0x0)
+OHCI 8b01f000 initialized ok
+drive at ohci0 devnum 1, Product OHCI Root Hub
+ not configured
+ohci1 at pci0 dev 18 function 1 vendor/product: 0x1002/0x4398 (serialbus, USB)usb base addr : 0xc8707000, bus_base is : 0xc0000000
+OHCI revision: 0x00000110
+  RH: a: 0x02000b03 b: 0x00000000
+early period(0x0)
+OHCI 8b026c00 initialized ok
+drive at ohci1 devnum 3, Product Wired Keyboard 600
+ not configured
+Read Capacity returns: 0xff17ef00, 0x20000
+Capacity = 0xef1800, blocksz = 0x200
+usb0 at ohci1 devnum 4, Product OnlyDisk                    <br/>
+drive at ohci1 devnum 2, Product OHCI Root Hub
+ not configured
+vendor/product: 0x1002/0x4396 (serialbus, USB) at pci0 dev 18 function 2 not configured
+vendor/product: 0x1002/0x4397 (serialbus, USB) at pci0 dev 19 function 0 not configured
+vendor/product: 0x1002/0x4398 (serialbus, USB) at pci0 dev 19 function 1 not configured
+vendor/product: 0x1002/0x4396 (serialbus, USB) at pci0 dev 19 function 2 not configured
+vendor/product: 0x1002/0x4385 (serialbus, subclass: 0x05) at pci0 dev 20 function 0 not configured
+pciide1 at pci0 dev 20 function 1 vendor/product: 0x1002/0x439c (mass storage, IDE): DMA, (partial support), ch 0 cfg to compat, ch 1 cfg to compat
+vendor/product: 0x1002/0x4383 (multimedia, subclass: 0x03) at pci0 dev 20 function 2 not configured
+vendor/product: 0x1002/0x439d (bridge, ISA) at pci0 dev 20 function 3 not configured
+ppb6 at pci0 dev 20 function 4 vendor/product: 0x1002/0x4384 (bridge, PCI)
+pci7 at ppb6 bus 7
+vendor/product: 0x1002/0x4399 (serialbus, USB) at pci0 dev 20 function 5 not configured
+out configure
+Self test cmd failed,ignored!
+KBD_TEST cmd failed,ignored!
+Keyboard succesfully initialized.
+Press <del> to set BIOS,waiting for 3 seconds here..... 
+devconfig done.</del></wdc></wdc></dd>
+</dl>
+</dd>
+</dl>
+<p>-----------------godson3a_smbus_fixup---------------
+ set smbus reg (0xbe) :1212 (usb intr map)
+ set smbus reg (0xaf) :1c (sata intr map)
+SB700 interrupt PIC set begin,<br/>
+set pic_5 pass
+set pic_5 pass
+set pic_6 pass
+set pic_5 pass
+set pic_5 pass
+set pic_a pass
+set pic_9 pass
+set pic_5 pass
+PIC control bit: 00007d37
+original int mode: 0x00000000 
+&lt;1&gt; now int mode: 0x00000078 
+waiting....
+&lt;1&gt; now int mode: 0x00007878 
+SB700 interrupt PIC set done 
+SB700 device interrupt route begin </p>
+<p>rte0 fixup: em0 ---------------&gt; int5
+SB700 device  route em0: int5 
+SB700 device  route em1: int6 </p>
+<p>godson3a_sata_fixup: sata ---------------&gt; int5 
+-----------------tset sata------------------
+sata pci_config 0x40 (14)
+godson3a_sata: fix sata mode==:5
+godson3a_ide_fixup: fix ide mode
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: usb ------&gt; int6 
+godson3a fixup: VGA ------&gt; int6 
+godson3a fixup: VGA ------&gt; int6 
+05:00:00 interrupt line : Error
+06:00:00 interrupt line : Error
+ifinit done.
+domaininit done.
+init_proc....
+HSTI
+SYMI
+SBDE</p>
+<p>[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+[[  [[[[[[[[[       [[[[[       [[[[   [[[[[  [[[[[      [[[[[       [[[[[       [[[[   [[[[[  [[
+[[  [[[[[[[[   [[[[  [[[   [[[[  [[[    [[[[  [[[[  [[[[  [[[   [[[[  [[[   [[[[  [[[    [[[[  [[
+[[  [[[[[[[[  [[[[[[ [[[  [[[[[[ [[[  [  [[[  [[[  [[[[[[[[[[[[   [[[[[[[  [[[[[[ [[[  [  [[[  [[
+[[  [[[[[[[[  [[[[[[ [[[  [[[[[[ [[[  [[  [[  [[[  [[[    [[[[[[[    [[[[  [[[[[[ [[[  [[  [[  [[
+[[  [[[[[[[[  [[[[[[ [[[  [[[[[[ [[[  [[[  [  [[[  [[[[[  [[[[[[[[[[  [[[  [[[[[[ [[[  [[[  [  [[
+[[  [[[[[[[[   [[[[  [[[   [[[[  [[[  [[[[    [[[   [[[[  [[[   [[[  [[[[   [[[[  [[[  [[[[    [[
+[[       [[[[       [[[[[       [[[[  [[[[[   [[[[       [[[[[      [[[[[[       [[[[  [[[[[   [[
+[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[2011 Loongson][[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[</p>
+<p>Configuration [Bonito,EL,NET,SCSI,IDE]
+Version: PMON2013 V3.1R052B0053D0201 (Bonito) #1: Fri Feb  1 09:22:13 CST 2013 commit 39e53a7fafbe17ff77b63e61c49f1794f1907570 Author: Chen Xinke <a href="mailto:chenxinke@ict.ac.cn">chenxinke@ict.ac.cn</a> Date:   Sun Jan 27 15:20:17 2013 +0800 .
+Supported loaders [txt, srec, elf, bin]
+Supported filesystems [net, fat, fs, disk, iso9660, socket, tty, ram]
+This software may be redistributed under the BSD copyright.
+Copyright 2000-2002, Opsycon AB, Sweden.
+Copyright 2005, ICT CAS.
+CPU GODSON3 @ 799.98 MHz/ Bus @ 275 MHz
+Memory size 8192 MB .
+Primary Instruction cache size 64kb (32 line, 4 way)
+Primary Data cache size 64kb (32 line, 4 way)
+Secondary cache size 4096kb</p>
+<p>BEV1
+BEV0
+BEV in SR set to zero.
+Token is correct!
+flag is 0x0003030f76543210
+Store MC info of Node 0 MC 0
+Now enable ddr config windows </p>
+<p>Now Read out DDR parameter from DDR MC0 controler after DDR training
+Read out DDR MC0 config Done.
+Programming flash 8000b888:5c8 into bfc0d000
+Disable all space write protection of 49LF008A. 
+Erasing FLASH block  13      | Done.
+Enable all space write protection of 49LF008A. Programming FLASH. Disable all space write protection of 49LF008A. / Done.
+Enable all space write protection of 49LF008A. Verifying FLASH.  No Errors found.
+Store MC info of Node 0 MC 1
+Now enable ddr config windows </p>
+<p>Now Read out DDR parameter from DDR MC1 controler after DDR training
+Read out DDR MC1 config Done.
+Programming flash 8000b888:5c8 into bfc0e000
+Disable all space write protection of 49LF008A. 
+Erasing FLASH block  14       Done.
+Enable all space write protection of 49LF008A. Programming FLASH. Disable all space write protection of 49LF008A. -\ Done.
+Enable all space write protection of 49LF008A. Verifying FLASH.  No Errors found.
+Store MC info of Node 1 MC 0
+Now enable ddr config windows </p>
+<p>Now Read out DDR parameter from DDR MC0 controler after DDR training
+Read out DDR MC0 config Done.
+Programming flash 8000b888:5c8 into bfc0f000
+Disable all space write protection of 49LF008A. 
+Erasing FLASH block  15       Done.
+Enable all space write protection of 49LF008A. Programming FLASH. Disable all space write protection of 49LF008A. | Done.
+Enable all space write protection of 49LF008A. Verifying FLASH. / No Errors found.
+Store MC info of Node 1 MC 1
+Now enable ddr config windows </p>
+<p>Now Read out DDR parameter from DDR MC1 controler after DDR training
+Read out DDR MC1 config Done.
+Programming flash 8000b888:5c8 into bfc10000
+Disable all space write protection of 49LF008A. 
+Erasing FLASH block  16       Done.
+Enable all space write protection of 49LF008A. Programming FLASH. Disable all space write protection of 49LF008A. - Done.
+Enable all space write protection of 49LF008A. Verifying FLASH.  No Errors found.
+There is no 1 linux partion
+we can't locate root directory in super block!
+usage: bl -d cdrom/ide boot_config_file
+\|usage: bl -d cdrom/ide boot_config_file
+usage: bl -d cdrom/ide boot_config_file
+Now booting the LoongsonLinuxSystem
+Loading file: /dev/fs/ext2@wd0/boot/vmlinux20130419.numa (elf)
+(elf)
+0x80300000/11711552  + 0x80e2b440/17428768(z)  + 19271 syms /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/
+Entry address is 80305bf0
+Boot with parameters: console=tty root=/dev/sda1
+/home/TMP/wanghongmei/28/pmon-loongson3/pmon/common/env.c:length of boot_param is 00000090
+ac = 00000003, nsp @ 8a7fff00, env @ 8a7fff30, en @ 801453d0
+vsp = 08xffffffff8a7fff10, ssp @ 08xffffffff8a7fff30
+board_name:Loongson-3A-780E-2w-V1.02-demo ---0x80142730 10
+Shutdown:0x80074b68 reset:0x80074cb4
+   zero      at       v0       v1       a0       a1       a2       a3 <br/>
+ 00000000 00000000 00000000 00000000 00000003 8a7fff00 8a7fff30 801453d0
+    t0       t1       t2       t3       t4       t5       t6       t7 <br/>
+ 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    s0       s1       s2       s3       s4       s5       s6       s7 <br/>
+ 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    t8       t9       k0       k1       gp       sp       s8       ra <br/>
+ 00000000 00000000 00000000 00000000 00000000 8a7ffee0 00000000 800aa3f0
+CP0_Config3: CP0 16.3 (0xa0)
+CP0_PageGrain: CP0 5.1 (0x20000000)
+Caller cpu 0
+NUMA: Discovered 8 cpus on 2 nodes
+Debug: node_id:0, mem_type:1, mem_start:0x1000000, mem_size:0xf0 MB
+       start_pfn:0x0, end_pfn:0x4000, num_physpages:0x4000
+Debug: node_id:0, mem_type:2, mem_start:0x90000000, mem_size:0xf00 MB
+       start_pfn:0x24000, end_pfn:0x60000, num_physpages:0x40000
+smbios_addr : 0xfffe000
+node0's addrspace_offset is 0x0
+node0's start_pfn is 0x0, end_pfn is 0x60000, freepfn is 0x7b3
+Debug: node_id:0, mem_type:3, mem_start:0xfffe000, mem_size:0x0 MB
+Mengxf: total_memsize :0x1000 MB
+Debug: node_id:1, mem_type:1, mem_start:0x1000000, mem_size:0xf0 MB
+       start_pfn:0x40000000, end_pfn:0x40004000, num_physpages:0x44000
+Debug: node_id:1, mem_type:2, mem_start:0x90000000, mem_size:0xf00 MB
+       start_pfn:0x40024000, end_pfn:0x40060000, num_physpages:0x80000
+node1's addrspace_offset is 0x100000000000
+node1's start_pfn is 0x40000000, end_pfn is 0x40060000, freepfn is 0x40000000
+Mengxf: total_memsize :0x1000 MB
+NUMA: set cpumask cpu 0 on node 0
+NUMA: set cpumask cpu 1 on node 0
+NUMA: set cpumask cpu 2 on node 0
+NUMA: set cpumask cpu 3 on node 0
+NUMA: set cpumask cpu 4 on node 1
+NUMA: set cpumask cpu 5 on node 1
+NUMA: set cpumask cpu 6 on node 1
+NUMA: set cpumask cpu 7 on node 1
+SET HT_DMA CACHED
+[    0.000000] Linux version 2.6.36.3+ (git@ubuntu) (gcc version 4.4.0 (GCC) ) #18 SMP Fri Apr 19 15:23:35 CST 2013
+[    0.000000] shutdown:0xffffffff80074b68 reset:0xffffffff80074cb4
+[    0.000000] vbios locate in ffffffff8014a940
+[    0.000000] Version:1 PMON_Version_V3.1R052B0053D0201
+[    0.000000] Board name:Loongson-3A-780E-2w-V1.02-demo ffffffff80142730 10
+[    0.000000] Board type:0(RS780E)
+[    0.000000] cpu_clock:799980000, cputye:2, nr_cpus:8, ccnuma_smp:65536,single_double_way:131072
+[    0.000000] lp:ffffffff8a7fff58, irq_source:ffffffff80142698, offset:-174840000, ht_int_bit:1000000,ht_enable:d17b
+[    0.000000] pci_mem_start:40000000, pci_mem_end:7fffffff
+[    0.000000] Caller cpu 0
+[    0.000000] NUMA: Discovered 8 cpus on 2 nodes
+[    0.000000] bootconsole [early0] enabled
+[    0.000000] CPU revision is: 00006305 (ICT Loongson-3A5)
+[    0.000000] FPU revision is: 00770501
+[    0.000000] Checking for the multiply/shift bug... no.
+[    0.000000] Checking for the daddiu bug... no.
+[    0.000000] Determined physical RAM map:
+[    0.000000] Initrd not found or empty - disabling initrd
+[    0.000000] swiotlb:restricted 32bit dma!
+[    0.000000] SWIOTLB: swiotlbsize = 0x4000000
+[    0.000000] Placing 64MB software IO TLB between 98000000026dc000 - 98000000066dc000
+[    0.000000] software IO TLB at phys 0x26dc000 - 0x66dc000
+[    0.000000] Zone PFN ranges:
+[    0.000000]   DMA32    0x00000000 -&gt; 0x00040000
+[    0.000000]   Normal   0x00040000 -&gt; 0x40060000
+[    0.000000] Movable zone start PFN for each node
+[    0.000000] early_node_map[4] active PFN ranges
+[    0.000000]     0: 0x00000000 -&gt; 0x00004000
+[    0.000000]     0: 0x00024000 -&gt; 0x00060000
+[    0.000000]     1: 0x40000000 -&gt; 0x40004000
+[    0.000000]     1: 0x40024000 -&gt; 0x40060000
+[    0.000000] sizhiying--nr_node_ids:2,highest:3 FILE:mm/page_alloc.c,func:setup_nr_node_ids
+[    0.000000] Detected 7 available secondary CPU(s)
+[    0.000000] PERCPU: Embedded 3 pages/cpu @9800000006758000 s13376 r8192 d27584 u65536
+[    0.000000] pcpu-alloc: s13376 r8192 d27584 u65536 alloc=4*16384
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 [0] 4 [0] 5 [0] 6 [0] 7 
+[    0.000000] Built 2 zonelists in Zone order, mobility grouping on.  Total pages: 521600
+[    0.000000] Policy zone: Normal
+[    0.000000] Kernel command line: console=tty root=/dev/sda1 
+[    0.000000] PID hash table entries: 4096 (order: 1, 32768 bytes)
+[    0.000000] c0_config1 = fffffffffee37193
+[    0.000000] Primary instruction cache 64kB, VIPT, 4-way, linesize 32 bytes.
+[    0.000000] Primary data cache 64kB, 4-way, VIPT, no aliases, linesize 32 bytes
+[    0.000000] c0_config2 = ffffffff80001743
+[    0.000000] Unified secondary cache 4096kB 4-way, linesize 32 bytes, waybit=0.
+total ram pages initialed 0
+[    0.000000] BUG: Bad page state in process swapper  pfn:007b7
+[    0.000000] page:980000010001b008 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] Disabling lock debugging due to kernel taint
+[    0.000000] BUG: Bad page state in process swapper  pfn:007b8
+[    0.000000] page:980000010001b040 count:0 mapcount:-1048576 mapping:(null) index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:6bdb6db6e00007b9
+[    0.000000] page:980000010001b078 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x10000000000000()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:6bdb6db6e00007ba
+[    0.000000] page:980000010001b0b0 count:0 mapcount:-15663104 mapping:(null) index:0x0
+[    0.000000] page flags: 0x10000000000000()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007bb
+[    0.000000] page:980000010001b0e8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007bd
+[    0.000000] page:980000010001b158 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007be
+[    0.000000] page:980000010001b190 count:0 mapcount:0 mapping:0010000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:6bdb6db6e00007bf
+[    0.000000] page:980000010001b1c8 count:0 mapcount:-15663104 mapping:(null) index:0x0
+[    0.000000] page flags: 0xff000000000000()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5ef8>] free_hot_cold_page+0x5c/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:6bdb6db6e00007c0
+[    0.000000] page:980000010001b200 count:0 mapcount:0 mapping:00ff000000000000 index:0x0
+[    0.000000] page flags: 0xff000000000000()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007c2
+[    0.000000] page:980000010001b270 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007c3
+[    0.000000] page:980000010001b2a8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007c4
+[    0.000000] page:980000010001b2e0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007c6
+[    0.000000] page:980000010001b350 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007c7
+[    0.000000] page:980000010001b388 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007c8
+[    0.000000] page:980000010001b3c0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ca
+[    0.000000] page:980000010001b430 count:0 mapcount:0 mapping:0010000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007cb
+[    0.000000] page:980000010001b468 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007cc
+[    0.000000] page:980000010001b4a0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ce
+[    0.000000] page:980000010001b510 count:0 mapcount:0 mapping:0010000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007cf
+[    0.000000] page:980000010001b548 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d0
+[    0.000000] page:980000010001b580 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d2
+[    0.000000] page:980000010001b5f0 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d3
+[    0.000000] page:980000010001b628 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d4
+[    0.000000] page:980000010001b660 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d6
+[    0.000000] page:980000010001b6d0 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d7
+[    0.000000] page:980000010001b708 count:0 mapcount:-1048576 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007d8
+[    0.000000] page:980000010001b740 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007da
+[    0.000000] page:980000010001b7b0 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007db
+[    0.000000] page:980000010001b7e8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007dc
+[    0.000000] page:980000010001b820 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007de
+[    0.000000] page:980000010001b890 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007df
+[    0.000000] page:980000010001b8c8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e0
+[    0.000000] page:980000010001b900 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e2
+[    0.000000] page:980000010001b970 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e3
+[    0.000000] page:980000010001b9a8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e4
+[    0.000000] page:980000010001b9e0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e6
+[    0.000000] page:980000010001ba50 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e7
+[    0.000000] page:980000010001ba88 count:0 mapcount:-1048576 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007e8
+[    0.000000] page:980000010001bac0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ea
+[    0.000000] page:980000010001bb30 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007eb
+[    0.000000] page:980000010001bb68 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ec
+[    0.000000] page:980000010001bba0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ee
+[    0.000000] page:980000010001bc10 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ef
+[    0.000000] page:980000010001bc48 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f0
+[    0.000000] page:980000010001bc80 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f2
+[    0.000000] page:980000010001bcf0 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f3
+[    0.000000] page:980000010001bd28 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f4
+[    0.000000] page:980000010001bd60 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f6
+[    0.000000] page:980000010001bdd0 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f7
+[    0.000000] page:980000010001be08 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007f8
+[    0.000000] page:980000010001be40 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007fa
+[    0.000000] page:980000010001beb0 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007fb
+[    0.000000] page:980000010001bee8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007fc
+[    0.000000] page:980000010001bf20 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007fe
+[    0.000000] page:980000010001bf90 count:0 mapcount:0 mapping:00ff000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:007ff
+[    0.000000] page:980000010001bfc8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:00800
+[    0.000000] page:980000010001c000 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:00802
+[    0.000000] page:980000010001c070 count:0 mapcount:0 mapping:0010000000000000 index:0x10000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:00803
+[    0.000000] page:980000010001c0a8 count:0 mapcount:0 mapping:00ff000000000000 index:0xff000000000000
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] BUG: Bad page state in process swapper  pfn:00804
+[    0.000000] page:980000010001c0e0 count:0 mapcount:-1048576 mapping:(null) index:0x0
+[    0.000000] page flags: 0x0()
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8031f9b4>] dump_stack+0x8/0x34
+[    0.000000] [<ffffffff803a3fec>] bad_page+0x10c/0x138
+[    0.000000] [<ffffffff803a4ca4>] free_pages_prepare+0xa8/0x100
+[    0.000000] [<ffffffff803a5d3c>] __free_pages_ok+0x38/0x17c
+[    0.000000] [<ffffffff80de6ab4>] free_all_bootmem_core+0x12c/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] Unhandled kernel unaligned access[#1]:
+[    0.000000] Cpu 0
+[    0.000000] $ 0   : 0000000000000000 00000000140000e0 0000000000000000 0000000000000000
+[    0.000000] $ 4   : 0000000000000000 ffffffff80cf3c50 0000000000000002 0000000000000001
+[    0.000000] $ 8   : 0000000000000040 0000000000000003 0000000000000001 0000000000000006
+[    0.000000] $12   : 00000000140000e0 000000001000001e ffffffff80e30560 0000000000000000
+[    0.000000] $16   : 0000000000000000 ffffffffdc690008 001af6daee9e5e08 ffffffff80e30540
+[    0.000000] $20   : 0000000000000000 00001fffffffffff 0000000000021400 0000000000000009
+[    0.000000] $24   : 0000000000000000 ffffffff8032382c                                <br/>
+[    0.000000] $28   : ffffffff80cf0000 ffffffff80cf3c20 00000000000215f8 ffffffff80300400
+[    0.000000] Hi    : 0000000000000000
+[    0.000000] Lo    : 0000000000000003
+[    0.000000] epc   : ffffffff8032bacc do_ade+0x1cc/0x594
+[    0.000000]     Tainted: G    B    <br/>
+[    0.000000] ra    : ffffffff80300400 ret_from_exception+0x0/0x24
+[    0.000000] Status: 140000e2    KX SX UX KERNEL EXL 
+[    0.000000] Cause : 40008010
+[    0.000000] BadVA : 001af6daee9e5e0f
+[    0.000000] PrId  : 00006305 (ICT Loongson-3A5)
+[    0.000000] Modules linked in:
+[    0.000000] Process swapper (pid: 0, threadinfo=ffffffff80cf0000, task=ffffffff80d015c0, tls=0000000000000000)
+[    0.000000] Stack : 00000000140000e0 ffffffff80cf3bef 98000001000215f8 0010000000000000
+[    0.000000]         0000000000060000 ffffffff80300400 0000000000000000 00000000140000e0
+[    0.000000]         0000000000000000 001af6daee9e5e00 001af6db6db80000 0000000000000000
+[    0.000000]         0000000000000002 0000000000000001 0000000000000040 0000000000000003
+[    0.000000]         0000000000000001 0000000000000006 9800000100021540 98000001000215b0
+[    0.000000]         ffffffff80e30560 0000000000000000 98000001000215f8 0010000000000000
+[    0.000000]         0000000000060000 ffffffff80e30540 0000000000000000 00001fffffffffff
+[    0.000000]         0000000000021400 0000000000000009 0000000000000000 ffffffff8032382c
+[    0.000000]         0000000000000001 98000001000215c0 ffffffff80cf0000 ffffffff80cf3d80
+[    0.000000]         00000000000215f8 ffffffff803a5f10 00000000140000e2 0000000000000000
+[    0.000000]         ...
+[    0.000000] Call Trace:
+[    0.000000] [<ffffffff8032bacc>] do_ade+0x1cc/0x594
+[    0.000000] [<ffffffff80300400>] ret_from_exception+0x0/0x24
+[    0.000000] [<ffffffff803a2c60>] get_pageblock_flags_group+0x74/0xd0
+[    0.000000] [<ffffffff803a5f10>] free_hot_cold_page+0x74/0x250
+[    0.000000] [<ffffffff80de6adc>] free_all_bootmem_core+0x154/0x2ac
+[    0.000000] [<ffffffff80ddf980>] mem_init+0xac/0x1b0
+[    0.000000] [<ffffffff80ddc8d0>] start_kernel+0x190/0x468
+[    0.000000] 
+[    0.000000] 
+[    0.000000] Code: 00431024  144000c6  00000000 &lt;6a430007&gt; 6e430000  24020000  0060902d  144000b0  00a0202d 
+[    0.000000] Kernel panic - not syncing: Attempted to kill the idle task!</ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5f10></ffffffff803a2c60></ffffffff80300400></ffffffff8032bacc></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6ab4></ffffffff803a5d3c></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></ffffffff80ddc8d0></ffffffff80ddf980></ffffffff80de6adc></ffffffff803a5ef8></ffffffff803a4ca4></ffffffff803a3fec></ffffffff8031f9b4></p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

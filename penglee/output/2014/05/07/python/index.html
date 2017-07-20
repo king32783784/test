@@ -1,0 +1,938 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-Tips" />
+        <meta name="description" content="Tips 20 TDD／单元测试 例子要求 1.只有一种正确的途径用阿拉伯数字表示罗马数字。 2.反过来一样，一个字符串类型的有效的罗马数字也仅可以表示一个阿拉伯数字（即，这种转换方式也是只有一种）。 3.只有有限范围的阿拉伯数字可以以罗马数字表示，那就是1‐3999。而罗马数字表示大数字却有几种方式。例如，为了表示一个数字连续出现时正确的值则需要乘以1000。限定罗马数字在1到3999之间。 4.无法用罗马数字来表示0。 5.无法用罗马数字来表示负数。 6.无法用罗马数字来表示分数或非整数 １．to_roman()方法应该返回代表1-3999的罗马数字 import roman1 import unittest class KonwnValues(unittest.TestCase): # 测试用例类应该继承unittest的TestCase子类 known_values = ((1,&#39;I&#39;), # 需要测试所有明显边界值 (2, &#39;II&#39;), (3, &#39;III&#39;), (4, &#39;IV&#39;), (5, &#39;V ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(五）"/>
+    <meta property="og:url" content="../../../../2014/05/07/python/"/>
+    <meta property="og:description" content="Tips 20 TDD／单元测试 例子要求 1.只有一种正确的途径用阿拉伯数字表示罗马数字。 2.反过来一样，一个字符串类型的有效的罗马数字也仅可以表示一个阿拉伯数字（即，这种转换方式也是只有一种）。 3.只有有限范围的阿拉伯数字可以以罗马数字表示，那就是1‐3999。而罗马数字表示大数字却有几种方式。例如，为了表示一个数字连续出现时正确的值则需要乘以1000。限定罗马数字在1到3999之间。 4.无法用罗马数字来表示0。 5.无法用罗马数字来表示负数。 6.无法用罗马数字来表示分数或非整数 １．to_roman()方法应该返回代表1-3999的罗马数字 import roman1 import unittest class KonwnValues(unittest.TestCase): # 测试用例类应该继承unittest的TestCase子类 known_values = ((1,&#39;I&#39;), # 需要测试所有明显边界值 (2, &#39;II&#39;), (3, &#39;III&#39;), (4, &#39;IV&#39;), (5, &#39;V ..."/>
+    <meta property="article:published_time" content="2014-05-07" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-Tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(五） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/07/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/07/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/07/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/07/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/07/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(五）">
+                            Python-Tips(五）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-07T00:00:00+08:00"> 2014-05-07 三</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-Tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-20">Tips 20</h3>
+<p><strong>TDD／单元测试</strong></p>
+<p>例子要求
+1.只有一种正确的途径用阿拉伯数字表示罗马数字。
+2.反过来一样，一个字符串类型的有效的罗马数字也仅可以表示一个阿拉伯数字（即，这种转换方式也是只有一种）。
+3.只有有限范围的阿拉伯数字可以以罗马数字表示，那就是1‐3999。而罗马数字表示大数字却有几种方式。例如，为了表示一个数字连续出现时正确的值则需要乘以1000。限定罗马数字在1到3999之间。
+4.无法用罗马数字来表示0。
+5.无法用罗马数字来表示负数。
+6.无法用罗马数字来表示分数或非整数</p>
+<p>１．to_roman()方法应该返回代表1-3999的罗马数字</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">roman1</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="k">class</span> <span class="nc">KonwnValues</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span> <span class="c1"># 测试用例类应该继承unittest的TestCase子类</span>
+    <span class="n">known_values</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="s1">'I'</span><span class="p">),</span><span class="err">　　</span><span class="c1"># 需要测试所有明显边界值</span>
+                    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'II'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'III'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'IV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">'V'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s1">'VI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s1">'VII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s1">'VIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s1">'IX'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'X'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="s1">'L'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="s1">'C'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">'M'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="s1">'XXXI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">148</span><span class="p">,</span> <span class="s1">'CXLVIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">294</span><span class="p">,</span> <span class="s1">'CCXCIV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">312</span><span class="p">,</span> <span class="s1">'CCCXII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">421</span><span class="p">,</span> <span class="s1">'CDXXI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">528</span><span class="p">,</span> <span class="s1">'DXXVIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">621</span><span class="p">,</span> <span class="s1">'DCXXI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">782</span><span class="p">,</span> <span class="s1">'DCCLXXXII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">870</span><span class="p">,</span> <span class="s1">'DCCCLXX'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">941</span><span class="p">,</span> <span class="s1">'CMXLI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1043</span><span class="p">,</span> <span class="s1">'MXLIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1110</span><span class="p">,</span> <span class="s1">'MCX'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1226</span><span class="p">,</span> <span class="s1">'MCCXXVI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1301</span><span class="p">,</span> <span class="s1">'MCCCI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1485</span><span class="p">,</span> <span class="s1">'MCDLXXXV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1509</span><span class="p">,</span> <span class="s1">'MDIX'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1607</span><span class="p">,</span> <span class="s1">'MDCVII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1754</span><span class="p">,</span> <span class="s1">'MDCCLIV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1832</span><span class="p">,</span> <span class="s1">'MDCCCXXXII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">1993</span><span class="p">,</span> <span class="s1">'MCMXCIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2074</span><span class="p">,</span> <span class="s1">'MMLXXIV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2152</span><span class="p">,</span> <span class="s1">'MMCLII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2212</span><span class="p">,</span> <span class="s1">'MMCCXII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2343</span><span class="p">,</span> <span class="s1">'MMCCCXLIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2499</span><span class="p">,</span> <span class="s1">'MMCDXCIX'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2574</span><span class="p">,</span> <span class="s1">'MMDLXXIV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2646</span><span class="p">,</span> <span class="s1">'MMDCXLVI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2723</span><span class="p">,</span> <span class="s1">'MMDCCXXIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2892</span><span class="p">,</span> <span class="s1">'MMDCCCXCII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">2975</span><span class="p">,</span> <span class="s1">'MMCMLXXV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3051</span><span class="p">,</span> <span class="s1">'MMMLI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3185</span><span class="p">,</span> <span class="s1">'MMMCLXXXV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3250</span><span class="p">,</span> <span class="s1">'MMMCCL'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3313</span><span class="p">,</span> <span class="s1">'MMMCCCXIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3408</span><span class="p">,</span> <span class="s1">'MMMCDVIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3501</span><span class="p">,</span> <span class="s1">'MMMDI'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3610</span><span class="p">,</span> <span class="s1">'MMMDCX'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3743</span><span class="p">,</span> <span class="s1">'MMMDCCXLIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3844</span><span class="p">,</span> <span class="s1">'MMMDCCCXLIV'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3888</span><span class="p">,</span> <span class="s1">'MMMDCCCLXXXVIII'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3940</span><span class="p">,</span> <span class="s1">'MMMCMXL'</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">3999</span><span class="p">,</span> <span class="s1">'MMMCMXCIX'</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">test_to_roman_konwn_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span><span class="err">　</span><span class="c1"># 每个独立的测试都有自己的不含参数及没有返回值的方法，如果不跑异常则测试通过</span>
+        <span class="sd">'''to_roman should give known result with know input'''</span>
+        <span class="k">for</span> <span class="n">interger</span><span class="p">,</span> <span class="n">numeral</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">konwn_values</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">roman1</span><span class="o">.</span><span class="n">to_roman</span><span class="p">(</span><span class="n">integer</span><span class="p">)</span><span class="err">　</span><span class="c1"># 这里调用了roman1中的to_roman()方法，这里roman1仍未编写，但此处已定义了其接口</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">numeral</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span><span class="err">　</span><span class="c1"># 假设to_roman()方法已经正确定义，正确调用，成功实现并返回了一个值，这里判断返回值是否正确，TestCase类提供assertEqual方法检查两个值是否相对。如果返回值与预期值相同，则会正常退出，也就通过了测试</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+<p>roman1.py</p>
+<div class="highlight"><pre><span></span>def to_roman(n):
+    '''整型转罗马数字'''
+    pass  # 什么都不做
+</pre></div>
+<p>现在执行测试用例，结果如你所料，肯定会失败。-v　参数会有更详细的输出
+输出：
+    [root@isoft_lp 0306]# python romantest1.py  -v
+    test_to_roman_known_values (<strong>main</strong>.KnownValues) #运行脚本就会执行unittest.main(),该方法执行每一个测试用例，每条用例都是romantest.py中的类方法，这些类没有必要的组织要求；它们每一个都包含一个独立的测试方法，可以编写一个含有多个方法的类。但每个类都必须继承unittest.TestCase
+    to_roman should give known result with known input ... FAIL # 每个测试用例，unitest模块都会打印测试方法的docstring</p>
+<div class="highlight"><pre><span></span>======================================================================
+FAIL: test_to_roman_known_values (__main__.KnownValues)　　　#每个失败的用例，unittest模块会打印出详细的跟踪信息
+to_roman should give known result with known input
+----------------------------------------------------------------------
+Traceback (most recent call last):
+File "romantest1.py", line 66, in test_to_roman_known_values
+    self.assertEqual(numeral, result)　　# assertEqual() 的调用抛出了一个AssertionError异常，因为to_roman(1)应该返回"I",但时间没有
+AssertionError: 'I' != None
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s　# 说明每个用例执行情况后，打印执行了多少用例，用了多少时间
+
+FAILED (failures=1)　# 如果测试用例没有通过的话，unittest可以区别用例执行失败跟程序错误的。像assertXYX, assertRaise这样的assertEqual方法的失败是因为被声明的条件不是为真，或则预期的异常没有抛出。
+</pre></div>
+<p>现在可以实现to_roman</p>
+<div class="highlight"><pre><span></span>roman_numeral_map = (('M', 1000),
+                 ('CM', 900),
+                 ('D',  500),
+                 ('CD', 400),
+                 ('C',  100),
+                 ('XC', 90),
+                 ('L',  50),
+                 ('XL', 40),
+                 ('X',  10),
+                 ('IX', 9),
+                 ('V',  5),
+                 ('IV', 4),
+                 ('I',  1))
+                          # 组成罗马数字基本的元素
+def to_roman(n):
+'''整型转罗马数字'''
+    result = ''
+    for numeral, integer in roman_numeral_map:
+        while n &gt;= integer:
+            result += numeral
+            n -= integer
+    return result
+</pre></div>
+<p>这样就可以通过测试了</p>
+<p>如果输入非法值会怎么样呢？
+比如输入4000,程序返回了MMMM,和预期不符，而且不是一个正确的罗马数
+当to_roman()应该抛出一个OutOfRangeError异常</p>
+<p>测试代码如下：</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">ToRomanBadInput</span><span class="p">(</span><span class="nx">unittest</span><span class="p">.</span><span class="nx">TestCase</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">def</span> <span class="nx">test_too_large</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="s1">'''to_roman should fail with large input'''</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">assertRaise</span><span class="p">(</span><span class="nx">roman2</span><span class="p">.</span><span class="nx">OutOfRangeErr</span><span class="p">,</span> <span class="nx">roman2</span><span class="p">.</span><span class="nx">to_roman</span><span class="p">,</span> <span class="mi">4000</span><span class="p">)</span>
+    <span class="err">该测试方法需要以下：期望的异常，要测试的方法及传入给方法的参数</span>
+</pre></div>
+<p>最后一行，这里没有直接调用to_roman()，也不需要手动检查它抛出的异常类型（通过一个try...except块包装），　这些assertRaises方法都完成了。
+我们要做的事情只有，告诉assertRaise所期望的异常类型(roman2.OutOfRangeErr),被测方法(to_roman()),以及方法的参数(4000).assertEqual方法负责调用to_roman()和检查方法抛出roman2.OutOfRangeError异常。这里只是把to_roman方法以参数传递，没有调用被测方法，也不是被测方法作为一个字符串名字传递进去。</p>
+<p>执行
+    [root@isoft_lp 0306]# python romantest2.py  -v
+    test_to_roman_known_values (<strong>main</strong>.KnownValues)
+    to_roman should give known result with known input ... ok
+    test_too_large (<strong>main</strong>.ToRomanBadInput)
+    to_roman should fail with large input ... ERROR</p>
+<div class="highlight"><pre><span></span>======================================================================
+ERROR: test_too_large (__main__.ToRomanBadInput)
+to_roman should fail with large input
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "romantest2.py", line 71, in test_too_large
+    self.assertRaises(roman2.OutOfRangeError, roman2.to_roman, 4000)
+AttributeError: 'module' object has no attribute 'OutOfRangeError'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (errors=1)
+</pre></div>
+<p>测试本身是失败，但这里是报错了，提示没有OutOfRangeError
+在测试模块添加</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">OutOfRangeError</span><span class="p">(</span><span class="nx">ValueError</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">pass</span>
+</pre></div>
+<p>异常也是类，越界是值错误的一种，因此继承ValueError</p>
+<p>再次执行，仍然失败，但没有出错，意味者用例执行成功了。
+现在修改代码，使其通过</p>
+<div class="highlight"><pre><span></span>def to_roman(n):
+    '''convert interger to Roman'''
+    if n &gt; 3999：
+        raise OutOfRangeError('number out of range (must be less than 4000)')
+    result = ''
+    for numeral, interger in roman_numeral_map:
+        whiel n &gt;= integer:
+            result += numeral
+            n -= interger
+    return result
+</pre></div>
+<p>最终两个测试都通过了</p>
+<div class="highlight"><pre><span></span>[root@isoft_lp 0306]# python romantest2.py  -v
+test_to_roman_known_values (__main__.KnownValues)
+to_roman should give known result with known input ... ok
+test_too_large (__main__.ToRomanBadInput)
+to_roman should fail with large input ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+</pre></div>
+<p>我们的需求还提到无法转换０和负数，因此要增加用例来进行测试。</p>
+<div class="highlight"><pre><span></span>def test_zero(self):
+    '''to_roman　should fail with 0 input'''
+    self.assertRaises(roman3.OutOfRangeError, roman3.to_roman,0) # 如果输入０触发错误
+
+def test_negative(self):
+    ''' to_roman should fail with negative input'''
+    self.assertRaises(roman3.OutOfRangeError, roman3.to_roman, -1) # 如果输入-1触发错误
+</pre></div>
+<p>执行测试，不出所料的失败，因为roman3中没有实现对应处理，接下来要考虑如何修改roman3让测试通过
+修改如下：</p>
+<div class="highlight"><pre><span></span>def to_roman(n):
+    '''整型转罗马数字'''
+    if not (0&lt; n &lt; 4000):
+        raise OutOfRangeError('number out of range (must be less than 4000)')
+    result = ''
+    for numeral, integer in roman_numeral_map:
+        while n &gt;= integer:
+            result += numeral
+            n -= integer
+    return result
+</pre></div>
+<p>如果是非整型数据呢？需要再添加对应的测试用例:</p>
+<div class="highlight"><pre><span></span>def test_non_interger(self):
+    '''to_roman should fail with non-integer'''
+    self.assertRaises(roman2.NotIntegerError, roman2.to_roman, 0.5)
+</pre></div>
+<p>执行测试，缺少NotIntegerError,需要在roman2模块中进行定义，和前面一样</p>
+<div class="highlight"><pre><span></span><span class="kr">class</span> <span class="nx">NotINtergerError</span><span class="p">(</span><span class="nx">ValueError</span><span class="p">)</span><span class="o">:</span><span class="nx">pass</span>
+</pre></div>
+<p>再次执行测试，不出所料，提示未触发异常，因为roman2没有进行判断，实现该判断：</p>
+<div class="highlight"><pre><span></span>if not isinstance(n, int):
+    raise NotIntegerError('no-integers can not be converted')
+</pre></div>
+<p>再次执行测试：</p>
+<div class="highlight"><pre><span></span>test_to_roman_known_values (__main__.KnownValues)
+to_roman should give known result with known input ... ok
+test_negative (__main__.ToRomanBadInput)
+to_roman should fail with negative input ... ok
+test_non_interger (__main__.ToRomanBadInput)
+to_roman should fail with non-integer ... ok
+test_too_large (__main__.ToRomanBadInput)
+to_roman should fail with large input ... ok
+test_zero (__main__.ToRomanBadInput)
+to_roman should fail with 0 input ... ok----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+OK
+</pre></div>
+<p>开头提出的需求是相互转换，所以还要实现罗马数字转阿拉伯数字的功能，不过测试先行。</p>
+<div class="highlight"><pre><span></span>def test_from_roman_know_values(self):
+    '''from_roman should give know result with konwn input'''
+    for integer, numeral in self.known_values:
+        result = roman2.from_roman(numeral)
+        self.assertEqual(integer, result)
+</pre></div>
+<p>看起来好像和前面的测试阿拉伯转罗马数字一样，确实，调用的测试数据是一样的，只不过输入输出颠倒了。理论上把数字传递给to_roman()方法，得到一个罗马字符串，然后把字符串传入from_roman(),然后又返回一个数字，这个数字和最初传给to_roman()应该是一样的。</p>
+<div class="highlight"><pre><span></span>n = from_roman(to_roman(n)) for all values of n
+</pre></div>
+<p>那么，from_roman的边界取值测试就可以利用这个方法，进行测试，也就是输入的还是数字，先调用to_roman()转成罗马数字，然后to_roman的输出作为from_roman的输入，进行from_roman的测试
+    class RoundtripCheck(unittest.TestCase):</p>
+<div class="highlight"><pre><span></span>    def test_roundtrip(self):
+        '''from_roman(to_roman(n))==n for all n'''
+        for integer in range(1, 4000):
+            numeral = roman2.to_roman(integer)
+            result = roman2.from_roman(numeral)
+            self.assertEqual(integer, result)
+</pre></div>
+<p>如果现在测试，肯定是提示error,因为我们还没有实现from_roman</p>
+<p>下面开始实现from_roman:</p>
+<div class="highlight"><pre><span></span>def from_roman(s):
+    '''罗马数字转整型'''
+    result = 0
+    index = 0
+    for numeral, integer in roman_numeral_map:
+        while s[index:index+len(numeral)] == numeral: # 沿着roman_numeral_map从上往下匹配，匹配一个转换一个再相加
+            result += integer
+            index += len(numeral)
+        return result
+</pre></div>
+<p>现在开始执行测试，Ran 7 tests in 0.030s  OK</p>
+<p>现在１-3999的合法输入的罗马数字都可以转换为正确的数字，但是如果不是合法的罗马数字呢？这就需要一个方法检查输入的字符是不是有效的罗马数字。
+罗马数字的规则不再描述:</p>
+<div class="highlight"><pre><span></span>def test_too_many_repeated_numerals(self):
+    '''from_roman should fail with too many repeated'''
+    for s in ('MMMM', 'DD', 'CCCC', 'LL', 'XXXX', 'VV', 'IIII'): # 一种情况，比如4是IV而不是IIII,首先测试这类情况
+        self.assertRaises(roman2.InvalidRomanNumeralError,
+                          roman2.from_roman, s)
+
+def test_repeated_pairs(self):
+    '''from_roman should fail with repeated pairs of numerals'''
+    for s in ('CMCM', 'CDCD', 'XCXC', 'XLXL', 'IXIX', 'IVIV'): # 检查某些不允许的重复，如IX为９，但IXIX不合法
+        self.assertRaises(roman2.InvalidRomanNumeraError,
+                          roman2.from_roman,s)
+
+def test_malformed_antecedents(self):
+    '''from_roman shoud fail with malformed antecedents'''
+    for s in ('IIMXCC', 'VX', 'DCM', 'CMM', 'IXIV', 'MCMC', 'XCX', 'IVI',　# 检测数字是否正确顺序出现，比如CL150,但LC不合法
+              'LM', 'LD', 'LC'):
+        self.assertRaises(roman2.InvalidRomanNumeraError,
+                          roman2.from_roman, s)
+</pre></div>
+<p>现在要做的是修改from_roman实现对输入罗马数字的检测：</p>
+<div class="highlight"><pre><span></span>roman_numeral_pattern = re.compile('''
+    ^        # 字符的开头
+    M{0,3}   # 千位,可以是0-3个M
+    (CM|CD|D?C{0,3})  # 百位,900(CM), 400(CD), 500(D) 0-300（0-3个C)
+    (XC|XL|L?X{0,3})  # 十位,90(XC),40(XL),0-30(0-3个X),50(L)
+    (IX|IV|V?I{0,3})  # 个位,9(IX), 4(IV), 5(V), 0-3(I,II,III)
+    $                 # 字符结束
+    ''', re.VERBOSE)
+    if not roman_numeral_pattern.search(s):
+        raise InvalidRomanNumberalError('Invalid Roman numeral: {0}'.format(s))
+</pre></div>
+<p>最终：
+    ..........
+    ----------------------------------------------------------------------
+    Ran 10 tests in 0.038s
+    OK</p>
+<p>测试驱动开发(TDD)方法的好处不言而喻。所以会测试的开发才是好开发。</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(五）">Python-Tips(五）</a><ul><li><a class="toc-href" href="#tips-20" title="Tips 20">Tips 20</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

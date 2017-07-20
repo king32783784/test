@@ -1,0 +1,906 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python" />
+        <meta name="description" content="最近碰到一个问题，是取一个数的反数，所以整理了一下位操作。 计算机系统中所有的数据都是以二进制的形式存储的。位运算其实就是直接对在内存中的二进制数据进行操作，因此数据处理会比较快。 在实际编程中，如果能合理运用位操作，能提高运行效率，解决一些复杂问题。 位操作基础 基本的位操作符有与、或、异或、取反、左移、右移。运算规则如下： 符号 描述 运算规则 &#39;&amp;&#39; 与 两个位都为１，结果为１ &#39;I&#39; 或 两个位都为０，结果才为０（只要有1就为1） &#39;^&#39; 异或 两个位相同为0， 相异为1 &#39;～&#39; 取反 0变1， 1变0 &#39;&lt;&lt;&#39; 左移 各个二进制位全部左移若干位，高位丢弃，低位补0 &#39;&gt;&gt;&#39; 右移 各二进位全部右移若干位，对无符号数，高位补0， 有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移） 注意 ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="位操作"/>
+    <meta property="og:url" content="../../../../2017/02/23/python/"/>
+    <meta property="og:description" content="最近碰到一个问题，是取一个数的反数，所以整理了一下位操作。 计算机系统中所有的数据都是以二进制的形式存储的。位运算其实就是直接对在内存中的二进制数据进行操作，因此数据处理会比较快。 在实际编程中，如果能合理运用位操作，能提高运行效率，解决一些复杂问题。 位操作基础 基本的位操作符有与、或、异或、取反、左移、右移。运算规则如下： 符号 描述 运算规则 &#39;&amp;&#39; 与 两个位都为１，结果为１ &#39;I&#39; 或 两个位都为０，结果才为０（只要有1就为1） &#39;^&#39; 异或 两个位相同为0， 相异为1 &#39;～&#39; 取反 0变1， 1变0 &#39;&lt;&lt;&#39; 左移 各个二进制位全部左移若干位，高位丢弃，低位补0 &#39;&gt;&gt;&#39; 右移 各二进位全部右移若干位，对无符号数，高位补0， 有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移） 注意 ..."/>
+    <meta property="article:published_time" content="2017-02-23" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>位操作 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2017/02/23/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2017/02/23/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2017/02/23/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2017/02/23/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2017/02/23/python/"
+                           rel="bookmark"
+                           title="Permalink to 位操作">
+                            位操作
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2017-02-23T00:00:00+08:00"> 2017-02-23 四</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python.html">Python</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><p>最近碰到一个问题，是取一个数的反数，所以整理了一下位操作。
+计算机系统中所有的数据都是以二进制的形式存储的。位运算其实就是直接对在内存中的二进制数据进行操作，因此数据处理会比较快。
+在实际编程中，如果能合理运用位操作，能提高运行效率，解决一些复杂问题。</p>
+<h3 id="wei-cao-zuo-ji-chu">位操作基础</h3>
+<p>基本的位操作符有与、或、异或、取反、左移、右移。运算规则如下：</p>
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+<th>运算规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>'&amp;'</td>
+<td>与</td>
+<td>两个位都为１，结果为１</td>
+</tr>
+<tr>
+<td>'I'</td>
+<td>或</td>
+<td>两个位都为０，结果才为０（只要有1就为1）</td>
+</tr>
+<tr>
+<td>'^'</td>
+<td>异或</td>
+<td>两个位相同为0， 相异为1</td>
+</tr>
+<tr>
+<td>'～'</td>
+<td>取反</td>
+<td>0变1， 1变0</td>
+</tr>
+<tr>
+<td>'&lt;&lt;'</td>
+<td>左移</td>
+<td>各个二进制位全部左移若干位，高位丢弃，低位补0</td>
+</tr>
+<tr>
+<td>'&gt;&gt;'</td>
+<td>右移</td>
+<td>各二进位全部右移若干位，对无符号数，高位补0， 有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移）</td>
+</tr>
+</tbody>
+</table>
+<p>注意：</p>
+<ol>
+<li>只有～为单目运算符，其他的为双目运算符</li>
+<li>位操作只能作用于整型数据</li>
+<li>位操作符的运算优先级比较低，因此使用时注意括号的添加</li>
+<li>位算符可以复合操作，比如&amp;=、|=、^=、&lt;&lt;=、&gt;&gt;=。</li>
+</ol>
+<h3 id="chang-yong-wei-cao-zuo-li-zi">常用位操作例子</h3>
+<h4 id="1pan-duan-qi-ou">1.判断奇偶</h4>
+<p>显然的，最末位为0的为偶数，为1的为奇数。因此可以使用a &amp; 1是否为0来判断，如果为0则表明为偶数，为1表明为奇数</p>
+<p>下面的程序，将输出0到100之间的所有偶数</p>
+<table class="table highlighttable table-striped table-hover"><tbody><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># *-* utf-8 *-*</span>
+
+<span class="k">def</span> <span class="nf">geteven</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="ow">is</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">i</span>
+<span class="n">geteven</span><span class="p">()</span>
+</pre></div>
+</td></tr></tbody></table>
+<h4 id="2jiao-huan-liang-shu">2.交换两数</h4>
+<p>一般的写法为，借助第三个变量来保存其中一个变量</p>
+<div class="highlight"><pre><span></span>def change(x,y):
+    z=x
+    x=y
+    y=z
+    return x,y
+</pre></div>
+<p>使用位操作，可以不借助第三个变量</p>
+<p>首先 a^=b 即 a=(a^b)
+然后 b^=a 即b = b^a 将a替换为(a^b)得到 b=b^(a^b),由于^满足交换率，b^(a^b)=b^b^a 由于一个数和自己异或的结果为0，并且任何书和0异或都不会变。因此
+b=b^(a^b)=b^b^a=0^a。 b=a
+最后a^=b即 a=a^b 前面已得到a=(a^b), b=a 所以 a=a^b即a=(a^b)^a = a^a^b=0^b=b
+故代码还可以这样写</p>
+<div class="highlight"><pre><span></span>def change(x,y)
+    x^=y
+    y^=x
+    x^=y
+    return x,y
+</pre></div>
+<p>以具体的实例来说明一下：</p>
+<p>比如x=7 y=5
+7的二进制为 4+2+1 即0111
+5的二进制为 4+1   即0101
+第一步 x^=y x = 0111 ^ 0101 = 1101 
+第二步 y^=x y = 0101 ^ 1101 = 0111; 这时y为0111即7，也就是x
+第三步 x^=y x = 1101 ^ 0111 = 0101; 这时x为0101即5，也就是y</p>
+<h4 id="3jiao-huan-fu-hao">3.交换符号</h4>
+<p>交换符号，顾名思义，即为正变负。
+其实用普通方法也很简单：
+x=-x 例如 1 -1 -12 12 
+但通过位操作也很方便
+比如 -11
+11110101(-11) 取反为0001010 加1 为00001011 即11
+00001011(11) 取反11110100 加1 为11110101 即-11
+正负切换，只需原数取反后加1</p>
+<p>代码如下：</p>
+<div class="highlight"><pre><span></span>def signchange(x):
+    return ~x+1
+</pre></div>
+<h4 id="4qiu-jue-dui-zhi">4.求绝对值</h4>
+<p>位操作可以用来求绝对值，负数可以取反后加1.和前面讲的一样
+如果32位有符号整型，右移31位得到最后一位符号位，如果为0，则为正数，如果为-1，为负数 正数直接返回，否则取反加1</p>
+<p>代码如下：</p>
+<div class="highlight"><pre><span></span> def getabs(x):
+     sign = x &gt;&gt; 31
+     if sign is 0:
+         return x
+     else:
+         return ~x + 1
+</pre></div>
+<p>对于任何数，和0异或都会保存不变。与-1异或相当于取反。因此 x与sign异或后再减sign(sign要么为0，要么为-1，-sign要么减0或减-1等于+1）也可以得到绝对值，代码可以改为：</p>
+<div class="highlight"><pre><span></span>def getabs(x):
+    sign = x &gt;&gt; 31
+    return (x^sign) - sign
+</pre></div>
+<h4 id="5gao-di-wei-jiao-huan">5.高低位交换</h4>
+<p>比如一个16位的无符号整数，前8位可以作为“高位”，后8位可以为“低位”，将其高低互换。
+如34520:
+10000110 11011000
+变为
+11011000 10000110
+55430
+将10000110 11011000 右移8位，即得到00000000 10000110，左移8位得到，11011000 00000000，然后将两个数相或得到11011000 10000110 
+代码如下：</p>
+<div class="highlight"><pre><span></span>def changesite(x):
+    return (x &gt;&gt; 8) | (x &lt;&lt; 8)
+</pre></div>
+<p>此处 python可能得到值不同，python默认为有符号数，且为64位</p>
+<h4 id="6er-jin-zhi-ni-xu">6.二进制逆序</h4>
+<p>逆序就是将34520
+10000110 11011000变为
+00011011 01100001 </p>
+<p>类似于归并排序的分组处理，可以通过4步进行16位数据的二进制逆序：
+第1步：2位一组，每位高低交换：
+10000110 11011000
+01001001 11100100
+第2步：4位一组，每2位高低交换
+01001001 11100100
+00010110 10110001
+第3步：8位一组，每4位高低交换
+00010110 10110001
+01100001 00011011
+第4步，16位一组，8位高低交换
+01100001 00011011
+00011011 01100001
+这样就得到了二进制交换的目的</p>
+<p>第一步如何进行交换？</p>
+<p>先分别取其奇数位和偶数位，空位以0补位
+奇数位：10000010 10001000
+偶数为：00000100 01010000
+然后将奇数位右移1位得到
+01000001 01000100
+偶数位左移1位得到
+00001000 10100000
+两则相或得到：
+01001001 11100100 这样就得到了奇偶位的数据交换</p>
+<p>代码如下：</p>
+<div class="highlight"><pre><span></span>def getnum(x):
+    x = ((x&amp;0XAAAA) &gt;&gt; 1) | ((x&amp;0X5555) &lt;&lt;1);
+    x = ((x&amp;0XCCCC) &gt;&gt; 2) | ((x&amp;0X3333) &lt;&lt;2);
+    x = ((x&amp;0XF0F0) &gt;&gt; 4) | ((x&amp;0X0F0F) &lt;&lt;4);
+    x = ((x&amp;0XFF00) &gt;&gt; 8) | ((x&amp;0X00FF) &lt;&lt;8);
+    return x
+</pre></div>
+<h4 id="7er-jin-zhi-an-wei-qu-fan">7.二进制按位取反</h4>
+<p>例如 5=101 变为010 2
+1=1 变为0 
+7=111 变为000
+变化可以简单归结为1变0 0变1 
+异或的特点是相同为0，不同为1；如果和1相异或，1就会变成0，0就会变成1，也就是将原数的每位和1相异或就能得到对应的取反
+比如 101: 101 ^ 111 得到 010 111： 111^111得到000
+现在问题转为如何获取和原数相同的全数为1的数
+获取原数的位数，如111可由1000 - 1 获取
+方法1
+1左移获得，1移位后右边补0
+代码如下：</p>
+<div class="highlight"><pre><span></span>def getnum(num):
+    i = 1
+    while i &lt;= num:
+        i = i &lt;&lt; 1
+        print(i)
+    return (i - 1) ^ num
+</pre></div>
+<p>2.获取原数的位数，求相同位数的最大数
+代码如下：</p>
+<div class="highlight"><pre><span></span>def getnum(num):
+    n = int(math.log(num,2)) + 1
+    m = 2**n
+    return (m-1) ^ num
+</pre></div>
+<h4 id="8-er-jin-zhi-zhong-1de-ge-shu">8 二进制中１的个数</h4>
+<p>统计二进制数中１的个数，这个方法比较多，可由转成字符进行统计。这里采用位操作的方法。
+下面还是以34520为例，进行分析
+１.２位一组高低位相加
+　10 00 01 10 11 01 10 00
+-&gt;01 00 01 01 10 01 01 00
+2.4位一组高低位相加
+  01 00 01 01 10 01 01 00
+  00 01 00 10 00 11 00 01
+3.8位一组高低位相加
+  00 01 00 10 00 11 00 01
+  00 00 00 11 00 00 01 00
+4.16位一组高低位相加
+　00 00 00 11 00 00 01 00
+　00 00 00 00 00 00 01 11
+　
+这方法的套路在于二进制无非０和１，第一步相当于分别把８组里面的１进行了统计，第二步又把４组里面的１进行了统计，然后2组，然后1组
+代码：</p>
+<div class="highlight"><pre><span></span>def getsum(x):
+     x = ((x &amp; 0xaaaa) &gt;&gt; 1) + (x &amp; 0x5555)
+     x = ((x &amp; 0xcccc) &gt;&gt; 2) + (x &amp; 0x3333)
+     x = ((x &amp; 0xf0f0) &gt;&gt; 4) + (x &amp; 0x0f0f)
+     x = ((x &amp; 0xff00) &gt;&gt; 8) + (x &amp; 0x00ff)
+     return x
+</pre></div>
+<p>分组处理可以解决很多二进制问题。</p>
+<h4 id="9luo-dan-de-shu-zi">9.落单的数字</h4>
+<p>一组数字，大部分都是出现了偶数次，而缺失的数字出现了奇数次，现在要找出这个数。
+利用异或运算的两个特性，１．自己和自己异或为０（和０异或为本身）　２．异或满足交换率
+也就是将所有的数进行异或，成对的数就会变成０，最后就变成了一堆０和落单的数异或，也就找到了它</p>
+<p>代码如下：</p>
+<div class="highlight"><pre><span></span>def getnum(numlist):
+    num=0
+    for i in numlist:
+        num ^= i
+    return num
+</pre></div>
+<p>例如getnum([7,6,4,3,3,4,6,3,3,7,7])
+将输出7</p>
+<p>要是两个落单了呢
+比如[2,3,4,5,6,7,8,9,9,8,7,5,3,2]
+如果按照上面的做法，最终得到的是两个落单数字的异或结果。
+如果将整组数分成两组，并且将两个落单的数分别分到两组中，两组分别异或就能把两个落单的数孤立出来。
+如何分组呢，相同的数在每个二进制上的位都相同，两个相同的数异或后，每位上都是０，而不同的数异或后至少有一位为１,我们就按这一位为０的分为１组，为１的分为１组
+例子中异或结果为6^4  0110^0100 为0010 也就是７和４在第１位不同，然后将整个数组按照第１位　１和０进行分组
+２　0010　第一组
+３　0011 第一组
+４　0100 第二组
+５　0101 第二组
+６　0110 第一组
+７　0111 第一组
+８　1000 第二组
+９　1001 第二组
+这样 ２、３、６、７、７、３、２为１组　 4、５、８、９、９、５为２组
+这样每组分别异或就得到了6和４</p>
+<p>代码：</p>
+<div class="highlight"><pre><span></span>def getdouble(numlist):
+    num = 0
+    for i in numlist:
+        num ^= i
+    n = int(math.log(num,2)) + 1
+    for j in range(n):
+        if((num &gt;&gt; j)&amp;1 ==1):
+            break
+    list1=[]
+    list2=[]
+    for temp in numlist:
+        if ((temp &gt;&gt; j)&amp;1 ==1):
+            list1.append(temp)
+        else:
+            list2.append(temp)
+    print getsingle(list1)
+    print getsingle(list2)
+</pre></div></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="位操作">位操作</a><ul><li><a class="toc-href" href="#wei-cao-zuo-ji-chu" title="位操作基础">位操作基础</a></li><li><a class="toc-href" href="#chang-yong-wei-cao-zuo-li-zi" title="常用位操作例子">常用位操作例子</a><ul><li><a class="toc-href" href="#1pan-duan-qi-ou" title="1.判断奇偶">1.判断奇偶</a></li><li><a class="toc-href" href="#2jiao-huan-liang-shu" title="2.交换两数">2.交换两数</a></li><li><a class="toc-href" href="#3jiao-huan-fu-hao" title="3.交换符号">3.交换符号</a></li><li><a class="toc-href" href="#4qiu-jue-dui-zhi" title="4.求绝对值">4.求绝对值</a></li><li><a class="toc-href" href="#5gao-di-wei-jiao-huan" title="5.高低位交换">5.高低位交换</a></li><li><a class="toc-href" href="#6er-jin-zhi-ni-xu" title="6.二进制逆序">6.二进制逆序</a></li><li><a class="toc-href" href="#7er-jin-zhi-an-wei-qu-fan" title="7.二进制按位取反">7.二进制按位取反</a></li><li><a class="toc-href" href="#8-er-jin-zhi-zhong-1de-ge-shu" title="8 二进制中１的个数">8 二进制中１的个数</a></li><li><a class="toc-href" href="#9luo-dan-de-shu-zi" title="9.落单的数字">9.落单的数字</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

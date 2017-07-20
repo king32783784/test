@@ -1,0 +1,872 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Python-Tips" />
+        <meta name="description" content="Tips 23 XML XML是一种描述层次结构话数据的方法。XML文档包含由起始和结束标签分割的一个或多个元素。下面这个就是个简单的XML文件： &lt;foo&gt; # 这是foo元素的起始标签 &lt;/foo&gt; # 这是foo元素对应的结束标签 元素可以嵌套到任意层次 &lt;foo&gt; &lt;bar&gt; &lt;/bar&gt; # 可以作为foo元素的子元素 XML文档中第一个元素叫做根元素，每份XML文档只能有一个根元素。以下就不是一个xml文档。 # 两个根元素 元素可以有其属性，类似字典的键值对。属性由空格分割列举在元素的起始标签中。一个元素中属性名不恩能够重复，属性值必须用括号包括起来，单引号或双引号都可以。 &lt;foo lang=&#39;en&#39;&gt; # foo元素有一个叫做lang的属性，属性值为&#39;en&#39; &lt;bar id=&#39;papayawhip&#39; lang=&#34;fr&#34;&gt;&lt;/bar&gt; # bar元素分别两个属性,id和lang，每个属性都有对应值，每个元素具有独立的属性集 &lt;/foo&gt; 如果元素存在多个属性，书写的顺序不重要。元素的属性都是无序的键值对集，和字典类似。元素的个数是没有限制的。 元素可以有其文本内容" />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Python-Tips(七）"/>
+    <meta property="og:url" content="../../../../2014/05/18/python/"/>
+    <meta property="og:description" content="Tips 23 XML XML是一种描述层次结构话数据的方法。XML文档包含由起始和结束标签分割的一个或多个元素。下面这个就是个简单的XML文件： &lt;foo&gt; # 这是foo元素的起始标签 &lt;/foo&gt; # 这是foo元素对应的结束标签 元素可以嵌套到任意层次 &lt;foo&gt; &lt;bar&gt; &lt;/bar&gt; # 可以作为foo元素的子元素 XML文档中第一个元素叫做根元素，每份XML文档只能有一个根元素。以下就不是一个xml文档。 # 两个根元素 元素可以有其属性，类似字典的键值对。属性由空格分割列举在元素的起始标签中。一个元素中属性名不恩能够重复，属性值必须用括号包括起来，单引号或双引号都可以。 &lt;foo lang=&#39;en&#39;&gt; # foo元素有一个叫做lang的属性，属性值为&#39;en&#39; &lt;bar id=&#39;papayawhip&#39; lang=&#34;fr&#34;&gt;&lt;/bar&gt; # bar元素分别两个属性,id和lang，每个属性都有对应值，每个元素具有独立的属性集 &lt;/foo&gt; 如果元素存在多个属性，书写的顺序不重要。元素的属性都是无序的键值对集，和字典类似。元素的个数是没有限制的。 元素可以有其文本内容"/>
+    <meta property="article:published_time" content="2014-05-18" />
+    <meta property="article:section" content="编程语言-Python" />
+        <meta property="article:tag" content="Python-Tips" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Python-Tips(七） - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/18/python/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/18/python/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2014/05/18/python/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2014/05/18/python/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li class="active">
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2014/05/18/python/"
+                           rel="bookmark"
+                           title="Permalink to Python-Tips(七）">
+                            Python-Tips(七）
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2014-05-18T00:00:00+08:00"> 2014-05-18 日</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/bian-cheng-yu-yan-python.html">编程语言-Python</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/python-tips.html">Python-Tips</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="tips-23">Tips 23</h3>
+<p><strong>XML</strong></p>
+<p>XML是一种描述层次结构话数据的方法。XML文档包含由起始和结束标签分割的一个或多个元素。下面这个就是个简单的XML文件：</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;foo&gt;</span>     # 这是foo元素的起始标签
+<span class="nt">&lt;/foo&gt;</span>　　# 这是foo元素对应的结束标签
+</pre></div>
+<p>元素可以嵌套到任意层次</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;foo&gt;</span>
+  <span class="nt">&lt;bar&gt;</span> <span class="nt">&lt;/bar&gt;</span>  # 可以作为foo元素的子元素
+</pre></div>
+<p>
+XML文档中第一个元素叫做根元素，每份XML文档只能有一个根元素。以下就不是一个xml文档。
+　　<foo></foo>
+<bar></bar>　# 两个根元素
+元素可以有其属性，类似字典的键值对。属性由空格分割列举在元素的起始标签中。一个元素中属性名不恩能够重复，属性值必须用括号包括起来，单引号或双引号都可以。</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;foo</span> <span class="na">lang=</span><span class="s">'en'</span><span class="nt">&gt;</span> # foo元素有一个叫做lang的属性，属性值为'en'
+  <span class="nt">&lt;bar</span> <span class="na">id=</span><span class="s">'papayawhip'</span> <span class="na">lang=</span><span class="s">"fr"</span><span class="nt">&gt;&lt;/bar&gt;</span>　# bar元素分别两个属性,id和lang，每个属性都有对应值，每个元素具有独立的属性集
+<span class="nt">&lt;/foo&gt;</span>
+</pre></div>
+<p>如果元素存在多个属性，书写的顺序不重要。元素的属性都是无序的键值对集，和字典类似。元素的个数是没有限制的。
+元素可以有其文本内容
+    <foo lang="en">
+    　<bar ...')并非在测试是否find()方法找到匹配项，而是在判断元素是否包含子元素。想要判断是否包含要查找的子元素，需要使用if="" element.find('...')="" is="" lang="fr&gt;PapayaWhip&lt;/bar&gt;
+    &lt;/foo&gt;
+如果和开头那个啥都没有，较空元素。空元素的简洁表示：&lt;foo/&gt;
+和python函数可以在不同模块中声明一样，可以在不同命名空间中声明XML元素。XML文档的命名空间看起来像URL.可以通过xmlns来定义默认命名空间。命名空间声明和元素属性类似，但作用不同。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&lt;feed&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://www.w3.org/2005/Atom'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&gt;&lt;/span&gt; # feed元素处于命名空间&quot;http://www..../Atom' 
+  &lt;span class=&quot;nt&quot;&gt;&lt;title&gt;&lt;/span&gt;dive into mark&lt;span class=&quot;nt&quot;&gt;&lt;/title&gt;&lt;/span&gt;  #title元素的命名空间也是，命名空间会作用到子元素
+&lt;span class=&quot;nt&quot;&gt;&lt;/feed&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;还可以通过xmlns:prefix声明定义一个命名空间并取名为prefix.然后该命名空间的每个元素都必须显式的调用这个前缀。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&lt;atom:feed&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:atom=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://www.w3.org/2005/Atom'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&gt;&lt;/span&gt; # feed元素属于命名空间http.../Atom
+　　&lt;span class=&quot;nt&quot;&gt;&lt;atom:title&gt;&lt;/span&gt; dive into mark &lt;span class=&quot;nt&quot;&gt;&lt;/atom:title&gt;&lt;/span&gt; # title元素也是
+&lt;span class=&quot;nt&quot;&gt;&lt;atom:feed&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对于XML解析器而言，以上两种方式是一样的。命名空间 + 元素名 = XML标识　前缀是用来引用命名空间的，所以对应解析器来说，这些前缀(atom:）无关紧要。名字空间、元素名、属性、元素的文本内容相同的情况下，xml文档相同。&lt;/p&gt;
+&lt;p&gt;在根元素之前，加上字符编码信息（无处不在啊）&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;?xml version='1.0' encoding='utf-8'?&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;Atom结构&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;每个Atom订阅都共享一个根元素：即在命名空间http://www.w3.org/2005/Atom中的元素feed&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&lt;feed&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://www.w3.org/2005/Atom'&lt;/span&gt;  &lt;span class=&quot;err&quot;&gt;#&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;表示命名空间Atom&lt;/span&gt;
+   &lt;span class=&quot;na&quot;&gt;xml:lang=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'en'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&gt;&lt;/span&gt;    # 用来声明元素及子元素使用的语言 
+  &lt;span class=&quot;nt&quot;&gt;&lt;title&gt;&lt;/span&gt; dive into mark &lt;span class=&quot;nt&quot;&gt;&lt;/title&gt;&lt;/span&gt; # 表题
+  &lt;span class=&quot;nt&quot;&gt;&lt;subtitle&gt;&lt;/span&gt; currently between addictions&lt;span class=&quot;nt&quot;&gt;&lt;/subtitle&gt;&lt;/span&gt;# 子标题
+  &lt;span class=&quot;nt&quot;&gt;&lt;id&gt;&lt;/span&gt; tag:diveintomark.org,2001-07-29:/&lt;span class=&quot;nt&quot;&gt;&lt;/id&gt;&lt;/span&gt;　# 全局唯一标识符
+  &lt;span class=&quot;nt&quot;&gt;&lt;updated&gt;&lt;/span&gt;2009-03-27T21:56:07Z&lt;span class=&quot;nt&quot;&gt;&lt;/updated&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;link&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;rel=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'alternate'&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'text/html'&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;href=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://diveintomark.org/'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&gt;&lt;/span&gt;　#link3个属性
+
+&lt;span class=&quot;nt&quot;&gt;&lt;entry&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;author&gt;&lt;/span&gt; # 作者
+    &lt;span class=&quot;nt&quot;&gt;&lt;name&gt;&lt;/span&gt;Mark&lt;span class=&quot;nt&quot;&gt;&lt;/name&gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&lt;uri&gt;&lt;/span&gt;http://diveintomark.org/&lt;span class=&quot;nt&quot;&gt;&lt;/uri&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;/author&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;title&gt;&lt;/span&gt;Dive into history, 2009 edition&lt;span class=&quot;nt&quot;&gt;&lt;/title&gt;&lt;/span&gt;                           # 标题
+  &lt;span class=&quot;nt&quot;&gt;&lt;link&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;rel=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'alternate'&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'text/html'&lt;/span&gt;                                   &lt;span class=&quot;err&quot;&gt;#&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;文章链接&lt;/span&gt; 
+    &lt;span class=&quot;na&quot;&gt;href=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://diveintomark.org/archives/2009/03/27/dive-into-history-2009-edition'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;id&gt;&lt;/span&gt;tag:diveintomark.org,2009-03-27:/archives/20090327172042&lt;span class=&quot;nt&quot;&gt;&lt;/id&gt;&lt;/span&gt;        #标识符
+  &lt;span class=&quot;nt&quot;&gt;&lt;updated&gt;&lt;/span&gt;2009-03-27T21:56:07Z&lt;span class=&quot;nt&quot;&gt;&lt;/updated&gt;&lt;/span&gt;                                  # 日期
+  &lt;span class=&quot;nt&quot;&gt;&lt;published&gt;&lt;/span&gt;2009-03-27T17:20:42Z&lt;span class=&quot;nt&quot;&gt;&lt;/published&gt;&lt;/span&gt;        
+  &lt;span class=&quot;nt&quot;&gt;&lt;category&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;scheme=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://diveintomark.org'&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;term=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'diveintopython'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&gt;&lt;/span&gt;       # 类别
+  &lt;span class=&quot;nt&quot;&gt;&lt;category&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;scheme=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://diveintomark.org'&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;term=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'docbook'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;category&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;scheme=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'http://diveintomark.org'&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;term=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'html'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&lt;summary&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'html'&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&gt;&lt;/span&gt;Putting an entire chapter on one page sounds        # 简介
+    bloated, but consider this &lt;span class=&quot;ni&quot;&gt;&amp;amp;&lt;/span&gt;mdash; my longest chapter so far
+    would be 75 printed pages, and it loads in under 5 seconds&lt;span class=&quot;ni&quot;&gt;&amp;amp;&lt;/span&gt;hellip;
+    On dialup.&lt;span class=&quot;nt&quot;&gt;&lt;/summary&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;/entry&gt;                    &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解析XML&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;接下来才是重点，不然啰嗦那么多干嘛&lt;/p&gt;
+&lt;p&gt;python可以使用几种不同的方式解析XML文档。它包含DOM和SAX解析器。这里讲一下ElementTree和库上边。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;xml.etree.ElementTree&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;etree&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# ElementTree属于Python标准库的一部分，位置为xml.etree.ElementTree&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tree&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;etree&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'feed.xml'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# parse函数是ElementTree库的主要入口,使用文件名或流对象作为参数,parse()函数会解析完整的文档。如果内存资源紧张，可以增量式解析&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tree&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getroot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# parse函数会返回一个能代表整篇文档的对象，这不是根元素，获取根元素可以调用getroot()方法&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; 
+&lt;span class=&quot;o&quot;&gt;&lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Element&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'{http://www.w3.org/2005/Atom}feed'&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x7f61dc975ae8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;ElementTree使用{namespace}localname来表达XML元素&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;元素即列表&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在ElementTree API中，元素的行为就像列表一样。列表中的项即该元素的子元素&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&gt;&gt;&gt; root.tag    # 根元素如下
+'{http://www.w3.org/2005/Atom}feed'
+&gt;&gt;&gt; len(root) # 根元素的长度即为子元素的数量
+8
+&gt;&gt;&gt; for child in root: # 我们可以像使用迭代器（列表）一样遍历其子元素
+...     print(child)
+... 
+&lt;Element '{http://www.w3.org/2005/Atom}title' at 0x7fc09da09408&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}subtitle' at 0x7fc09da09458&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}id' at 0x7fc09da09548&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}updated' at 0x7fc09da09598&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}link' at 0x7fc09da09638&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09688&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09b38&gt;
+&lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09ef8&gt;
+从输出看到，根元素共8个子元素，所有feed级的元数据(title,subtitle,id,updated,link,entrya)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;该列表只包括了直接的子元素，子元素如果有其自身的子元素，是不包含在这，他们包含在各自的子元素的列表中。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;属性即字典&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;XML不只是元素的集合；每一个元素还有其属性集。一旦获取某个元素的引用，我们可以像操作字典一样来获取其属性&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&gt;&gt;&gt; root.attrib # attrib是一个代表元素属性的字典，该部分的xml内容： &lt;feed xmlns='http://www.w3.org/2005/Atom' xml:lang='en'&gt;，前缀xml:指示一个内置的名字空间，每个XML不需声明便可使用
+{'{http://www.w3.org/XML/1998/namespace}lang': 'en'}
+&gt;&gt;&gt; root[4] # 第五个子元素即子元素link
+&lt;Element '{http://www.w3.org/2005/Atom}link' at 0x7fc09da09638&gt;
+&gt;&gt;&gt; root[4].attrib # link元素的属性字典
+{'href': 'http://diveintomark.org/', 'type': 'text/html', 'rel': 'alternate'}
+&gt;&gt;&gt; root[3] # 第4个子元素updated
+&lt;Element '{http://www.w3.org/2005/Atom}updated' at 0x7fc09da09598&gt;
+&gt;&gt;&gt; root[3].attrib # updated没有属性，所以是个空字典
+{}
+&gt;&gt;&gt; root[4].attrib['href'] # 和字典操作一样，获取对应的属性值
+'http://diveintomark.org/'
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;XML查找结点&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;许多情况下，我们需要找到XML中特点的元素。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&gt;&gt;&gt; root.findall('{http://www.w3.org/2005/Atom}entry') # findall()方法可以查找匹配的子元素
+[&lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09688&gt;, &lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09b38&gt;, &lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09ef8&gt;]
+&gt;&gt;&gt; root.tag
+'{http://www.w3.org/2005/Atom}feed'
+&gt;&gt;&gt; root.findall('{http://www.w3.org/2005/Atom}feed') # 每个元素都有findall()方法，但查询只会搜索其子元素，根元素feed中不存在feed的子元素，所以为空列表
+[]
+&gt;&gt;&gt; root.findall('{http://www.w3.org/2005/Atom}author') # author虽然有，但它是entry的子元素
+[]
+&gt;&gt;&gt; tree.findall('{http://www.w3.org/2005/Atom}entry') # 对象tree(etree.parse()返回值)中一些方法是根元素方法的镜像，和tree.getroot().findall()返回值一样
+[&lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09688&gt;, &lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09b38&gt;, &lt;Element '{http://www.w3.org/2005/Atom}entry' at 0x7fc09da09ef8&gt;]
+&gt;&gt;&gt; tree.findall('{http://www.w3.org/2005/Atom}author') # 和tree.getroot().findall结果一样
+[]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;findall()匹配所有元素，find()方法只返回第一个匹配元素&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&gt;&gt;&gt; entries = tree.findall('{http://www.w3.org/2005/Atom}entry')# 查找元素赋给entries
+&gt;&gt;&gt; len(entries)
+3
+&gt;&gt;&gt; title_element = entries[0].find('{http://www.w3.org/2005/Atom}title') # find()方法使用ElementTree作为参数,返回第一个匹配的元素
+&gt;&gt;&gt; title_element.text
+'Dive into history, 2009 edition'
+&gt;&gt;&gt; foo_element = entries[0].find('{http://www.w3.org/2005/Atom}foo')
+&gt;&gt;&gt; foo_element
+&gt;&gt;&gt; type(foo_element) # entries[0]没有foo元素，返回None
+&lt;class 'NoneType'&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;ElementTree元素对象如果不包含子元素，其值被认为False(即len(element)为0).if element.find(" none<="" not="" p="">
+</bar></foo></p><p>可以在所以派生元素中搜索，即任意嵌套层次的子元素、孙子元素...</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; all_links = tree.findall('.//{http://www.w3.org/2005/Atom}link') # .//指在任意嵌套层次查找
+&gt;&gt;&gt; all_links
+[&lt;Element '{http://www.w3.org/2005/Atom}link' at 0x7fc09da09638&gt;, &lt;Element '{http://www.w3.org/2005/Atom}link' at 0x7fc09da098b8&gt;, &lt;Element '{http://www.w3.org/2005/Atom}link' at 0x7fc09da09d18&gt;, &lt;Element '{http://www.w3.org/2005/Atom}link' at 0x7fc09da0c098&gt;]
+&gt;&gt;&gt; all_links[0].attrib # 直接子元素的link
+{'href': 'http://diveintomark.org/', 'type': 'text/html', 'rel': 'alternate'}
+&gt;&gt;&gt; all_links[1].attrib # 子元素entry子元素link
+{'href': 'http://diveintomark.org/archives/2009/03/27/dive-into-history-2009-edition', 'type': 'text/html', 'rel': 'alternate'}                                                           
+&gt;&gt;&gt; all_links[2].attrib                                                                     
+{'href': 'http://diveintomark.org/archives/2009/03/21/accessibility-is-a-harsh-mistress', 'type': 'text/html', 'rel': 'alternate'}                                                        
+&gt;&gt;&gt; all_links[3].attrib
+{'href': 'http://diveintomark.org/archives/2008/12/18/give-part-1-container-formats', 'type': 'text/html', 'rel': 'alternate'}
+</pre></div>
+<p>ElementTree的findall()方法是其一个非常强大的特性,但它的查询方式有些出乎意料，“有限的XPath支持"  XPath是一种用于查询XML文档的W3C标准。另外一个第三方库对ElementTree的API进行了扩展，提供了对XPath的全面支持。</p>
+<p><strong>LXML</strong></p>
+<p>lxml是一个开源的第三方库，以流行的libxml2解析器为基础开发。它提供了对XPath1.0的全面支持。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span> <span class="c1"># 导入lxml，和ElementTree提供相同的API</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span>  <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'feed.xml'</span><span class="p">)</span> <span class="c1"># parse函数和ElementTree</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span> <span class="c1"># 相同</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'{http://www.w3.org/2005/Atom}entry'</span><span class="p">)</span> <span class="c1"># 相同</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">entry</span> <span class="n">at</span> <span class="mh">0x7fc09da04b48</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">entry</span> <span class="n">at</span> <span class="mh">0x7fc09da04a08</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">entry</span> <span class="n">at</span> <span class="mh">0x7fc09bd92ec8</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+<p>对应大型的xml文件，lxml明显比内置的ElementTree快了许多。如果现在只用到了ElementTree的API，并且想要使用最快的实现，可以尝试导入lxml。</p>
+<p>比如
+    try:
+        from lxml import etree
+    except ImportError:
+        import xml.etree.ElementTree as etree
+这种方法同样适用于其他备选模块的方法</p>
+<p>lxml不只是一个更快速的ElementTree,它的findall()方法能够支持更加复杂的表达式。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">lxml.etree</span> <span class="c1"># 直接导入了lxml.etree，强调这些特性只限于lxml</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'feed.xml'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'.//{http://www.w3.org/2005/Atom}*[@href]'</span><span class="p">)</span><span class="c1"># 查找整个文档范围内搜索命名空间Atom中具有href属性的元素 {http://www.w3.org/2005/Atom}指示"搜索范围仅在命名空间Atom中。”*表示“任意本地名的元素”[@href]表示含有href属性“</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">link</span> <span class="n">at</span> <span class="mh">0x7fc09bd99088</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">link</span> <span class="n">at</span> <span class="mh">0x7fc09bd99108</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">link</span> <span class="n">at</span> <span class="mh">0x7fc09bd990c8</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">link</span> <span class="n">at</span> <span class="mh">0x7fc09bd92f08</span><span class="o">&gt;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">".//{http://www.w3.org/2005/Atom}*[@href='http://diveintomark.org/']"</span><span class="p">)</span> <span class="c1"># 查找所有包含href属性并且值为"http://diveintomark.org/"的Atom元素</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">link</span> <span class="n">at</span> <span class="mh">0x7fc09bd99088</span><span class="o">&gt;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">NS</span> <span class="o">=</span> <span class="s1">'{http://www.w3.org/2005/Atom}'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'.//{NS}author[{NS}uri]'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NS</span><span class="o">=</span><span class="n">NS</span><span class="p">))</span> <span class="c1">#搜索命名空间Atom中包含uri元素作为子元素的author元素。该语句只返回第一个和第二个entry元素中的author元素，最后的entry元素没有uri </span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">author</span> <span class="n">at</span> <span class="mh">0x7fc09bd991c8</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">author</span> <span class="n">at</span> <span class="mh">0x7fc09bd99048</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+<p>lxml集成了对任意XPath1.0表达式的支持</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">lxml.etree</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">'feed.xml'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">NSMAP</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'atom'</span><span class="p">:</span> <span class="s1">'http://www.w3.org/2005/Atom'</span><span class="p">}</span> <span class="c1"># 要查询命名空间的元素，定义一个命名空间前缀映射。</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">entries</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">".//atom:category[@term='accessibility']/.."</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="n">NSMAP</span><span class="p">)</span> <span class="c1">#  XPath查询请求。这个XPath表达式目的在于搜索category元素，并且该元素包含值为accessibility的term属性”/.."意思是返回找到的category元素的父元素。这条语句会找到所有包含&lt;category term = 'accessibility'&gt;作为子元素的条目</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">entries</span> <span class="c1"># xpath()函数返回一个ElementTree对象列表</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Element</span> <span class="p">{</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2005</span><span class="o">/</span><span class="n">Atom</span><span class="p">}</span><span class="n">entry</span> <span class="n">at</span> <span class="mh">0x7fc09bd99188</span><span class="o">&gt;</span><span class="p">]</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">entry</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">'./atom:title/text()'</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="n">NSMAP</span><span class="p">)</span> <span class="c1"># XPath表达式并总是返回一个元素列表。一个解析了的xml文档的DOM模型并不包含元素；只包含结点。结点可以是元素，属性，甚至是文本内容。XPath查询的结果是一个结点列表。当前查询返回一个文本结点列表：title元素(atom:title)的文本内容（text()),并且title元素必须是当前元素的子元素(./)</span>
+</pre></div>
+<p><strong>生成XML</strong></p>
+<p>python同样可以创建xml文档</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">etree</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">new_feed</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">'{http://www.w3.org/2005/Atom}feed'</span><span class="p">,</span> <span class="c1"># 实例化Element类创建一个新元素。将元素的名字(命名空间+本地名)作为参数。</span>
+<span class="n">attrib</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'{http://www.w3.org/XML/1998/namespace}lang'</span><span class="p">:</span><span class="s1">'en'</span><span class="p">})</span> <span class="c1"># 将属性名和值构成的字典传递给attrib参数</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">new_feed</span><span class="p">))</span> 
+<span class="sa">b</span><span class="s1">'&lt;ns0:feed xmlns:ns0="http://www.w3.org/2005/Atom" xml:lang="en" /&gt;'</span>
+<span class="p">[</span><span class="s1">'Accessibility is a harsh mistress'</span><span class="p">]</span>
+</pre></div>
+<p>内置的ElementTree库没有提供细粒度地对序列化时命名空间内元素的控制，但是lxml有这样的功能。</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">lxml.etree</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">NSMAP</span> <span class="o">=</span> <span class="p">{</span><span class="bp">None</span><span class="p">:</span> <span class="s1">'http://www.w3.org/2005/Atom'</span><span class="p">}</span> <span class="c1"># 首先，定义一个用于命名空间映射的字典对象,使用None前缀来定义默认的命名空间</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">new_feed</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">'feed'</span><span class="p">,</span> <span class="n">nsmap</span><span class="o">=</span><span class="n">NSMAP</span><span class="p">)</span> <span class="c1"># 我们创建元素的时候，给lxml专有的nsmap参数传值，并且lxml会参照我们定义的命名空间前缀</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">tounicode</span><span class="p">(</span><span class="n">new_feed</span><span class="p">))</span>
+<span class="o">&lt;</span><span class="n">feed</span> <span class="n">xmlns</span><span class="o">=</span><span class="s2">"http://www.w3.org/2005/Atom"</span><span class="o">/&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">new_feed</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">'{http://www.w3.org/XML/1998/namespace}lang'</span><span class="p">,</span> <span class="s1">'en'</span><span class="p">)</span><span class="c1"># 使用set方法随时给元素添加所需属性</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">tounicode</span><span class="p">(</span><span class="n">new_feed</span><span class="p">))</span>
+<span class="o">&lt;</span><span class="n">feed</span> <span class="n">xmlns</span><span class="o">=</span><span class="s2">"http://www.w3.org/2005/Atom"</span> <span class="n">xml</span><span class="p">:</span><span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="o">/&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">title</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">new_feed</span><span class="p">,</span> <span class="s1">'title'</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">'type'</span><span class="p">:</span><span class="s1">'html'</span><span class="p">})</span> <span class="c1"># 给已有元素创建子元素，实例化SubElement类，两个参数，父元素(new_feed)和子元素的名字</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">tounicode</span><span class="p">(</span><span class="n">new_feed</span><span class="p">))</span><span class="err">；</span><span class="c1"># 传递属性字典进去</span>
+<span class="o">&lt;</span><span class="n">feed</span> <span class="n">xmlns</span><span class="o">=</span><span class="s2">"http://www.w3.org/2005/Atom"</span> <span class="n">xml</span><span class="p">:</span><span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="o">&gt;&lt;</span><span class="n">title</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"html"</span><span class="o">/&gt;&lt;/</span><span class="n">feed</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">title</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'dive into &amp;hellip;'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">tounicode</span><span class="p">(</span><span class="n">new_feed</span><span class="p">))</span>
+<span class="o">&lt;</span><span class="n">feed</span> <span class="n">xmlns</span><span class="o">=</span><span class="s2">"http://www.w3.org/2005/Atom"</span> <span class="n">xml</span><span class="p">:</span><span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="o">&gt;&lt;</span><span class="n">title</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"html"</span><span class="o">&gt;</span><span class="n">dive</span> <span class="n">into</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">hellip</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;&lt;/</span><span class="n">feed</span><span class="o">&gt;</span>
+<span class="c1"># 新创建title元素在Atom命名空间中，并作为子元素插入到feed元素中。设定元素的文本内容，只需设定其.text属性；当前title元素序列化时就使用了其文本内容，任何包含&lt;或则&amp;符号的内容在序列化时都需要转义</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">tounicode</span><span class="p">(</span><span class="n">new_feed</span><span class="p">,</span> <span class="n">pretty_print</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&lt;</span><span class="n">feed</span> <span class="n">xmlns</span><span class="o">=</span><span class="s2">"http://www.w3.org/2005/Atom"</span> <span class="n">xml</span><span class="p">:</span><span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">title</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"html"</span><span class="o">&gt;</span><span class="n">dive</span> <span class="n">into</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">hellip</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">feed</span><span class="o">&gt;</span>
+<span class="s2">"pretty_print=True,"</span><span class="err">会在每个结束的末尾或含义子元素但没有文本内容的末尾添加换行符</span>
+</pre></div>
+<p><strong>解析损坏的XML</strong></p>
+<p>不再说明了，尽量保证xml格式符合标准吧</p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Python-Tips(七）">Python-Tips(七）</a><ul><li><a class="toc-href" href="#tips-23" title="Tips 23">Tips 23</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

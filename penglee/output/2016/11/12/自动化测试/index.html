@@ -1,0 +1,870 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Avocado" />
+        <meta name="description" content="编写Avocado测试 现在我们开始使用python编写Avocado测试，测试继承于avocado.Test. 基本例子 创建一个时间测试，sleeptest,测试非常简单，只是sleep一会： import time from avocado import Test class SleepTest(Test): def test(self): sleep_length = self.params.get(&#39;sleep_length&#39;, default=1) self.log.debug(&#34;Sleep for %.2f seconds&#34;, sleep_length) time sleep(sleep_length) 这是为avocado编写的一个简单示例，可以使用其他power API编写。 从上面的例子可以看出，avocado测试从avocado.Test继承的test方法入手。 多个测试和命名约定 可以在一个类中存在多个测试。 要想做多个测试，只需要在命名方法前加test,例如test_foo ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Avocado-编写Avocado测试"/>
+    <meta property="og:url" content="../../../../2016/11/12/自动化测试/"/>
+    <meta property="og:description" content="编写Avocado测试 现在我们开始使用python编写Avocado测试，测试继承于avocado.Test. 基本例子 创建一个时间测试，sleeptest,测试非常简单，只是sleep一会： import time from avocado import Test class SleepTest(Test): def test(self): sleep_length = self.params.get(&#39;sleep_length&#39;, default=1) self.log.debug(&#34;Sleep for %.2f seconds&#34;, sleep_length) time sleep(sleep_length) 这是为avocado编写的一个简单示例，可以使用其他power API编写。 从上面的例子可以看出，avocado测试从avocado.Test继承的test方法入手。 多个测试和命名约定 可以在一个类中存在多个测试。 要想做多个测试，只需要在命名方法前加test,例如test_foo ..."/>
+    <meta property="article:published_time" content="2016-11-12" />
+    <meta property="article:section" content="自动化测试-Avocado" />
+        <meta property="article:tag" content="Avocado" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>Avocado-编写Avocado测试 - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/11/12/自动化测试/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/11/12/自动化测试/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2016/11/12/自动化测试/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2016/11/12/自动化测试/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2016/11/12/自动化测试/"
+                           rel="bookmark"
+                           title="Permalink to Avocado-编写Avocado测试">
+                            Avocado-编写Avocado测试
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2016-11-12T00:00:00+08:00"> 2016-11-12 六</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">自动化测试-Avocado</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/avocado.html">Avocado</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="bian-xie-avocadoce-shi">编写Avocado测试</h3>
+<p>现在我们开始使用python编写Avocado测试，测试继承于avocado.Test.</p>
+<h4 id="ji-ben-li-zi">基本例子</h4>
+<p>创建一个时间测试，sleeptest,测试非常简单，只是sleep一会：</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">avocado</span> <span class="kn">import</span> <span class="n">Test</span>
+
+<span class="k">class</span> <span class="nc">SleepTest</span><span class="p">(</span><span class="n">Test</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sleep_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'sleep_length'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Sleep for </span><span class="si">%.2f</span><span class="s2"> seconds"</span><span class="p">,</span> <span class="n">sleep_length</span><span class="p">)</span>
+        <span class="n">time</span> <span class="n">sleep</span><span class="p">(</span><span class="n">sleep_length</span><span class="p">)</span>
+</pre></div>
+<p>这是为avocado编写的一个简单示例，可以使用其他power API编写。</p>
+<p>从上面的例子可以看出，avocado测试从avocado.Test继承的test方法入手。</p>
+<h5 id="duo-ge-ce-shi-he-ming-ming-yue-ding">多个测试和命名约定</h5>
+<p>可以在一个类中存在多个测试。</p>
+<p>要想做多个测试，只需要在命名方法前加test,例如test_foo,test_bar等。建议遵守这个命名风格，就像<a href="https://www.python.org/dev/peps/pep-0008/#function-names">PEP8 Function Names</a>.</p>
+<p>对于class名称，可以任意命名，当最好还是遵从CamelCase命名，参考PEP8 中<a href="https://www.python.org/dev/peps/pep-0008/">Class Names</a></p>
+<h5 id="fang-bian-shu-xing">方便属性</h5>
+<p>测试类提供了一定数量的方便属性：</p>
+<ul>
+<li>为测试添加测试log,可以使用self.log.可以定义log debug,info,error和warning信息。</li>
+<li>参数解析系统，可以访问self.parms使用。可以在后面的Test variants - Mux文章查看更多信息。</li>
+</ul>
+<h4 id="bao-cun-sheng-cheng-de-shu-ju_1">保存生成的数据</h4>
+<p>每个测试都提供一个所谓的whiteboard,可以通过self.whiteboard访问。Witeboard是一个可以自动保存到测试结果（可以支持的output格式）字符串。你同样可以选择保存二进制数据到whiteboard,但你需要先进行编码转换（base64).</p>
+<p>基于上面的sleeptest，假设想保存sleep_length用于其他脚本或数据分析工具：</p>
+<div class="highlight"><pre><span></span>def test(self):
+    sleep_length = self.params.get('sleep_length', default=1)
+    self.log.debug("Sleeping for %.2f second", sleep_length)
+    time.sleep(sleep_length)
+    slef.writeboard = "%.2f" % sleep_length
+</pre></div>
+<p>whiteboard可以并应当接收由可用的测试结果插件生成的文件。Result.json文件已经为每个测试包含了whiteboard.此外，会用一个命名为whiteboard的文件保存和results.json相同级别的信息（也许你想使用与你定制的脚本配套的结果处理工具，该文件会保存白板内容的原始副本）。</p>
+<h4 id="fang-wen-ce-shi-can-shu">访问测试参数</h4>
+<p>每个测试都有一组可以通过self.params.get($name, $path=None, $default=None)访问的参数.Avocado会从Multiplex 配置文件中发现所有参数并填充到self.params.比如上面的例子，sleeptest的multiplex文件：</p>
+<div class="highlight"><pre><span></span><span class="n">sleeptest</span><span class="o">:</span>
+    <span class="n">type</span><span class="o">:</span> <span class="s2">"builtin"</span>
+    <span class="n">length</span><span class="o">:</span> <span class="o">!</span><span class="n">Mux</span>
+        <span class="n">short</span><span class="o">:</span>
+            <span class="n">sleep_length</span><span class="o">:</span> <span class="mf">0.5</span>
+        <span class="n">medium</span><span class="o">:</span>
+            <span class="n">sleep_length</span><span class="o">:</span> <span class="mi">1</span>
+        <span class="n">long</span><span class="o">:</span>
+            <span class="n">sleep_length</span><span class="o">:</span> <span class="mi">5</span>
+</pre></div>
+<p>当我们用avocado run $test --mux-yaml $file.yaml运行这个例子，3个variants会执行并且内容会插入/run的命名空间。每个variant包含变量的“type"和"sleep_length"。要获取有效值，需要名称（”sleep_length)和path。需要选择路径 ,在这个例子：/run/sleeptest/length/<em>或sleeptest/</em>,取决于如何设置。</p>
+<p>默认的参数是可选的，但是要处理好这部分。可能有人运行你的测试时选择不同的参数或没有参数，它仍然能够很好的运行。</p>
+<p>所以关于如何访问"sleep_length"的完整示例：</p>
+<div class="highlight"><pre><span></span>self.params.get("sleep_length", "/*/sleeptest/*", 1)
+</pre></div>
+<p>还有一种更简单的方式。它用于定义解析顺序，简单的查询可以简单的指定路径：</p>
+<div class="highlight"><pre><span></span>self.params.get("sleep_length", None, 1)
+self.params.get("sleep_length", '*', 1)
+self.params.get("sleep_length", default=1)
+</pre></div>
+<p>应该避免参数冲突（不同的匹配值应该指定不同的路径）。如果不能这样（例如使用复合yaml文件）可以通过 --mux-path进行默认路径的修改。它将对参数和操作通过路径进行一个接一个的切片。当第一个切片匹配后会返回，不再尝试其他切片。虽然相对查询只匹配来自--mux-path的切片。</p>
+<p>有很多方式使用paths分离存在冲突的params或只是使查询更清晰。通常tests中使用"*"就足够了，namespacing不是必须的，但是有助于高级用法更清晰简单。</p>
+<p>关于路径的考虑基本是从用户角度。更多信息参考<a href="http://avocado-framework.readthedocs.io/en/43.0/Mux.html">The variants-Mux</a></p>
+<h4 id="shi-yong-multplexwen-jian">使用multplex文件</h4>
+<p>Ａvocado可以使用multplex文件提供params和生成generation来运行sleeptest:</p>
+<div class="highlight"><pre><span></span>$ avocado run sleeptest.py --mux-yaml examples/tests/sleeptest.py.date/sleeptest.yaml
+JOB ID     : d565e8dec576d6040f894841f32a836c751f968f
+JOB LOG    : <span class="nv">$HOME</span>/avocado/job-results/job-2014-08-12T15.44-d565e8de/job.log
+TESTS      : <span class="m">3</span>
+<span class="o">(</span><span class="m">1</span>/3<span class="o">)</span> sleeptest.py:SleepTest.test<span class="p">;</span><span class="m">1</span>: PASS <span class="o">(</span><span class="m">0</span>.50 s<span class="o">)</span>
+<span class="o">(</span><span class="m">2</span>/3<span class="o">)</span> sleeptest.py:SleepTest.test<span class="p">;</span><span class="m">2</span>: PASS <span class="o">(</span><span class="m">1</span>.00 s<span class="o">)</span>
+<span class="o">(</span><span class="m">3</span>/3<span class="o">)</span> sleeptest.py:SleepTest.test<span class="p">;</span><span class="m">3</span>: PASS <span class="o">(</span><span class="m">5</span>.00 s<span class="o">)</span>
+RESULTS    : PASS <span class="m">3</span> <span class="p">|</span> ERROR <span class="m">0</span> <span class="p">|</span> FAIL <span class="m">0</span> <span class="p">|</span> SKIP <span class="m">0</span> <span class="p">|</span> WARN <span class="m">0</span> <span class="p">|</span> INTERRUPT <span class="m">0</span>
+TESTS TIME : <span class="m">6</span>.50 s
+JOB HTML   : <span class="nv">$HOME</span>/avocado/job-results/job-2014-08-12T15.44-d565e8de/html/results.html
+</pre></div>
+<p>The --mux-yaml accepts either only <span class="math">\(FILE_LOCATION or $INJECT_TO:\)</span>FILE_LOCATION. As explained in Test variants - Mux without any path the content gets injected into /run in order to be in the default relative path location. The <span class="math">\(INJECT_TO can be either relative path, then it’s injected into /run/\)</span>INJECT_TO location, or absolute path (starting with '/'), then it’s injected directly into the specified path and it’s up to the test/framework developer to get the value from this location (using path or adding the path to mux-path). To understand the difference execute those commands:</p>
+<div class="highlight"><pre><span></span>$ avocado multiplex -t -m examples/tests/sleeptest.py.data/sleeptest.yaml
+$ avocado multiplex -t -m duration:examples/tests/sleeptest.py.data/sleeptest.yaml
+$ avocado multiplex -t -m /my/location:examples/tests/sleeptest.pt.data/sleeptest.yaml
+</pre></div>
+<p>注意，因为multiplex文件为sleeptest指定了所有参数，所以不能将ID留空：</p>
+<div class="highlight"><pre><span></span>$ scripts/avocado run --mux-yaml examples/tests/sleeptest/sleeptest.yaml
+Empty <span class="nb">test</span> ID. A <span class="nb">test</span> path or <span class="nb">alias</span> must be provided
+</pre></div>
+<p>可以使用同一个multiplex文件启动多个测试：</p>
+<div class="highlight"><pre><span></span><span class="n">$avocado</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">sleeptest</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="n">synctest</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="o">--</span><span class="n">mux-yaml</span><span class="w"> </span><span class="n">examples/tests/sleeptest</span><span class="o">.</span><span class="n">py</span><span class="o">.</span><span class="n">data/sleeptest</span><span class="o">.</span><span class="n">yaml</span><span class="w"></span>
+
+<span class="kd">JOB</span><span class="o"> </span><span class="n">ID</span><span class="w">     </span><span class="err">:</span><span class="w"> </span><span class="n">cd20fc8d1714da6d4791c19322374686da68c45c</span><span class="w"></span>
+<span class="kd">JOB</span><span class="o"> </span><span class="n">LOG</span><span class="w">    </span><span class="err">:</span><span class="w"> </span><span class="n">$HOME/avocado/job-results/job-2016-05-04T09</span><span class="o">.</span><span class="mi">25</span><span class="o">-</span><span class="n">cd20fc8/job</span><span class="o">.</span><span class="n">log</span><span class="w"></span>
+<span class="n">TESTS</span><span class="w">      </span><span class="err">:</span><span class="w"> </span><span class="mi">8</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">sleeptest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SleepTest</span><span class="o">.</span><span class="n">test;1</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">0.50</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">sleeptest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SleepTest</span><span class="o">.</span><span class="n">test;2</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">1.00</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">sleeptest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SleepTest</span><span class="o">.</span><span class="n">test;3</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">5.01</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">4</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">sleeptest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SleepTest</span><span class="o">.</span><span class="n">test;4</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">10.00</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">5</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">synctest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SyncTest</span><span class="o">.</span><span class="n">test;1</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">2.38</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">6</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">synctest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SyncTest</span><span class="o">.</span><span class="n">test;2</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">2.47</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">7</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">synctest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SyncTest</span><span class="o">.</span><span class="n">test;3</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">2.46</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">8</span><span class="o">/</span><span class="mi">8</span><span class="o">)</span><span class="w"> </span><span class="n">synctest</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">SyncTest</span><span class="o">.</span><span class="n">test;4</span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">2.45</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="n">RESULTS</span><span class="w">    </span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="kr">ERROR</span><span class="o"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="n">FAIL</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="kr">SKIP</span><span class="o"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="n">WARN</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="n">INTERRUPT</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="n">TESTS</span><span class="w"> </span><span class="n">TIME</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="mf">26.26</span><span class="w"> </span><span class="n">s</span><span class="w"></span>
+<span class="kd">JOB</span><span class="o"> </span><span class="n">HTML</span><span class="w">   </span><span class="err">:</span><span class="w"> </span><span class="n">$HOME/avocado/job-results/job-2016-05-04T09</span><span class="o">.</span><span class="mi">25</span><span class="o">-</span><span class="n">cd20fc8/html/results</span><span class="o">.</span><span class="n">html</span><span class="w"></span>
+</pre></div>
+<h4 id="gao-ji-ri-zhi-gong-neng">高级日志功能</h4>
+<p>Avocado 在测试的同时提供高级日志功能。这些可以和标准python API库组合。</p>
+<p>一个常见的例子是需要在更长或更复杂的测试中遵循具体的进展。 让我们看一个非常简单的测试示例，但在单个测试中有一个多个明确的阶段：</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">avocado</span> <span class="kn">import</span> <span class="n">Test</span>
+
+<span class="n">progress_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"progress"</span>
+
+<span class="k">class</span> <span class="nc">Plant</span><span class="p">(</span><span class="n">Test</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_plant_organic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rows"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1">#Preparing soil</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="n">progress_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: Preparing soil on row </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+
+        <span class="c1"># Letting soil rest</span>
+        <span class="n">progress_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: letting soil rest before throwing seeds"</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Throwing seeds</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="n">progress_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: throwing seeds on row </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+
+        <span class="c1"># Let them grow</span>
+        <span class="n">progress_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: waiting for Avocados to grow"</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Harvest them</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="n">progress_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: harvesting organic avocados on row </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+</pre></div>
+<p>这时，可以请求avocaod显示你的日志流，独占或则加入其他内建流：</p>
+<div class="highlight"><pre><span></span>$ avocado --show app, progress run plant.py
+</pre></div>
+<p>结果类似于：</p>
+<div class="highlight"><pre><span></span><span class="kd">JOB</span><span class="o"> </span><span class="n">ID</span><span class="w">     </span><span class="err">:</span><span class="w"> </span><span class="n">af786f86db530bff26cd6a92c36e99bedcdca95b</span><span class="w"></span>
+<span class="kd">JOB</span><span class="o"> </span><span class="n">LOG</span><span class="w">    </span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">home/cleber/avocado/job-results/job-2016-03-18T10</span><span class="o">.</span><span class="mi">29</span><span class="o">-</span><span class="n">af786f8/job</span><span class="o">.</span><span class="n">log</span><span class="w"></span>
+<span class="n">TESTS</span><span class="w">      </span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">preparing</span><span class="w"> </span><span class="n">soil</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">preparing</span><span class="w"> </span><span class="n">soil</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">preparing</span><span class="w"> </span><span class="n">soil</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">letting</span><span class="w"> </span><span class="n">soil</span><span class="w"> </span><span class="n">rest</span><span class="w"> </span><span class="n">before</span><span class="w"> </span><span class="n">throwing</span><span class="w"> </span><span class="n">seeds</span><span class="w"></span>
+<span class="o">-</span><span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">throwing</span><span class="w"> </span><span class="n">seeds</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">throwing</span><span class="w"> </span><span class="n">seeds</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">throwing</span><span class="w"> </span><span class="n">seeds</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">waiting</span><span class="w"> </span><span class="n">for</span><span class="w"> </span><span class="n">Avocados</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">grow</span><span class="w"></span>
+<span class="n">\progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">harvesting</span><span class="w"> </span><span class="n">organic</span><span class="w"> </span><span class="n">avocados</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">harvesting</span><span class="w"> </span><span class="n">organic</span><span class="w"> </span><span class="n">avocados</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="n">progress</span><span class="err">:</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="n">plant</span><span class="o">.</span><span class="n">py</span><span class="err">:</span><span class="n">Plant</span><span class="o">.</span><span class="n">test_plant_organic</span><span class="err">:</span><span class="w"> </span><span class="n">harvesting</span><span class="w"> </span><span class="n">organic</span><span class="w"> </span><span class="n">avocados</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="n">PASS</span><span class="w"> </span><span class="o">(</span><span class="mf">7.01</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"></span>
+<span class="n">RESULTS</span><span class="w">    </span><span class="err">:</span><span class="w"> </span><span class="n">PASS</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="kr">ERROR</span><span class="o"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="n">FAIL</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="kr">SKIP</span><span class="o"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="n">WARN</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">|</span><span class="w"> </span><span class="n">INTERRUPT</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="n">TESTS</span><span class="w"> </span><span class="n">TIME</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="mf">7.01</span><span class="w"> </span><span class="n">s</span><span class="w"></span>
+<span class="kd">JOB</span><span class="o"> </span><span class="n">HTML</span><span class="w">   </span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">home/cleber/avocado/job-results/job-2016-03-18T10</span><span class="o">.</span><span class="mi">29</span><span class="o">-</span><span class="n">af786f8/html/results</span><span class="o">.</span><span class="n">html</span><span class="w"></span>
+</pre></div>
+<p>自定义的progress流和app输出混合在一起，可能不太适合。如果想让progress流输入到一个独立文件，这样会清晰。</p>
+<div class="highlight"><pre><span></span>$ avocado run plant.py --store-loggin-stream progress
+</pre></div>
+<p>这样，除了所有其他日志文件通常生成，会有另一个名为日志文件progress.INFO在作业结果目录。 在测试运行期间，可以观察进度：</p>
+<div class="highlight"><pre><span></span>$ tail -f ~/avocado/job-results/latest/progress.INFO
+
+<span class="m">10</span>:36:59 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: preparing soil on row <span class="m">0</span>
+<span class="m">10</span>:36:59 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: preparing soil on row <span class="m">1</span>
+<span class="m">10</span>:36:59 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: preparing soil on row <span class="m">2</span>
+<span class="m">10</span>:36:59 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: letting soil rest before throwing seeds
+<span class="m">10</span>:37:01 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: throwing seeds on row <span class="m">0</span>
+<span class="m">10</span>:37:01 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: throwing seeds on row <span class="m">1</span>
+<span class="m">10</span>:37:01 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: throwing seeds on row <span class="m">2</span>
+<span class="m">10</span>:37:01 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: waiting <span class="k">for</span> Avocados to grow
+<span class="m">10</span>:37:06 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: harvesting organic avocados on row <span class="m">0</span>
+<span class="m">10</span>:37:06 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: harvesting organic avocados on row <span class="m">1</span>
+<span class="m">10</span>:37:06 INFO <span class="p">|</span> <span class="m">1</span>-plant.py:Plant.test_plant_organic: harvesting organic avocados on row <span class="m">2</span>
+</pre></div>
+<p>同一个progress日志记录器，可以在多个测试方法和在多个测试模块一起使用。 在给出的示例中，测试名称用于给出额外的上下文。</p>
+<p>&lt;未完待续&gt;</p>
+<p><img class="img-responsive" height="280" src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/4C0XUNHJ7C.jpg" width="420"/></p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="Avocado-编写Avocado测试">Avocado-编写Avocado测试</a><ul><li><a class="toc-href" href="#bian-xie-avocadoce-shi" title="编写Avocado测试">编写Avocado测试</a><ul><li><a class="toc-href" href="#ji-ben-li-zi" title="基本例子">基本例子</a><ul><li><a class="toc-href" href="#duo-ge-ce-shi-he-ming-ming-yue-ding" title="多个测试和命名约定">多个测试和命名约定</a></li><li><a class="toc-href" href="#fang-bian-shu-xing" title="方便属性">方便属性</a></li></ul></li><li><a class="toc-href" href="#bao-cun-sheng-cheng-de-shu-ju_1" title="保存生成的数据">保存生成的数据</a></li><li><a class="toc-href" href="#fang-wen-ce-shi-can-shu" title="访问测试参数">访问测试参数</a></li><li><a class="toc-href" href="#shi-yong-multplexwen-jian" title="使用multplex文件">使用multplex文件</a></li><li><a class="toc-href" href="#gao-ji-ri-zhi-gong-neng" title="高级日志功能">高级日志功能</a></li></ul></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>

@@ -1,0 +1,1170 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="李鹏" />
+        <meta name="keywords" content="Selenium" />
+        <meta name="description" content="Remote WebDriver WebDriver实现。 class selenium.webdriver.remote.webdriver.WebDriver(command_executor=&#39;http://127.0.0.1:4444/wd/hub&#39;, desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False, file_detector=None) Bases: object 控制浏览器向remote server发送命令。Remote server 运行的协议定义为https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol. 属性： * session_id- webdriver用于打开和控制浏览器窗口的ＩＤ字符串 * capabilities- Dictionaty of effective capabilities ..." />
+
+<!-- Open Graph tags -->
+<meta property="og:site_name" content="路漫求索"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="selenium-Remote WebDriver"/>
+    <meta property="og:url" content="../../../../2015/01/21/selenium/"/>
+    <meta property="og:description" content="Remote WebDriver WebDriver实现。 class selenium.webdriver.remote.webdriver.WebDriver(command_executor=&#39;http://127.0.0.1:4444/wd/hub&#39;, desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False, file_detector=None) Bases: object 控制浏览器向remote server发送命令。Remote server 运行的协议定义为https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol. 属性： * session_id- webdriver用于打开和控制浏览器窗口的ＩＤ字符串 * capabilities- Dictionaty of effective capabilities ..."/>
+    <meta property="article:published_time" content="2015-01-21" />
+    <meta property="article:section" content="自动化测试-Selenium" />
+        <meta property="article:tag" content="Selenium" />
+        <meta property="article:author" content="李鹏" />
+        <meta property="og:image"
+              content="../../../../favicon.png"/>
+
+    <title>selenium-Remote WebDriver - 路漫求索</title>
+
+        <link rel="stylesheet" href="../../../../theme/css/bootstrap.sandstone.min.css" type="text/css"/>
+
+    <link href="../../../../theme/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../../../../theme/css/pygments/colorful.css" rel="stylesheet" />
+    
+    <link href="../../../../theme/css/pelican-twitchy.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Feeds -->
+        <link href="../../../../feeds/atom.xml" type="application/atom+xml" rel="alternate"
+              title="路漫求索 ATOM Feed" />
+</head>
+<body data-spy="scroll" data-target="#scrollspy">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper-small" class="twitchy-background">
+            <ul id="accordion-small" class="sidebar-nav sidebar-nav-small">
+                <li>
+        <a href="../../../.." title="路漫求索" class="collapsed">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="../../../../archives.html" title="最新文章" class="collapsed">
+            <span class="glyphicon glyphicon-th-list"></span>
+        </a>
+    </li>
+                
+                <li class="nav-divider"></li>
+                <li id="share-small">
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-share-small" title="分享" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/01/21/selenium/" title="Share via Facebook" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/01/21/selenium/" title="Share via Google+" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" title="Share via Twitter" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion-small" href="#collapse-social-small" title="Social" class="collapsed">
+                        <i class="fa fa-users padding-small"></i>
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social-small" class="collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL"><i class="fa fa-envelope-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub"><i class="fa fa-github-square fa-lg padding-small"></i></a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS"><i class="fa fa-rss-square fa-lg padding-small"></i></a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+        <a href="#" title="Back to top" class="collapsed">
+            <span class="fa fa-arrow-up"></span>
+        </a>
+    </li>
+            </ul>
+        </div>
+        <div id="sidebar-wrapper" class="twitchy-background">
+            <ul id="accordion" class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../../../">
+<img src="../../../../sitelogo.png" width="200" alt="Sitelogo"/>                     </a>
+                </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-latest">
+                            <span class="glyphicon glyphicon-th-list padding-small"></span>
+                            最新文章
+                        </a>
+                    </li>
+                    <li class="panel anti-panel"><ul id="collapse-latest" class="sidebar_submenu collapse in">
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/08/19/Multue/" title="Multue测试工具介绍">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Multue测试工具介绍
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/06/17/网络/" title="网络速率统计的几个示例">
+                                <i class="fa fa-file-text padding-small"></i>
+                                网络速率统计的几个示例
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/04/01/Robot/" title="Robot Framework 用户手册(三)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(三)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/31/Robot/" title="Robot Framework 用户手册(二)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(二)
+                            </a>
+                        </li>
+                        <li class="">
+                            <a class="hide-overflow" href="../../../../2017/03/26/Robot/" title="Robot Framework 用户手册(一)">
+                                <i class="fa fa-file-text padding-small"></i>
+                                Robot Framework 用户手册(一)
+                            </a>
+                        </li>
+                    <li>
+                        <a href="../../../../archives.html">
+                            <i class="fa fa-arrow-right padding-small"></i>
+                            更多
+                        </a>
+                    </li>
+                    </ul></li>
+                <li class="nav-divider"></li>
+                <li id="share">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-share" title="Share" class="collapsed">
+                        <i class="fa fa-share-alt padding-small"></i>
+                        分享
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../../../../2015/01/21/selenium/" target="popup">
+                            <i class="fa fa-facebook-square padding-small"></i>
+                            Facebook
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://plus.google.com/share?url=../../../../2015/01/21/selenium/" target="popup">
+                            <i class="fa fa-google-plus padding-small"></i>
+                            Google+
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" target="popup">
+                            <i class="fa fa-twitter-square padding-small"></i>
+                            Twitter
+                        </a>
+                    </li>
+                </ul></li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-social">
+                        <i class="fa fa-users padding-small"></i>
+                        联系
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-social" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="mailto:peng.li@i-soft.com.cn" title="EMAIL">
+                            <i class="fa fa-envelope-square fa-lg padding-small"></i>
+                            EMAIL
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/king32783784" title="GitHub">
+                            <i class="fa fa-github-square fa-lg padding-small"></i>
+                            GitHub
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://king32783784.github.io/feeds/atom.xml" title="RSS">
+                            <i class="fa fa-rss-square fa-lg padding-small"></i>
+                            RSS
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-pages">
+                        <i class="fa fa-folder-open padding-small"></i>
+                       站内导航
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-pages" class="sidebar_submenu collapse ">
+                    <li>
+                        <a href="../../../../pages/opensource.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            开源项目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/links.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            常用链接
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/Reference material.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            参考资料
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/todo list.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            Todo List
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/tools.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            工具集
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../pages/aboutme.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            关于我
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../../../pages/doc.html">
+                            <i class="fa fa-file-text padding-small"></i>
+                            专题文档
+                        </a>
+                    </li>
+                </ul></li>
+                
+                <li class="nav-divider"></li>
+                <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-categories">
+                        <i class="fa fa-folder-open padding-small"></i>
+                        文章分类
+                    </a>
+                </li>
+                <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-python.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-Python
+                            <span class="badge pull-right categorybadge">26</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/dockerzhuan-ti.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Docker专题
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            工具
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/mongodb.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Mongodb
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/tong-xin-xiang-guan.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            通信相关
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/web.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Web
+                            <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                </ul></li>
+                
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- open/close sidebar -->
+        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+            <span id="right-arrow" class="glyphicon glyphicon-chevron-right"  title="expand sidebar"></span>
+            <span id="left-arrow" class="glyphicon glyphicon-chevron-left" title="minimize sidebar"></span>
+        </a>
+       <!-- /open/close sidebar -->
+       <!--访问统计 -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+<section id="content">
+    <article>
+        <div class="row">
+            <div class="col-lg-9">
+                <header class="page-header">
+                    <h1>
+                        <a href="../../../../2015/01/21/selenium/"
+                           rel="bookmark"
+                           title="Permalink to selenium-Remote WebDriver">
+                            selenium-Remote WebDriver
+                        </a>
+                        <small>
+<div class="post-info">
+    <div class="publish-info-block">
+        <small>
+            <span class="published">
+                <i class="fa fa-calendar padding-small"></i><time datetime="2015-01-21T00:00:00+08:00"> 2015-01-21 三</time>
+            </span>
+            <span class="category">
+                <i class="fa fa-folder-open padding-small"></i><a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">自动化测试-Selenium</a>
+            </span>
+            <span class="tags">
+                <i class="fa fa-tags padding-small"></i>
+                <a href="../../../../tag/selenium.html">Selenium</a>            </span>
+        </small>
+    </div>
+</div><!-- /.post-info -->                        </small>
+                    </h1>
+                </header>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="entry-content">
+                    <body><h3 id="remote-webdriver">Remote WebDriver</h3>
+<p>WebDriver实现。</p>
+<p>class selenium.webdriver.remote.webdriver.WebDriver(command_executor='http://127.0.0.1:4444/wd/hub', desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False, file_detector=None)</p>
+<p>Bases: object
+控制浏览器向remote server发送命令。Remote server 运行的协议定义为<a href="https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol">https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol</a>.
+属性：
+    * session_id- webdriver用于打开和控制浏览器窗口的ＩＤ字符串
+    * capabilities- Dictionaty of effective capabilities of this browser session as returned
+    　　　remote server,见<a href="https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities">https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities</a>
+    * command_executor -远程链接。RemoteConnection对象执行命令。
+    * error_handler- errorhandler. ErrorHandler对象用于处理错误。
+    　　　
+add_cookie(cookie_dict)</p>
+<p>添加cookie到当前会话。
+Args: * cookie_dict:字典对象，具有所需要的秘钥－”name"和“value".
+keys选项　”path", "domain", "secure", "expiry"</p>
+<p>用法：</p>
+<div class="highlight"><pre><span></span>driver.add_cookie({'name':'foo', 'value':'bar'}) driver.add_cookie({'name':'foo', 'value':
+'bar', 'path':'/'}) driver.add_cookie({'name':'foo', 'value':'bar','path':'/','secure':True})
+</pre></div>
+<p>back()</p>
+<p>浏览器历史记录中后退一步
+用法：driver.back()</p>
+<p>close()</p>
+<p>关闭当前窗口
+用法：driver.close()</p>
+<p>create_web_element(element_id)</p>
+<p>创建指定元素id的web元素</p>
+<p>delete_all_cookies()</p>
+<p>删除会话中所有的cookies
+用法：driver.delete_all_cookies</p>
+<p>delete_cookies(name)</p>
+<p>删除给出名字的单一cookie
+用法：driver.delete_cookie('my_cookie')</p>
+<p>execute(driver_command, params=None)</p>
+<p>通过 command.CommandExecutor发送命令
+参数：
+    * driver_command: 执行命令名称的字符串
+    * params: 使用命令发送的命名参数的字典
+返回：命令的json导入到字典对象</p>
+<p>excute_async_scipt(scipt, *args)</p>
+<p>异步执行当前窗口／框架中的javascript
+Args:
+    * script: 要执行的javascript
+    * *ags: 任何javascript适用的参数
+用法：driver.execute_async_script('document.title')</p>
+<p>execute_script(script, *args)</p>
+<p>同步执行当前窗口/框架中的javascript
+Args: 
+    * script: 要执行的javascript
+    * *ags: 任何javascript适用的参数
+用法：driver.execute_scipt('document.title')</p>
+<div class="highlight"><pre><span></span>file_detector_context(*args, **kwds)
+</pre></div>
+<p>在limited　context覆盖当前的file　detector. 确保original file detector已设置。
+例如：
+    with webdriver.file_detector_context(UselessFileDetector):
+        someinput.send_keys('/etc/hosts')</p>
+<p>参数：　file_detector_clss－ 如果类不同，需要提供文件检测器的类</p>
+<p>从当前file_detector，那么该类用args和kwargs实例化，并在上下文管理器的持续时间期间用作文件检测器。</p>
+<div class="highlight"><pre><span></span>args－ 期间需要传递给file detector的可选参数
+kwargs - 关键字参数，传递方式和args相同
+</pre></div>
+<p>find_element(by='id', value=None)</p>
+<p>'Private'方法由find_element_by_<em>方法们使用
+用法：　使用相应的find_element_by_</em> 替换
+返回：　WebElement</p>
+<p>find_element_by_class_name(name)</p>
+<p>按类名查找元素
+参数：　name-要查找元素的类名
+用法：　driver.find_element_by_class_name("foo")</p>
+<p>find_element_by_css_selector(css_selector)</p>
+<p>通过css selector查找元素
+参数：css_selector 查找元素使用的css selector
+用法：driver.find_element_by_css_selector('#foo')</p>
+<p>find_element_by_id(id_)</p>
+<p>通过id查找元素
+参数： id  查找元素的id
+用法： driver.find_element_by_id('foo')</p>
+<p>find_element_by_link_text(link_text)</p>
+<p>通过link text查找元素
+参数：　link_text 查找元素的link_text
+用法：　driver.find_element_by_link_text('Sign ln')</p>
+<p>find_element_by_name(name)</p>
+<p>通过name查找元素
+参数：　name: 查找元素的name
+用法：　driver.find_element_by_name('foo')</p>
+<p>find_element_by_xpath(xpath)</p>
+<p>通过xpath查找元素
+args: xpath 查找元素的xpath定位器
+用法：driver.find_element_by_xpath('//div/td/[1]')</p>
+<p>find_element(by='id', value=None)</p>
+<p>find_elements_by_<em>methods使用的'Pvivate'方法
+用法：　使用符合要求的find_elements_by_</em>替换现有的
+返回类型：　WebElement列表</p>
+<p>find_elements_by_class_name(name)</p>
+<p>按类名查找元素
+参数name: 查找元素的类名
+用法：driver.find_elements_by_class_name('foo')</p>
+<p>find_elements_by_css_selector(css_selector)</p>
+<p>按css selector查找元素
+css_selector: 查找元素使用的css selector
+用法：driver.find_element_by_css_selector('.foo')</p>
+<p>find_elements_by_id(id_)</p>
+<p>按id查找多个元素
+id_:要查找元素的id</p>
+<p>find_elements_by_link_text(text)</p>
+<p>通过链接文本查找元素
+link_text: 查找元素的链接文本
+driver.find_elements_by_link_text('Sign In')</p>
+<p>find_elements_by_name(name)</p>
+<p>按名称查找元素
+name:查找元素的名称
+driver.find_elements_by_name('foo')</p>
+<p>find_elements_by_partial_link_text(link_text)</p>
+<p>通过部分匹配链接文本查找元素。
+link_text: 查找元素部分匹配的链接文本
+driver.find_element_by_partial_link_text('Sign')</p>
+<p>find_elements_by_tag_name(name)</p>
+<p>通过tag　name查找元素
+name: 查找元素使用的tag name
+driver.find_elements_by_tag_name('foo')</p>
+<p>find_elements_by_xpath(xpath)</p>
+<p>通过xpath查找多个元素
+xpath: 要查找元素的xpath的定位符
+driver.find_elements_by_xpath("//div[contains(@class, 'foo')]")</p>
+<p>forward()</p>
+<p>回退一次浏览器历史记录
+driver.forward()</p>
+<p>get(url)</p>
+<p>在当前浏览器窗口加载网页</p>
+<p>get_cookie(name)</p>
+<p>按名称找到单个cookie,如果找到，返回cookie,没有返回None
+driver.get_cookie('my_cookie')</p>
+<p>get_cookies()</p>
+<p>返回一组字典，对应当前会话可用的cookies</p>
+<p>driver.get_cookies()</p>
+<p>get_log(log_type)</p>
+<p>获取给定log类型的log
+log_type:返回log的log类型
+用法：driver.get_log('browser') driver.get_log('driver')
+driver.get_log('client') driver.get_log('server')</p>
+<p>get_screenshot_as_base64()</p>
+<p>获取当前窗口截屏的base64编码字符串
+这个在嵌入图像到html时非常有用。
+用法：driver.get_screentshot_as_base64()</p>
+<p>get_screenshot_as_file(filename)</p>
+<p>获取当前窗口的截屏。如果存在，返回False
+任何IOError，否则返回True.在filename中使用绝对路径
+filename: 将屏幕截图保存到的完整路径。
+driver.get_screenshot_as_file('/Screenshots/foo.png')</p>
+<p>get_screenshot_as_png()</p>
+<p>获取当前窗口的截屏，并保存为二进制数据。
+driver.get_screenshot_as_png()</p>
+<p>get_window_position(windowHandle='current')</p>
+<p>获取当前窗口的x,y位置
+driver.get_window_position()</p>
+<p>get_window_size(windowHandle='current')</p>
+<p>获取当前窗口的宽和高
+driver.get_window_size()</p>
+<p>implicitly_wait(time_to_wait)</p>
+<p>设置固定超时时间等待元素被找到，或命令完成
+这个方法只需要在每个对话框执行一次。设置timeout需要调用execute_async_script.
+time_to_wait:等待的时间
+driver.implicitly_wait(30)</p>
+<p>maximize_window()</p>
+<p>将当前webdriver的窗口最大化</p>
+<p>quit()</p>
+<p>退出dirver并关闭每一个关联的窗口
+driver.quit()</p>
+<p>refresh()</p>
+<p>刷新当前的窗口
+driver.refresh()</p>
+<p>save_screenshot(filename)</p>
+<p>同 get_screenshot_as_file.</p>
+<p>set_page_load_timeout(time_to_wait)</p>
+<p>设置等待网页加载完成的时间（抛出异常之前）
+time_to_wait:等待的时间
+driver.set_page_load_timeout(30)</p>
+<p>set_script_timeout(time_to_wait)</p>
+<p>设置脚本运行的时间，直到抛出异常之前
+time_to_wait:等待时间
+driver.set_script_timeout(30)</p>
+<p>set_window_position(x,y, windowHandle='current')</p>
+<p>设置当前窗口的x,y
+driver.set_window_position(0,0)
+        　　　
+set_window_size( width, height, windowHandle='current')</p>
+<p>设置当前窗口的高和宽
+driver.set_window_size(800,600)</p>
+<p>start_client()</p>
+<p>启动新窗口前调用。这个方法使用时可以重写。</p>
+<p>start_session(desired_capabilities, browser_profile=None)</p>
+<p>创建所需功能的新会话
+browser_name : 浏览器请求的名称
+vesion: 哪些浏览器版本要求。
+platform: 哪个平台要求在浏览器上。
+javascript_enabled :新回话是否应支持JavaScript。
+browser_profile : 一个selenium.webdriver.firefox.firefox_profile.FirefoxProfile对象。只有当被请求的Firefox使用。</p>
+<p>stop_client()</p>
+<p>执行quit命令后调用。用户可以根据需要自定义shutdown行为方法</p>
+<p>switch_to_active_element()</p>
+<p>Deprecated use driver.switch_to.active_element</p>
+<p>switch_to_alert()</p>
+<p>Deprecated use driver.switch_to.alert</p>
+<p>switch_to_default_content()</p>
+<p>Deprecated use driver.switch_to.default_content</p>
+<p>switch_to_frame(frame_reference)</p>
+<p>Deprecated use driver.switch_to.frame</p>
+<p>switch_to_window(window_name)</p>
+<p>Deprecated use driver.switch_to.window</p>
+<p>application_cache</p>
+<p>返回一个与浏览器的应用程序缓存交互的ApplicationCache对象</p>
+<p>current_url</p>
+<p>获取当前页的URL
+driver.current_url</p>
+<p>current_window_handle</p>
+<p>返回当前窗口的handle
+driver.current_window_handle</p>
+<p>desired_capabilities</p>
+<p>返回正在使用当前所需功能的驱动程序 
+        　　　
+file_detector</p>
+<p>log_types</p>
+<p>获取可用log types的列表
+driver.log_types</p>
+<p>mobile</p>
+<p>name
+返回此实例中底层浏览器的名称
+driver.name</p>
+<p>orientation
+获取当前设备的当前位置
+orientation = driver.orientation</p>
+<p>page_source
+获取当前页面的源码
+driver.page_source</p>
+<p>switch_to</p>
+<p>title
+返回当前页面的ｔｉｔｌｅ
+driver.title</p>
+<p>window_handles
+返回当前会话中所有窗口的句柄
+driver.window_handles</p>
+<h3 id="webelement">WebElement</h3>
+<p>class selenium.webdriver.remote.webelement.WebElement(parent, id_, w3c=False)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span><span class="n">object</span>
+<span class="err">表示一个</span><span class="n">DOM</span><span class="err">元素</span>
+<span class="err">通常与一个文档交互的所有有趣操作将通过该接口来执行</span>
+<span class="err">所有方法调用前会做一个</span><span class="n">freshness</span> <span class="n">check</span><span class="o">,</span><span class="err">确保引用元素仍然有效。这实际上是检查元素是否仍然连接到</span><span class="n">DOM</span><span class="o">.</span><span class="err">如果检测测试失败，将会抛出</span><span class="n">StaleElementReferenceException</span><span class="err">异常，并且所有调用都会失败。</span>
+
+<span class="n">clear</span><span class="o">()</span>
+
+    <span class="err">清除文本，如果是一个文本输入元素。</span>
+
+<span class="n">click</span><span class="o">()</span>
+
+    <span class="err">点击元素</span>
+
+<span class="n">find_element</span><span class="o">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'id'</span><span class="o">,</span><span class="n">value</span><span class="o">=</span><span class="n">None</span><span class="o">)</span>
+
+<span class="n">find_element_by_class_name</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+
+    <span class="err">通过子元素的类名查找元素</span>
+    <span class="n">name</span><span class="o">:</span><span class="err">查找元素的类名</span>
+
+<span class="n">find_element_by_css_selector</span><span class="o">(</span><span class="n">css_selector</span><span class="o">)</span>
+
+    <span class="err">通过子元素的</span><span class="n">CSS</span> <span class="n">selector</span><span class="err">查找元素</span>
+    <span class="n">css_selector</span><span class="o">:</span> <span class="n">CSS</span> <span class="n">selector</span> <span class="n">string</span> <span class="err">例如‘</span><span class="n">a</span><span class="o">.</span><span class="na">nav</span><span class="err">#</span><span class="n">home</span><span class="s1">'</span>
+
+<span class="s1">find_element_by_id(id_)</span>
+
+<span class="s1">    通过子元素的ID查找元素</span>
+<span class="s1">    id_: 用于定位的子元素的ID</span>
+
+<span class="s1">find_elements_by_partial_link_text(link_text)</span>
+<span class="s1">    通过子元素的link text查找元素的列表</span>
+<span class="s1">    link_text：元素的Link text</span>
+
+<span class="s1">find_element_by_tag_name(name)</span>
+<span class="s1">    通过子元素的tag　name查找元素的列表</span>
+<span class="s1">    name - html的tag的name（如h1,a,span)</span>
+
+<span class="s1">find_elements_by_xpath(xpath)</span>
+
+<span class="s1">    通过xpath查找元素</span>
+<span class="s1">    xpath:xpath位置字符</span>
+<span class="s1">    基本路径相对于这个元素的位置</span>
+<span class="s1">    这将选择此元素下的所有链接。</span>
+<span class="s1">        myelement.find_elements_by_xpath(".//a")</span>
+
+<span class="s1">    然而，将会选择该页面本身的所有links</span>
+<span class="s1">        myelement.find_elements_by_xpath("//a")</span>
+
+<span class="s1">    get_attribute(name)</span>
+
+<span class="s1">        获取给定元素的属性或特性</span>
+<span class="s1">        这个方法会首先尝试返回给定名字的属性的值。如果具有该名称的属性不存在，它返回具有相同名称的属性值。如果什么都没有，返回None</span>
+<span class="s1">        name:检索的属性的名字</span>
+<span class="s1">        例如：</span>
+<span class="s1">            #check if the "active" CSS class is applied to an element.</span>
+<span class="s1">            is_active = "active" in target_element.get_attribute("class")</span>
+
+<span class="s1">    is_displayed()</span>
+<span class="s1">         判断该元素是否对用户可见。      </span>
+
+<span class="s1">    is_enabled()</span>
+<span class="s1">         返回元素是否已启用</span>
+
+<span class="s1">    is_selected()</span>
+<span class="s1">        返回元素是否已选择</span>
+<span class="s1">        可以用来检查复选框或单选框是否已选择</span>
+
+<span class="s1">    Screenshot(filename)</span>
+
+<span class="s1">        获取当前元素的截屏。如果出现任何IOError,返回False,否则返回True。filename使用绝对路径。</span>
+<span class="s1">        filename: 保存截屏文件的绝对路径</span>
+<span class="s1">        用法：element.Screenshot('</span><span class="sr">/Screenshots/</span><span class="n">foo</span><span class="o">.</span><span class="na">png</span><span class="s1">')</span>
+
+<span class="s1">    send_keys(*value)</span>
+<span class="s1">        模拟键入元素</span>
+<span class="s1">        value: 键入字符串，或设置表单。设置文件输出，可以为文件的绝对路径</span>
+
+<span class="s1">        可以用来发送简单的按键事件或填充表单：</span>
+<span class="s1">           form_textfield = driver.find_element_by_name('</span><span class="n">username</span><span class="s1">')</span>
+<span class="s1">           form_textfield.send_keys("admin")</span>
+
+<span class="s1">        同样可以用于设置文件输入。</span>
+
+<span class="s1">            file_input = driver.find_element_by_name('</span><span class="n">profilePic</span><span class="s1">')</span>
+<span class="s1">            file_input.send_keys("path/to/profilepic.gif")</span>
+<span class="s1">            #Generally it'</span><span class="n">s</span> <span class="n">better</span> <span class="n">to</span> <span class="n">wrap</span> <span class="n">the</span> <span class="n">file</span> <span class="n">path</span> <span class="k">in</span> <span class="n">one</span> <span class="n">of</span> <span class="n">the</span> <span class="n">methods</span>
+            <span class="err">#</span><span class="k">in</span> <span class="n">os</span><span class="o">.</span><span class="na">path</span> <span class="n">to</span> <span class="k">return</span> <span class="n">the</span> <span class="n">actual</span> <span class="n">path</span> <span class="n">to</span> <span class="n">support</span> <span class="n">cross</span> <span class="n">OS</span> <span class="n">testing</span><span class="o">.</span>
+            <span class="err">#</span> <span class="n">file_input</span><span class="o">.</span><span class="na">send_keys</span><span class="o">(</span><span class="n">os</span><span class="o">.</span><span class="na">path</span><span class="o">.</span><span class="na">abspath</span><span class="o">(</span><span class="s2">"path/to/profilepic.gif"</span><span class="o">))</span>
+
+    <span class="n">submit</span><span class="o">()</span>
+        <span class="err">提交表单</span>
+
+    <span class="n">value_of_css_property</span><span class="o">(</span><span class="n">property_name</span><span class="o">)</span>
+         <span class="n">CSS</span><span class="err">属性的值</span>
+
+    <span class="n">id</span>
+        <span class="n">selenium</span> <span class="err">使用的内部编号</span>
+        <span class="err">主要内部用户使用。可以用于简单检查</span><span class="mi">2</span><span class="err">个元素是否为同一元素，可以使用“</span><span class="o">==</span><span class="err">”：</span>
+            <span class="k">if</span> <span class="n">element1</span> <span class="o">==</span> <span class="n">element2</span><span class="o">:</span>
+                <span class="n">print</span><span class="o">(</span><span class="s2">"These 2 are equal"</span><span class="o">)</span>
+
+    <span class="n">location</span>
+        <span class="err">在渲染画布中元素的位置</span>
+
+    <span class="n">location_once_scrolled_into_view</span>
+        <span class="err">元素可能在没有提示的情况下修改。用它可以找到我们可以点击的元素。此方法可以将元素滚动到视图。</span>
+        <span class="err">返回屏幕上的顶部左侧角落的位置，或者</span><span class="n">None</span><span class="err">如果该元素是不可见的。</span>
+
+    <span class="n">parent</span>
+      <span class="n">Internal</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">the</span> <span class="n">WebDriver</span> <span class="n">instance</span> <span class="k">this</span> <span class="n">element</span> <span class="n">was</span> <span class="n">found</span> <span class="n">from</span><span class="o">.</span>
+
+    <span class="n">rect</span>
+       <span class="err">元素的位置和大小的字典</span>
+
+    <span class="n">screenshot_as_base64</span>
+        <span class="err">获取当前元素截屏的</span><span class="n">base64</span><span class="err">位编码</span>
+        <span class="err">用法：</span><span class="n">img_b64</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="na">screenshot_as_base64</span>
+
+    <span class="n">screensh_as_png</span>
+        <span class="err">获取当前元素截屏的二进制</span>
+        <span class="err">用法：</span><span class="n">element_png</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="na">screensh_as_png</span>
+
+    <span class="n">size</span> 
+        <span class="err">元素的大小</span>
+
+    <span class="n">tag_name</span> 
+        <span class="err">元素的</span><span class="n">tagname</span><span class="err">属性</span>
+
+    <span class="n">text</span>
+        <span class="err">元素的文本</span>
+</pre></div>
+<h3 id="ui-support">UI Support</h3>
+<p>class selenium.webdriver.support.select.Select(webelement)
+    deselect_all()
+        清除所有选中的条目。只对选中多个支持的选择有效。如果SELECT如果不支持复合选择，则抛出NotImplementedError.</p>
+<div class="highlight"><pre><span></span>deselect_by_index(index)
+    取消给定索引出的选项。通过元素的“index”属性进行，不仅仅通过计数。
+    index: 被取消选项的索引
+    如果指定的index没有SELECT,将抛出“NoSuchElementException"异常。
+
+deselect_by_value(value)
+   取消匹配参数值的选项。例如给点参数”foo"，将取消这样的选项：
+       <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"foo"</span><span class="nt">&gt;</span>Bar<span class="nt">&lt;/option&gt;</span>
+
+   value: 要匹配的值
+   如果没有选项匹配给定的参数值，将抛出“NoSuchElementException"异常。
+
+deselect_by_visible_text(text)
+       取消同参数值匹配的可见文本的选择项。例如给出”Bar"，这样的选项就会取消：
+           <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"foo"</span><span class="nt">&gt;</span>Bar<span class="nt">&lt;/option&gt;</span>
+
+           text:要匹配的可见文本
+
+select_by_index(index)
+    选择指定索引的选项。通过元素的index属性进行，不是通过counting.
+    index:被选中选项的索引
+    如果给定的索引指定的选项不存在，将抛出”NoSuchElementException"异常
+
+select_by_value(value)
+    选择匹配参数值的所有选项。例如，给定“foo"，这样的选项将会选中：
+        <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"foo"</span><span class="nt">&gt;</span>Bar<span class="nt">&lt;/option&gt;</span>
+        vale:需要匹配的值
+    如果没有选项匹配给定的参数值，将抛出”NoSuchElementException"异常。
+
+select_by_visible_text(text)
+    选择所有匹配可视文本的选项。例如给定参数“Bar"，这样的选项将会选中：
+        <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">"foo"</span><span class="nt">&gt;</span>Bar<span class="nt">&lt;/option&gt;</span>
+        text:要匹配的可见文本
+    如果没有选项匹配给定的参数值，将会抛出StaleElementReferenceException异常。
+
+all_selected_options
+   返回属于这个选项标签的所有选择选项的列表
+
+first_selected_option
+   返回选项标签的第一个选项（或则当前已选中的选项）
+
+options 
+返回属于这个选择标签的所有选项的列表
+</pre></div>
+<p>class selenium.webdriver.support.wait.WebDriverWait(driver, timeout, poll_frequency=0.5, ignored_exceptions=None)
+    Bases:object</p>
+<div class="highlight"><pre><span></span>until(method, message=")
+    Calls the method provided with the driver as an argument until the return value is not False.
+
+until_not(method, message='')
+
+    Calls the method provided with the driver as an argument until the return value is False.
+</pre></div>
+<h3 id="color-support">Color Support</h3>
+<p>class selenium.webdriver.support.color.Color(red, green, blue, alpha=1)
+    Bases:object
+    颜色转换支持类。
+    例如：
+    from selenium.webdriver.support.color import Color</p>
+<div class="highlight"><pre><span></span>    print(Color.from_string('#00ff33').rgba)
+    print(Color.from_string('rgb(1, 255, 3)').hex)
+    print(Color.from_string('blue').rgba)
+
+    static from_string(str_)
+
+    hex
+    rgb
+    rgba
+</pre></div>
+<h3 id="expected-conditions-support">Expected conditions Support</h3>
+<p>class selenium.webdriver.support.expected_conditions.alert_is_present
+    Bases:object
+    弹出预期alert</p>
+<p>class selenium.webdriver.support.expected_conditions.element_located_selection_state_to_be(locator, is_selected)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span><span class="n">object</span>
+<span class="n">An</span> <span class="n">expectation</span> <span class="n">to</span> <span class="n">locate</span> <span class="n">an</span> <span class="n">element</span> <span class="n">and</span> <span class="n">check</span> <span class="k">if</span> <span class="n">the</span> <span class="n">selection</span> <span class="n">state</span> <span class="n">specified</span> <span class="k">is</span> <span class="k">in</span> <span class="n">that</span> <span class="n">state</span><span class="o">.</span> <span class="n">locator</span> <span class="k">is</span> <span class="n">a</span> <span class="n">tuple</span> <span class="n">of</span> <span class="o">(</span><span class="n">by</span><span class="o">,</span> <span class="n">path</span><span class="o">)</span> <span class="n">is_selected</span> <span class="k">is</span> <span class="n">a</span> <span class="n">boolean</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.element_located_to_be_selected(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">the</span> <span class="n">element</span> <span class="n">to</span> <span class="n">be</span> <span class="n">located</span> <span class="k">is</span> <span class="n">selected</span><span class="o">.</span> <span class="n">locator</span> <span class="k">is</span> <span class="n">a</span> <span class="n">tuple</span> <span class="n">of</span> <span class="o">(</span><span class="n">by</span><span class="o">,</span> <span class="n">path</span><span class="o">)</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.element_selection_state_to_be(element, is_selected)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="k">if</span> <span class="n">the</span> <span class="n">given</span> <span class="n">element</span> <span class="k">is</span> <span class="n">selected</span><span class="o">.</span> <span class="n">element</span> <span class="k">is</span> <span class="n">WebElement</span> <span class="n">object</span> <span class="n">is_selected</span> <span class="k">is</span> <span class="n">a</span> <span class="n">Boolean</span><span class="o">.</span><span class="err">”</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.element_to_be_clickable(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">Expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">an</span> <span class="n">element</span> <span class="k">is</span> <span class="n">visible</span> <span class="n">and</span> <span class="n">enabled</span> <span class="n">such</span> <span class="n">that</span> <span class="n">you</span> <span class="n">can</span> <span class="n">click</span> <span class="n">it</span><span class="o">.</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.element_to_be_selected(element)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">the</span> <span class="n">selection</span> <span class="k">is</span> <span class="n">selected</span><span class="o">.</span> <span class="n">element</span> <span class="k">is</span> <span class="n">WebElement</span> <span class="n">object</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.frame_to_be_available_and_switch_to_it(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">whether</span> <span class="n">the</span> <span class="n">given</span> <span class="n">frame</span> <span class="k">is</span> <span class="n">available</span> <span class="n">to</span> <span class="k">switch</span> <span class="n">to</span><span class="o">.</span> <span class="n">If</span> <span class="n">the</span> <span class="n">frame</span> <span class="k">is</span> <span class="n">available</span> <span class="n">it</span> <span class="n">switches</span> <span class="n">the</span> <span class="n">given</span> <span class="n">driver</span> <span class="n">to</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">frame</span><span class="o">.</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.invisibility_of_element_located(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">Expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">an</span> <span class="n">element</span> <span class="k">is</span> <span class="n">either</span> <span class="n">invisible</span> <span class="n">or</span> <span class="n">not</span> <span class="n">present</span> <span class="n">on</span> <span class="n">the</span> <span class="n">DOM</span><span class="o">.</span>
+
+<span class="n">locator</span> <span class="n">used</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">element</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.presence_of_all_elements_located(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">there</span> <span class="k">is</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">element</span> <span class="n">present</span> <span class="n">on</span> <span class="n">a</span> <span class="n">web</span> <span class="n">page</span><span class="o">.</span> <span class="n">locator</span> <span class="k">is</span> <span class="n">used</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">element</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">list</span> <span class="n">of</span> <span class="n">WebElements</span> <span class="n">once</span> <span class="n">they</span> <span class="n">are</span> <span class="n">located</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.presence_of_element_located(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">an</span> <span class="n">element</span> <span class="k">is</span> <span class="n">present</span> <span class="n">on</span> <span class="n">the</span> <span class="n">DOM</span> <span class="n">of</span> <span class="n">a</span> <span class="n">page</span><span class="o">.</span> <span class="n">This</span> <span class="n">does</span> <span class="n">not</span> <span class="n">necessarily</span> <span class="n">mean</span> <span class="n">that</span> <span class="n">the</span> <span class="n">element</span> <span class="k">is</span> <span class="n">visible</span><span class="o">.</span> <span class="n">locator</span> <span class="o">-</span> <span class="n">used</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">element</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">WebElement</span> <span class="n">once</span> <span class="n">it</span> <span class="k">is</span> <span class="n">located</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.staleness_of(element)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">Wait</span> <span class="n">until</span> <span class="n">an</span> <span class="n">element</span> <span class="k">is</span> <span class="n">no</span> <span class="n">longer</span> <span class="n">attached</span> <span class="n">to</span> <span class="n">the</span> <span class="n">DOM</span><span class="o">.</span> <span class="n">element</span> <span class="k">is</span> <span class="n">the</span> <span class="n">element</span> <span class="n">to</span> <span class="n">wait</span> <span class="k">for</span><span class="o">.</span> <span class="n">returns</span> <span class="n">False</span> <span class="k">if</span> <span class="n">the</span> <span class="n">element</span> <span class="k">is</span> <span class="n">still</span> <span class="n">attached</span> <span class="n">to</span> <span class="n">the</span> <span class="n">DOM</span><span class="o">,</span> <span class="kc">true</span> <span class="n">otherwise</span><span class="o">.</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.text_to_be_present_in_element(locator, text_)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="k">if</span> <span class="n">the</span> <span class="n">given</span> <span class="n">text</span> <span class="k">is</span> <span class="n">present</span> <span class="k">in</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">element</span><span class="o">.</span> <span class="n">locator</span><span class="o">,</span> <span class="n">text</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.text_to_be_present_in_element_value(locator, text_)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="k">if</span> <span class="n">the</span> <span class="n">given</span> <span class="n">text</span> <span class="k">is</span> <span class="n">present</span> <span class="k">in</span> <span class="n">the</span> <span class="n">element</span><span class="err">’</span><span class="n">s</span> <span class="n">locator</span><span class="o">,</span> <span class="n">text</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.title_contains(title)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">the</span> <span class="n">title</span> <span class="n">contains</span> <span class="n">a</span> <span class="k">case</span><span class="o">-</span><span class="n">sensitive</span> <span class="n">substring</span><span class="o">.</span> <span class="n">title</span> <span class="k">is</span> <span class="n">the</span> <span class="n">fragment</span> <span class="n">of</span> <span class="n">title</span> <span class="n">expected</span> <span class="n">returns</span> <span class="n">True</span> <span class="n">when</span> <span class="n">the</span> <span class="n">title</span> <span class="n">matches</span><span class="o">,</span> <span class="n">False</span> <span class="n">otherwise</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.title_is(title)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">the</span> <span class="n">title</span> <span class="n">of</span> <span class="n">a</span> <span class="n">page</span><span class="o">.</span> <span class="n">title</span> <span class="k">is</span> <span class="n">the</span> <span class="n">expected</span> <span class="n">title</span><span class="o">,</span> <span class="n">which</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">exact</span> <span class="n">match</span> <span class="n">returns</span> <span class="n">True</span> <span class="k">if</span> <span class="n">the</span> <span class="n">title</span> <span class="n">matches</span><span class="o">,</span> <span class="kc">false</span> <span class="n">otherwise</span><span class="o">.</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.visibility_of(element)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">an</span> <span class="n">element</span><span class="o">,</span> <span class="n">known</span> <span class="n">to</span> <span class="n">be</span> <span class="n">present</span> <span class="n">on</span> <span class="n">the</span> <span class="n">DOM</span> <span class="n">of</span> <span class="n">a</span> <span class="n">page</span><span class="o">,</span> <span class="k">is</span> <span class="n">visible</span><span class="o">.</span> <span class="n">Visibility</span> <span class="n">means</span> <span class="n">that</span> <span class="n">the</span> <span class="n">element</span> <span class="k">is</span> <span class="n">not</span> <span class="n">only</span> <span class="n">displayed</span> <span class="n">but</span> <span class="n">also</span> <span class="n">has</span> <span class="n">a</span> <span class="n">height</span> <span class="n">and</span> <span class="n">width</span> <span class="n">that</span> <span class="k">is</span> <span class="n">greater</span> <span class="n">than</span> <span class="mi">0</span><span class="o">.</span> <span class="n">element</span> <span class="k">is</span> <span class="n">the</span> <span class="n">WebElement</span> <span class="n">returns</span> <span class="n">the</span> <span class="o">(</span><span class="n">same</span><span class="o">)</span> <span class="n">WebElement</span> <span class="n">once</span> <span class="n">it</span> <span class="k">is</span> <span class="n">visible</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.visibility_of_any_elements_located(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">there</span> <span class="k">is</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">element</span> <span class="n">visible</span> <span class="n">on</span> <span class="n">a</span> <span class="n">web</span> <span class="n">page</span><span class="o">.</span> <span class="n">locator</span> <span class="k">is</span> <span class="n">used</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">element</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">list</span> <span class="n">of</span> <span class="n">WebElements</span> <span class="n">once</span> <span class="n">they</span> <span class="n">are</span> <span class="n">located</span>
+</pre></div>
+<p>class selenium.webdriver.support.expected_conditions.visibility_of_element_located(locator)</p>
+<div class="highlight"><pre><span></span><span class="n">Bases</span><span class="o">:</span> <span class="n">object</span>
+
+<span class="n">An</span> <span class="n">expectation</span> <span class="k">for</span> <span class="n">checking</span> <span class="n">that</span> <span class="n">an</span> <span class="n">element</span> <span class="k">is</span> <span class="n">present</span> <span class="n">on</span> <span class="n">the</span> <span class="n">DOM</span> <span class="n">of</span> <span class="n">a</span> <span class="n">page</span> <span class="n">and</span> <span class="n">visible</span><span class="o">.</span> <span class="n">Visibility</span> <span class="n">means</span> <span class="n">that</span> <span class="n">the</span> <span class="n">element</span> <span class="k">is</span> <span class="n">not</span> <span class="n">only</span> <span class="n">displayed</span> <span class="n">but</span> <span class="n">also</span> <span class="n">has</span> <span class="n">a</span> <span class="n">height</span> <span class="n">and</span> <span class="n">width</span> <span class="n">that</span> <span class="k">is</span> <span class="n">greater</span> <span class="n">than</span> <span class="mi">0</span><span class="o">.</span> <span class="n">locator</span> <span class="o">-</span> <span class="n">used</span> <span class="n">to</span> <span class="n">find</span> <span class="n">the</span> <span class="n">element</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">WebElement</span> <span class="n">once</span> <span class="n">it</span> <span class="k">is</span> <span class="n">located</span> <span class="n">and</span> <span class="n">visible</span>
+</pre></div>
+<p>Top<a href="">^</a></p>
+<p>上一篇<a href="https://king32783784.github.io/2015/01/20/selenium/">Selenium主题8</a>
+下一篇<a href="https://king32783784.github.io/2015/01/22/selenium/">Selenium主题10</a></p></body>
+                </div>
+                <footer class="text-right">
+                    <p>by 李鹏</p>
+                </footer>
+  <!-- css -->
+  <style type="text/css">
+      .center {
+          text-align: center;
+      }
+      .hidden {
+          display: none;
+      }
+    .donate_bar a.btn_donate{
+      display: inline-block;
+      width: 80px;
+      height:80px;
+      background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+      _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+      <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+           因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+         为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+         嵌入其它博客时不一定要它们。 -->
+      -webkit-transition: background 0s;
+      -moz-transition: background 0s;
+      -o-transition: background 0s;
+      -ms-transition: background 0s;
+      transition: background 0s;
+      <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+    }
+
+    .donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+    .donate_bar .donate_txt {
+      display: block;
+      color: #9d9d9d;
+      font: 14px/2 "Microsoft Yahei";
+    }
+    .bold{ font-weight: bold; }
+  </style>
+  <!-- /css -->
+
+    <!-- Donate Module -->
+    <div id="donate_module">
+
+  <!-- btn_donate & tips -->
+  <div id="donate_board" class="donate_bar center">
+      <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+    <a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="Donate 打赏"></a>
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+      
+    
+  </div>
+  <!-- /btn_donate & tips -->
+
+  <!-- donate guide -->
+    
+  <div id="donate_guide" class="donate_bar center hidden">
+        <br>
+      ------------------------------------------------------------------------------------------------------------------------------
+      <br>
+
+    <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/wechart.png?raw=true" title="微信打赏 Colin" height="320px" width="auto"/>
+    </a>
+        
+        &nbsp;&nbsp;
+   <a href="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">
+      <img src="https://github.com/king32783784/king32783784.github.io/blob/master/tmpfile/alipay.png?raw=true" title="支付宝打赏 Colin" height="320px" width="auto"/>
+    </a>
+
+    <span class="donate_txt">
+      <Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！>
+    </span>
+
+  </div>
+  <!-- /donate guide -->
+
+  <!-- donate script -->
+  <script type="text/javascript">
+    document.getElementById('btn_donate').onclick = function() {
+      $('#donate_board').addClass('hidden');
+      $('#donate_guide').removeClass('hidden');
+    }
+
+    function donate_on_web(){
+      $('#donate').submit();
+        }
+
+    var original_window_onload = window.onload;
+        window.onload = function () {
+            if (original_window_onload) {
+                original_window_onload();
+            }
+            document.getElementById('donate_board_wdg').className = 'hidden';
+    }
+  </script>
+  <!-- /donate script -->
+</div>
+<!-- /Donate Module -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2127927"></script>
+<!-- UY END -->
+            </div>
+    <div id="scrollspy">
+        <div class="col-lg-3 nav nav-stacked hidden-xs hidden-sm" data-spy="affix" data-offset-top="135">
+            <div id="toc"><ul><li><a class="toc-href" href="#" title="selenium-Remote WebDriver">selenium-Remote WebDriver</a><ul><li><a class="toc-href" href="#remote-webdriver" title="Remote WebDriver">Remote WebDriver</a></li><li><a class="toc-href" href="#webelement" title="WebElement">WebElement</a></li><li><a class="toc-href" href="#ui-support" title="UI Support">UI Support</a></li><li><a class="toc-href" href="#color-support" title="Color Support">Color Support</a></li><li><a class="toc-href" href="#expected-conditions-support" title="Expected conditions Support">Expected conditions Support</a></li></ul></li></ul></div>
+        </div>
+    </div>
+        </div>
+    </article>
+</section>
+
+<!--"-->
+<footer>
+    <hr>
+    <div class="row">
+        <div class="col-lg-9 text-center">
+            <p><small>
+                <a href="http://www.reliablecounter.com" target="_blank"><img src="http://www.reliablecounter.com/count.php?page=https://king32783784.github.io/&digit=style/plain/6/&reloads=0" alt="" title="" border="0"></a><br /><a href="http://www.fabbly.com" target="_blank" style="font-family: Geneva, Arial; font-size: 9px; color: #330010; text-decoration: none;"></a>
+                Copyright</a>  </a>
+                <!--&middot;-->                    &copy;2009 李鹏
+            </small></p>
+        </div>
+    </div>
+</footer>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- jQuery Version 1.11.2 -->
+    <script src="../../../../theme/js/jquery-1.11.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../../theme/js/bootstrap.min.js"></script>
+    <!-- twitchy Script -->
+    <script src="../../../../theme/js/pelican_twitchy.min.js"></script>
+    <!-- Begin Cookie Consent https://silktide.com/tools/cookie-consent/ -->
+    <script>
+        window.cookieconsent_options = {
+            message: "This site uses Cookies. If you continue without changing your settings, it is assumed that you are happy to receive all cookies from this website.",
+            learnMore: "More info",
+            link: null,
+            dismiss: "Got it!",
+            theme: "../../../../theme/css/cookieconsent/dark-floating.css",
+        };
+    </script>
+    <script src="../../../../theme/js/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent -->
+
+</body>
+</html>
