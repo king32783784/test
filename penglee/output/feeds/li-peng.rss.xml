@@ -493,10 +493,10 @@ Example
 &lt;p&gt;类似于arg=value,给一个参数名称定义一个关键字参数。当多个参数有默认值时，它可以列出一部分参数，让其他的参数使用默认值。
 例如，一个关键字接受参数arg1=a, arg2=b, arg3=c,并且只调用一个参数arg3=override,参数arg1、arg2使用默认值，但arg３需要得到override。这听起来很复杂，但下面的命名参数例子会使它变得更简洁。&lt;/p&gt;
 &lt;p&gt;命名参数语法，格式需要使用arg=value这种，而不是Arg=value或ARG=value.&lt;/p&gt;
-&lt;p&gt;当命名参数语法使用用户关键字时，命名参数不能包含&lt;span class="math"&gt;\(\{\}修饰符。例如，用户关键字有\)&lt;/span&gt;{arg1}=first,${arg2}=second参数，必须像arg2=override这样使用。&lt;/p&gt;
+&lt;p&gt;当命名参数语法使用用户关键字时，命名参数不能包含${}修饰符。例如，用户关键字有${arg1}=first,${arg2}=second参数，必须像arg2=override这样使用。&lt;/p&gt;
 &lt;p&gt;命名参数之后使用正常的位置参数，如　| Keyword | arg=value | positional |,是不能正常工作的。从2.8之后，这会导致explicit错误。命名参数的相对顺序并不重要。&lt;/p&gt;
 &lt;h5&gt;使用变量命名参数&lt;/h5&gt;
-&lt;p&gt;在命名参数的名字和值都可以使用变量。如果值是单一的scalar变量，它会原样传递给关键字。命名参数语法中值可以是任何对象，不仅仅是字符串。例如调用关键字arg=&lt;span class="math"&gt;\(\{object\},将通过变量\)&lt;/span&gt;{object}得到而并将其转为字符串。&lt;/p&gt;
+&lt;p&gt;在命名参数的名字和值都可以使用变量。如果值是单一的scalar变量，它会原样传递给关键字。命名参数语法中值可以是任何对象，不仅仅是字符串。例如调用关键字arg=${object},将通过变量${object}得到而并将其转为字符串。&lt;/p&gt;
 &lt;p&gt;如果变量用于命名参数的名称时，变量要在匹配到参数名称前解决。&lt;/p&gt;
 &lt;p&gt;命名参数语法要求使用＝号。这意味着，单独变量不能触发命名参数语法，甚至没有像foo=bar的值.在这进行关键字转换时，尤为重要。例如，一个关键字需要可变数量的参数@{args}，并传递使用相同语法的另一个关键字@{args},位置参数named=arg语法不被识别。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;*** Test Case ***
@@ -531,7 +531,7 @@ List files
 
 &lt;h4&gt;自由关键字参数&lt;/h4&gt;
 &lt;p&gt;RF2.8版本增加了python风格的自由关键字参数(**kwargs).这意味着关键字可以接受任何使用name=value这种语法的参数，并且不匹配任何其他的kwargs参数。
-自由关键字参数支持类似于命名参数的变量。在实践中，这意味着该变量可以作为名称和值，但使用显示的转义。例如，foo=&lt;span class="math"&gt;\(\{bar\}和\)&lt;/span&gt;{foo}=${bar}都有效，只要使用的变量存在。一个额外的限制是自由的关键字参数名必须是字符串。&lt;/p&gt;
+自由关键字参数支持类似于命名参数的变量。在实践中，这意味着该变量可以作为名称和值，但使用显示的转义。例如，foo=${bar}和${foo}=${bar}都有效，只要使用的变量存在。一个额外的限制是自由的关键字参数名必须是字符串。&lt;/p&gt;
 &lt;h5&gt;Kwargs 例子&lt;/h5&gt;
 &lt;p&gt;第一个使用kwargs的例子，我们看一下Process库中关键字的运行过程。它包括一个command签名，*arguments, **configuration，这意味着它需要执行的命令（command），其参数为可变的参数（*arguments），最后是由自由关键字(**configuration)作为可选的配置参数。这个例子可以看到，变量在自由关键字参数中可以和命名参数语法一样使用。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;*** Test Cases ***
@@ -554,64 +554,7 @@ Run Program
 
 
 &lt;h4&gt;关键字名称嵌入参数&lt;/h4&gt;
-&lt;p&gt;一个完全不同的方法来指定参数被嵌入他们到关键字名称。这个语法支持测试库的关键字和用户的关键字。&lt;/p&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Sat, 01 Apr 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-04-01:2017/04/01/Robot/</guid><category>Framework</category></item><item><title>Robot Framework 用户手册(二)</title><link>http://king32783784.github.io/2017/03/31/Robot/</link><description>&lt;h3&gt;2.1.3 测试数据表&lt;/h3&gt;
+&lt;p&gt;一个完全不同的方法来指定参数被嵌入他们到关键字名称。这个语法支持测试库的关键字和用户的关键字。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Sat, 01 Apr 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-04-01:2017/04/01/Robot/</guid><category>Framework</category></item><item><title>Robot Framework 用户手册(二)</title><link>http://king32783784.github.io/2017/03/31/Robot/</link><description>&lt;h3&gt;2.1.3 测试数据表&lt;/h3&gt;
 &lt;p&gt;测试数据为下表所示的４种结构。测试数据表通过表中第一个区域被识别。被识别的表名是Settings, Variables, Test Cases, Keywords.匹配区分大小写，并且支持Setting和Test Case的变体。&lt;/p&gt;
 &lt;p&gt;不同的测试数据表&lt;/p&gt;
 &lt;table&gt;
@@ -663,7 +606,7 @@ Run Program
 &lt;/ul&gt;
 &lt;p&gt;如果前置或需要连续的空格，需要进行转义。换行符、回车、制表符和非换行空格分别通过\n \r \t和\xA0转义。&lt;/p&gt;
 &lt;h4&gt;转义&lt;/h4&gt;
-&lt;p&gt;RF测试数据中的转义字符为()和内建标量&lt;span SPACE="SPACE" class="math"&gt;\({EMPTY}和\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;RF测试数据中的转义字符为()和内建标量${EMPTY}和${SPACE}.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;转义特殊字符&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;转义特殊字符&lt;/p&gt;
 &lt;table&gt;
@@ -1093,64 +1036,7 @@ For loop
 &lt;td&gt;6&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Fri, 31 Mar 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-03-31:2017/03/31/Robot/</guid><category>Framework</category></item><item><title>Robot Framework 用户手册(一)</title><link>http://king32783784.github.io/2017/03/26/Robot/</link><description>&lt;p&gt;以下内容主要参考RobotFramework官方用户手册文档。&lt;/p&gt;
+&lt;/table&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Fri, 31 Mar 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-03-31:2017/03/31/Robot/</guid><category>Framework</category></item><item><title>Robot Framework 用户手册(一)</title><link>http://king32783784.github.io/2017/03/26/Robot/</link><description>&lt;p&gt;以下内容主要参考RobotFramework官方用户手册文档。&lt;/p&gt;
 &lt;h3&gt;1.1 介绍&lt;/h3&gt;
 &lt;p&gt;RF框架是用于验收测试和验收测试驱动开发（ATDD)的通用开源测试框架。它具备易于使用的表格测试数据语法，并且使用关键字驱动测试的方法。它的测试功能可以通过使用python或java实现的测试库来进行扩展，用户可以使用用于创建测试用例的相同语法从现有的关键字创建新的更高级别的关键字。&lt;/p&gt;
 &lt;p&gt;RF框架独立于操作系统和应用程序。核心框架是使用python实现的，可以在jython(JVM)和IronPython(.NET)上运行。该框架具有丰富的生态系统，包括作为单独项目开发的各种通用测试库和工具。&lt;/p&gt;
@@ -2067,7 +1953,7 @@ Library       lib/LoginLibray.py&lt;/p&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;\${DATABASE FILE}&lt;/td&gt;
-&lt;td&gt;\&lt;span class="math"&gt;\(\{TEMPDIR\}\\\)&lt;/span&gt;{/}robotframework-quickstart-db.txt&lt;/td&gt;
+&lt;td&gt;\${TEMPDIR}\${/}robotframework-quickstart-db.txt&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;&lt;/td&gt;
@@ -2088,7 +1974,7 @@ Library       lib/LoginLibray.py&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;除了用户定义的变量外，还有一些内置的变量始终可用。这些变量包括上面例子使用的\&lt;span class="math"&gt;\(\{TEMPDIR\}和\\)&lt;/span&gt;{/}。&lt;/p&gt;
+&lt;p&gt;除了用户定义的变量外，还有一些内置的变量始终可用。这些变量包括上面例子使用的\${TEMPDIR}和\${/}。&lt;/p&gt;
 &lt;h4&gt;使用变量&lt;/h4&gt;
 &lt;p&gt;变量可以在测试数据的大部分地方使用。它们最常用作关键字的参数，如以下测试用例所示。来自关键字的返回值也可以分配给变量，可以作为以后使用。例如，以下数据库包含user关键字将数据库内容设置为${database}变量，然后使用BuiltIn关键字Should Contain来验证内容。库和用户关键字都可以返回值。&lt;/p&gt;
 &lt;p&gt;测试用例&lt;/p&gt;
@@ -2170,7 +2056,7 @@ Library       lib/LoginLibray.py&lt;/p&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;td&gt;Should Contain&lt;/td&gt;
 &lt;td&gt;\${database}&lt;/td&gt;
-&lt;td&gt;\&lt;span class="math"&gt;\(\{username\}/t\\)&lt;/span&gt;{password}/t\${status}&lt;/td&gt;
+&lt;td&gt;\${username}/t\${password}/t\${status}&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -2299,64 +2185,7 @@ robot --exclude database QuickStart.rst
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 
-&lt;p&gt;到此，相信大家对Robot Framework应该有了一个初步的认识了。&lt;/p&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Fri, 24 Mar 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-03-24:2017/03/24/Robot/</guid><category>Framework</category></item><item><title>Itest测试工具介绍</title><link>http://king32783784.github.io/2017/03/22/itest/</link><description>&lt;h3&gt;基本介绍&lt;/h3&gt;
+&lt;p&gt;到此，相信大家对Robot Framework应该有了一个初步的认识了。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Fri, 24 Mar 2017 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2017-03-24:2017/03/24/Robot/</guid><category>Framework</category></item><item><title>Itest测试工具介绍</title><link>http://king32783784.github.io/2017/03/22/itest/</link><description>&lt;h3&gt;基本介绍&lt;/h3&gt;
 &lt;p&gt;本文介绍了itest(自研测试工具）的制作目的、测试范围、常用功能、测试方法。该工具目前处于开发阶段，仍有部分功能未实现，存在一些稳定性、兼容性的问题。&lt;/p&gt;
 &lt;h3&gt;制作目的&lt;/h3&gt;
 &lt;p&gt;进行linux系统测试时，需要进行系统信息抓取、功能性测试、性能测试、稳定性测试。其中信息抓取、性能测试、稳定性测试大部分情况下需要进行多轮次的测试。比如系统信息抓取包含系统软硬件信息的多个方面如 cpu信息、gcc信息等等；性能测试包括cpu、内存、内核等等；稳定性测试包括io、多线程、图形、内核等等；功能测试包括内核系统调用、常用服务/命令（主要包括目前自动化实现的部分）。这些可以自动化实现的测试，之前我们多多少少的都做了一些测试脚本进行了实现，itest制作的目的是为了整合这些测试，并且提供一个简单操作的GUI界面。主界面如下&lt;/p&gt;
@@ -5349,7 +5178,7 @@ JOB HTML   : &lt;span class="nv"&gt;$HOME&lt;/span&gt;/avocado/job-results/job-2
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;The --mux-yaml accepts either only &lt;span class="math"&gt;\(FILE_LOCATION or $INJECT_TO:\)&lt;/span&gt;FILE_LOCATION. As explained in Test variants - Mux without any path the content gets injected into /run in order to be in the default relative path location. The &lt;span class="math"&gt;\(INJECT_TO can be either relative path, then it’s injected into /run/\)&lt;/span&gt;INJECT_TO location, or absolute path (starting with '/'), then it’s injected directly into the specified path and it’s up to the test/framework developer to get the value from this location (using path or adding the path to mux-path). To understand the difference execute those commands:&lt;/p&gt;
+&lt;p&gt;The --mux-yaml accepts either only $FILE_LOCATION or $INJECT_TO:$FILE_LOCATION. As explained in Test variants - Mux without any path the content gets injected into /run in order to be in the default relative path location. The $INJECT_TO can be either relative path, then it’s injected into /run/$INJECT_TO location, or absolute path (starting with '/'), then it’s injected directly into the specified path and it’s up to the test/framework developer to get the value from this location (using path or adding the path to mux-path). To understand the difference execute those commands:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ avocado multiplex -t -m examples/tests/sleeptest.py.data/sleeptest.yaml
 $ avocado multiplex -t -m duration:examples/tests/sleeptest.py.data/sleeptest.yaml
 $ avocado multiplex -t -m /my/location:examples/tests/sleeptest.pt.data/sleeptest.yaml
@@ -5476,64 +5305,7 @@ Empty &lt;span class="nb"&gt;test&lt;/span&gt; ID. A &lt;span class="nb"&gt;test
 
 &lt;p&gt;同一个progress日志记录器，可以在多个测试方法和在多个测试模块一起使用。 在给出的示例中，测试名称用于给出额外的上下文。&lt;/p&gt;
 &lt;p&gt;&amp;lt;未完待续&amp;gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/4C0XUNHJ7C.jpg" height="280" width="420"&gt;&lt;/p&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Sat, 12 Nov 2016 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2016-11-12:2016/11/12/自动化测试/</guid><category>Avocado</category></item><item><title>Avocado-入门</title><link>http://king32783784.github.io/2016/11/03/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/</link><description>&lt;h3&gt;1.Avocado 安装&lt;/h3&gt;
+&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/4C0XUNHJ7C.jpg" height="280" width="420"&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Sat, 12 Nov 2016 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2016-11-12:2016/11/12/自动化测试/</guid><category>Avocado</category></item><item><title>Avocado-入门</title><link>http://king32783784.github.io/2016/11/03/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/</link><description>&lt;h3&gt;1.Avocado 安装&lt;/h3&gt;
 &lt;h4&gt;1.1 通过包安装&lt;/h4&gt;
 &lt;p&gt;像&lt;span id = 'avocado02'&gt;Fedora&lt;/span&gt;可以通过rpm包进行安装，其他通过RPM管理的发行版需要自己制作相关包。Avocado同样支持DEP包的安装可以在contrib/packages/debian找到。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Fedora&lt;/strong&gt;&lt;/p&gt;
@@ -5632,7 +5404,7 @@ JOB HTML  : &lt;span class="nv"&gt;$HOME&lt;/span&gt;/avocado/job-results/job-20
 
 
 &lt;p&gt;可以看到，我们把/bin/true作为一个测试运行，并记录了测试过程。这是一个简单的例子，这是支持测试的一种类型。&lt;a href="http://avocado-framework.readthedocs.io/en/43.0/ReferenceGuide.html#test-types"&gt;Test Types&lt;/a&gt;了解更多的测试类型。&lt;/p&gt;
-&lt;p&gt;注意： 尽管可以通过 avocao run &lt;span class="math"&gt;\(test1 $test3... 运行多个测试，但可以导致崩溃。一个安全的方式为： avocodo run --\)&lt;/span&gt;argument1 --$argument2 -- $test1 $test2.  后面所有内容都会当做位置参数。&lt;/p&gt;
+&lt;p&gt;注意： 尽管可以通过 avocao run $test1 $test3... 运行多个测试，但可以导致崩溃。一个安全的方式为： avocodo run --$argument1 --$argument2 -- $test1 $test2.  后面所有内容都会当做位置参数。&lt;/p&gt;
 &lt;h4&gt;2.2 列出测试项&lt;/h4&gt;
 &lt;p&gt;有两种方式覆盖这些测试。可以通过--dry-run 参数模拟：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;avocado&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;bin/true&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;dry-run&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
@@ -5800,64 +5572,7 @@ UI输出被抑制，只显示作业日志，这使得它成为测试开发和调
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/8N5QJCOLP7.jpg" height="280" width="420"&gt;&lt;/p&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Thu, 03 Nov 2016 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2016-11-03:2016/11/03/自动化测试/</guid><category>Avocado</category></item><item><title>Avocado User’s Guide</title><link>http://king32783784.github.io/2016/11/01/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/</link><description>&lt;h3&gt;Avocado 用户指南&lt;/h3&gt;
+&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/8N5QJCOLP7.jpg" height="280" width="420"&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Thu, 03 Nov 2016 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2016-11-03:2016/11/03/自动化测试/</guid><category>Avocado</category></item><item><title>Avocado User’s Guide</title><link>http://king32783784.github.io/2016/11/01/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/</link><description>&lt;h3&gt;Avocado 用户指南&lt;/h3&gt;
 &lt;p&gt;内容：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="#avocado01"&gt;关于Avocado&lt;/a&gt;&lt;/li&gt;
@@ -21484,14 +21199,14 @@ True
 &lt;p&gt;re模块最基本的方法是search()函数&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;pattern = '^M?M?M?&lt;span class="math"&gt;\('  # ^表示从字符串开头匹配　M?重复３次，匹配0-3次Ｍ字符，\)&lt;/span&gt;　匹配字符传结束　？表示匹配是可选的&lt;/p&gt;
+&lt;p&gt;pattern = '^M?M?M?$'  # ^表示从字符串开头匹配　M?重复３次，匹配0-3次Ｍ字符，$　匹配字符传结束　？表示匹配是可选的&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;pattern = '^M?M?M?(CM|CD|D?C?C?C?)$' # "|"表示是可选的，一旦CM匹配成功，后面的均被忽略&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;{N,M} {1,4} 匹配１到４个前面的模式　
-  pattern = '^M{0,3}&lt;span class="math"&gt;\(' 和前面的 '^M?^M?^m?\)&lt;/span&gt;'等同&lt;/p&gt;
+  pattern = '^M{0,3}$' 和前面的 '^M?^M?^m?$'等同&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;python允许使用松散正则表达式。特点：空白符被忽略。空格、制表符和回车不会被匹配，匹配时需要加转义字符“\"
@@ -21586,64 +21301,7 @@ True
 &lt;p&gt;yield命令不是一个普通的函数。它是一次生成一个值的特殊类型函数。可以将其视为可恢复函数。调用该函数将返回一个可用于生成连续x值的生成器【Generator】
 yield 的作用就是把一个函数变成一个 generator，带有 yield 的函数不再是一个普通函数，Python 解释器会将其视为一个 generator，调用 fab(5) 不会执行 fab 函数，而是返回一个 iterable 对象！在 for 循环执行时，每次循环都会执行 fab 函数内部的代码，执行到 yield b 时，fab 函数就返回一个迭代值，下次迭代时，代码从 yield b 的下一条语句继续执行，而函数的本地变量看起来和上次中断执行前是完全一样的，于是函数继续执行，直到再次遇到 yield。&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ul&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Mon, 05 May 2014 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2014-05-05:2014/05/05/python/</guid><category>Python-Tips</category></item><item><title>Python-Tips(二）</title><link>http://king32783784.github.io/2014/05/03/python/</link><description>&lt;p&gt;&lt;strong&gt;Tips11&lt;/strong&gt;&lt;/p&gt;
+&lt;/ul&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Mon, 05 May 2014 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2014-05-05:2014/05/05/python/</guid><category>Python-Tips</category></item><item><title>Python-Tips(二）</title><link>http://king32783784.github.io/2014/05/03/python/</link><description>&lt;p&gt;&lt;strong&gt;Tips11&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;字典是无序的键值对, {};dict["键"]="值",反之不成立&lt;/p&gt;
@@ -22460,7 +22118,7 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;※注意区分&lt;span class="math"&gt;\(RPM_BUILD_ROOT和\)&lt;/span&gt;RPM_BUILD_DIR：&lt;/p&gt;
+&lt;p&gt;※注意区分$RPM_BUILD_ROOT和$RPM_BUILD_DIR：&lt;/p&gt;
 &lt;p&gt;$RPM_BUILD_ROOT是指开头定义的BuildRoot，&lt;/p&gt;
 &lt;p&gt;而$RPM_BUILD_DIR通常就是指/usr/src/asianux/BUILD，其中，前面的才是%file需要的。 &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;%pre&lt;/span&gt; &lt;span class="n"&gt;rpm&lt;/span&gt;&lt;span class="err"&gt;安装前执行的脚本&lt;/span&gt;
@@ -22558,66 +22216,7 @@ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 &lt;span class="nf"&gt;%changelog&lt;/span&gt;
 &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;Fri&lt;/span&gt; &lt;span class="n"&gt;Oct&lt;/span&gt; &lt;span class="mi"&gt;23&lt;/span&gt; &lt;span class="mi"&gt;2015&lt;/span&gt; &lt;span class="n"&gt;xxx&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mf"&gt;1.6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;
 &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;Rebuild&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="mf"&gt;4.0&lt;/span&gt; &lt;span class="n"&gt;release&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Wed, 09 Oct 2013 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2013-10-09:2013/10/09/rpm/</guid><category>Linux</category></item><item><title>PMON启动信息详解</title><link>http://king32783784.github.io/2013/08/29/pmon/</link><description>&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/P5LS1TUY3V.jpg" height="280" width="420"&gt;&lt;/p&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Wed, 09 Oct 2013 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2013-10-09:2013/10/09/rpm/</guid><category>Linux</category></item><item><title>PMON启动信息详解</title><link>http://king32783784.github.io/2013/08/29/pmon/</link><description>&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/P5LS1TUY3V.jpg" height="280" width="420"&gt;&lt;/p&gt;
 &lt;p&gt;启动过程：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;PMON2000 MIPS Initializing. Standby... /*CPU  Initializing*/
 
@@ -24346,7 +23945,7 @@ total ram pages initialed 0
 
 
 &lt;p&gt;添加SigLevel = Never”一行&lt;/p&gt;
-&lt;p&gt;修改地址“Server = http://ftp.isoft.zhcn.cc/&lt;span class="math"&gt;\(repo/os/\)&lt;/span&gt;arch”&lt;/p&gt;
+&lt;p&gt;修改地址“Server = http://ftp.isoft.zhcn.cc/$repo/os/$arch”&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#pacman -Rdd gcc-multilib
 #pacman -Sy gcc-fortran
 #wget http://www.mpich.org/static/downloads/1.0.8/mpich2-1.0.8.tar.gz
@@ -24823,64 +24422,7 @@ root@mng l_mpi_p_3.1.038]# ./install.sh
 
 
 &lt;p&gt;测试方法同上面。&lt;/p&gt;
-&lt;p&gt;Top&lt;a href=""&gt;^&lt;/a&gt;&lt;/p&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Wed, 12 Jun 2013 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2013-06-12:2013/06/12/linpack/</guid><category>benchmark</category></item><item><title>通过printf函数简单实现解析不定参数表</title><link>http://king32783784.github.io/2013/05/27/C/</link><description>&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/P5LS1TUY3V.jpg" height="280" width="420"&gt;&lt;/p&gt;
+&lt;p&gt;Top&lt;a href=""&gt;^&lt;/a&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">李鹏</dc:creator><pubDate>Wed, 12 Jun 2013 00:00:00 +0800</pubDate><guid isPermaLink="false">tag:king32783784.github.io,2013-06-12:2013/06/12/linpack/</guid><category>benchmark</category></item><item><title>通过printf函数简单实现解析不定参数表</title><link>http://king32783784.github.io/2013/05/27/C/</link><description>&lt;p&gt;&lt;img src="https://d2lm6fxwu08ot6.cloudfront.net/img-thumbs/280h/P5LS1TUY3V.jpg" height="280" width="420"&gt;&lt;/p&gt;
 &lt;p&gt;先看代码，&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;minprintf&lt;/strong&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#include&amp;lt;stdarg.h&amp;gt;

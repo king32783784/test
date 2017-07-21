@@ -7,14 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="author" content="李鹏" />
         <meta name="keywords" content="Python-Tips" />
-        <meta name="description" content="Tips15 python中所有正则表达式相关功能都包含在re模块中 ^匹配字符串开始 $匹配字符串结尾 re模块最基本的方法是search()函数 pattern = &#39;^M?M?M?\(&#39; # ^表示从字符串开头匹配 M?重复３次，匹配0-3次Ｍ字符，\) 匹配字符传结束 ？表示匹配是可选的 pattern = &#39;^M?M?M?(CM|CD|D?C?C?C?)$&#39; # &#34;|&#34;表示是可选的，一旦CM匹配成功，后面的均被忽略 {N,M} {1,4} 匹配１到４个前面的模式 pattern = &#39;^M{0,3}\(&#39; 和前面的 &#39;^M?^M?^m?\)&#39;等同 python允许使用松散正则表达式。特点：空白符被忽略。空格、制表符和回车不会被匹配，匹配时需要加转义字符“\&#34; 注释信息被忽略 ...if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width" />
+        <meta name="description" content="Tips15 python中所有正则表达式相关功能都包含在re模块中 ^匹配字符串开始 $匹配字符串结尾 re模块最基本的方法是search()函数 pattern = &#39;^M?M?M?$&#39; # ^表示从字符串开头匹配 M?重复３次，匹配0-3次Ｍ字符，$ 匹配字符传结束 ？表示匹配是可选的 pattern = &#39;^M?M?M?(CM|CD|D?C?C?C?)$&#39; # &#34;|&#34;表示是可选的，一旦CM匹配成功，后面的均被忽略 {N,M} {1,4} 匹配１到４个前面的模式 pattern = &#39;^M{0,3}$&#39; 和前面的 &#39;^M?^M?^m?$&#39;等同 python允许使用松散正则表达式。特点：空白符被忽略。空格、制表符和回车不会被匹配，匹配时需要加转义字符“\&#34; 注释信息被忽略 ..." />
 
 <!-- Open Graph tags -->
 <meta property="og:site_name" content="路漫求索"/>
     <meta property="og:type" content="article"/>
     <meta property="og:title" content="Python-Tips(三）"/>
     <meta property="og:url" content="../../../../2014/05/05/python/"/>
-    <meta property="og:description" content="Tips15 python中所有正则表达式相关功能都包含在re模块中 ^匹配字符串开始 $匹配字符串结尾 re模块最基本的方法是search()函数 pattern = &#39;^M?M?M?\(&#39; # ^表示从字符串开头匹配 M?重复３次，匹配0-3次Ｍ字符，\) 匹配字符传结束 ？表示匹配是可选的 pattern = &#39;^M?M?M?(CM|CD|D?C?C?C?)$&#39; # &#34;|&#34;表示是可选的，一旦CM匹配成功，后面的均被忽略 {N,M} {1,4} 匹配１到４个前面的模式 pattern = &#39;^M{0,3}\(&#39; 和前面的 &#39;^M?^M?^m?\)&#39;等同 python允许使用松散正则表达式。特点：空白符被忽略。空格、制表符和回车不会被匹配，匹配时需要加转义字符“\&#34; 注释信息被忽略 ...if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width if (!document.getElementById(&#39;mathjaxscript_pelican_#%@#$@#&#39;)) { var align = &#34;center&#34;, indent = &#34;0em&#34;, linebreak = &#34;false&#34;; if (false) { align = (screen.width"/>
+    <meta property="og:description" content="Tips15 python中所有正则表达式相关功能都包含在re模块中 ^匹配字符串开始 $匹配字符串结尾 re模块最基本的方法是search()函数 pattern = &#39;^M?M?M?$&#39; # ^表示从字符串开头匹配 M?重复３次，匹配0-3次Ｍ字符，$ 匹配字符传结束 ？表示匹配是可选的 pattern = &#39;^M?M?M?(CM|CD|D?C?C?C?)$&#39; # &#34;|&#34;表示是可选的，一旦CM匹配成功，后面的均被忽略 {N,M} {1,4} 匹配１到４个前面的模式 pattern = &#39;^M{0,3}$&#39; 和前面的 &#39;^M?^M?^m?$&#39;等同 python允许使用松散正则表达式。特点：空白符被忽略。空格、制表符和回车不会被匹配，匹配时需要加转义字符“\&#34; 注释信息被忽略 ..."/>
     <meta property="article:published_time" content="2014-05-05" />
     <meta property="article:section" content="编程语言-Python" />
         <meta property="article:tag" content="Python-Tips" />
@@ -251,10 +251,10 @@
                             工具集
                         </a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="../../../../pages/aboutme.html">
                             <i class="fa fa-file-text padding-small"></i>
-                            关于我
+                            About me
                         </a>
                     </li>
                     <li>
@@ -273,39 +273,18 @@
                     </a>
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
+                    <li >
+                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
                     <li class="active">
                         <a href="../../../../category/bian-cheng-yu-yan-python.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             编程语言-Python
                             <span class="badge pull-right categorybadge">26</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Selenium
-                            <span class="badge pull-right categorybadge">17</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Autotest
-                            <span class="badge pull-right categorybadge">12</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-LTP
-                            <span class="badge pull-right categorybadge">7</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/linux.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            Linux
-                            <span class="badge pull-right categorybadge">6</span>
                         </a>
                     </li>
                     <li >
@@ -316,80 +295,10 @@
                         </a>
                     </li>
                     <li >
-                        <a href="../../../../category/leetcode.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            leetcode
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/qi-ta.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            其他
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/xing-neng-ce-shi.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            性能测试
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Robot
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/bian-cheng-yu-yan-c.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            编程语言-C
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
                         <a href="../../../../category/dockerzhuan-ti.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Docker专题
                             <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/python-pyqt.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            Python-pyqt
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Avocado
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/suan-fa.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            算法
-                            <span class="badge pull-right categorybadge">2</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            unix环境编程
-                            <span class="badge pull-right categorybadge">2</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试工具
-                            <span class="badge pull-right categorybadge">2</span>
                         </a>
                     </li>
                     <li >
@@ -400,10 +309,45 @@
                         </a>
                     </li>
                     <li >
+                        <a href="../../../../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../../../../category/mongodb.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Mongodb
                             <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
                         </a>
                     </li>
                     <li >
@@ -414,10 +358,66 @@
                         </a>
                     </li>
                     <li >
+                        <a href="../../../../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../../../../category/web.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Web
                             <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../../../../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
                         </a>
                     </li>
                 </ul></li>
@@ -469,7 +469,7 @@
         <div class="row">
             <div class="col-lg-9">
                 <div class="entry-content">
-                    <body><p><strong>Tips15</strong></p>
+                    <p><strong>Tips15</strong></p>
 <ul>
 <li>
 <p>python中所有正则表达式相关功能都包含在re模块中</p>
@@ -481,14 +481,14 @@
 <p>re模块最基本的方法是search()函数</p>
 </li>
 <li>
-<p>pattern = '^M?M?M?<span class="math">\('  # ^表示从字符串开头匹配　M?重复３次，匹配0-3次Ｍ字符，\)</span>　匹配字符传结束　？表示匹配是可选的</p>
+<p>pattern = '^M?M?M?$'  # ^表示从字符串开头匹配　M?重复３次，匹配0-3次Ｍ字符，$　匹配字符传结束　？表示匹配是可选的</p>
 </li>
 <li>
 <p>pattern = '^M?M?M?(CM|CD|D?C?C?C?)$' # "|"表示是可选的，一旦CM匹配成功，后面的均被忽略</p>
 </li>
 <li>
 <p>{N,M} {1,4} 匹配１到４个前面的模式　
-  pattern = '^M{0,3}<span class="math">\(' 和前面的 '^M?^M?^m?\)</span>'等同</p>
+  pattern = '^M{0,3}$' 和前面的 '^M?^M?^m?$'等同</p>
 </li>
 <li>
 <p>python允许使用松散正则表达式。特点：空白符被忽略。空格、制表符和回车不会被匹配，匹配时需要加转义字符“\"
@@ -520,23 +520,27 @@
 </li>
 </ul>
 <p>如果不明确字符串开始的地方：</p>
-<div class="highlight"><pre><span></span>phonePattern = re.compile(r'(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$')
+<div class="highlight"><pre><span></span>phonePattern = re.compile(r&#39;(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$&#39;)
 </pre></div>
+
+
 <p>松散正则表达式会清晰一点：</p>
-<div class="highlight"><pre><span></span>phonePattern = re.compile(r'''
+<div class="highlight"><pre><span></span>phonePattern = re.compile(r&#39;&#39;&#39;
     (\d{3})    # 先匹配３个数字（如８００）
-    \D*        # 这个区域是任意非数字的字符如（"-")
+    \D*        # 这个区域是任意非数字的字符如（&quot;-&quot;)
     (\d{3})     # 匹配三个数字如（555)
     \D*        #任意非数字的字符
     (\d{4})    # 匹配４个数字如（1212)
     \D*        # 任意非数字的字符
     (\d*)      # 任何数字字符
     $          # 字符结束
-    ''', re.VERBOSE)
+    &#39;&#39;&#39;, re.VERBOSE)
 
-例如　phone.Pattern.search('work 1-(800) 555.1212 #1234').groups()
-('800','555','1212','1234')
+例如　phone.Pattern.search(&#39;work 1-(800) 555.1212 #1234&#39;).groups()
+(&#39;800&#39;,&#39;555&#39;,&#39;1212&#39;,&#39;1234&#39;)
 </pre></div>
+
+
 <p><strong>Tips16</strong></p>
 <ul>
 <li>
@@ -580,63 +584,6 @@
 yield 的作用就是把一个函数变成一个 generator，带有 yield 的函数不再是一个普通函数，Python 解释器会将其视为一个 generator，调用 fab(5) 不会执行 fab 函数，而是返回一个 iterable 对象！在 for 循环执行时，每次循环都会执行 fab 函数内部的代码，执行到 yield b 时，fab 函数就返回一个迭代值，下次迭代时，代码从 yield b 的下一条语句继续执行，而函数的本地变量看起来和上次中断执行前是完全一样的，于是函数继续执行，直到再次遇到 yield。</p>
 </li>
 </ul>
-<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width < 768) ? "left" : align;
-        indent = (screen.width < 768) ? "0em" : indent;
-        linebreak = (screen.width < 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-</script></body>
                 </div>
                 <footer class="text-right">
                     <p>by 李鹏</p>

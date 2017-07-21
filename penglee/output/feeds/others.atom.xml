@@ -1702,7 +1702,7 @@ generate text.g -$(subst output,,$@) &amp;gt; $@
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;其中，-&lt;span class="math"&gt;\((subst output,,\)&lt;/span&gt;@)中的“&lt;span class="math"&gt;\(”表示执行一个Makefile的函数，函数名为subst，后面的为参数。关于函数，将在后面讲述。这里的这个函数是截取字符串的意思，“\)&lt;/span&gt;@”表示目标的集合，就像一个数组，“$@”依次取出目标，并执于命令。&lt;/p&gt;
+&lt;p&gt;其中，-$(subst output,,$@)中的“$”表示执行一个Makefile的函数，函数名为subst，后面的为参数。关于函数，将在后面讲述。这里的这个函数是截取字符串的意思，“$@”表示目标的集合，就像一个数组，“$@”依次取出目标，并执于命令。&lt;/p&gt;
 &lt;h5&gt;7、静态模式&lt;/h5&gt;
 &lt;p&gt;静态模式可以更加容易地定义多目标的规则，可以让我们的规则变得更加的有弹性和灵活。我们还是先来看一下语法：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&amp;lt;targets ...&amp;gt;: &amp;lt;target-pattern&amp;gt;: &amp;lt;prereq-patterns ...&amp;gt;
@@ -1729,7 +1729,7 @@ generate text.g -$(subst output,,$@) &amp;gt; $@
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;上面的例子中，指明了我们的目标从&lt;span class="math"&gt;\(object中获取，“%.o”表明要所有以“.o”结尾的目标，也就是“foo.o bar.o”，也就是变量\)&lt;/span&gt;object集合的模式，而依赖模式“%.c”则取模式“%.o”的“%”，也就是“foo bar”，并为其加下“.c”的后缀，于是，我们的依赖目标就是“foo.c bar.c”。而命令中的“&lt;span class="math"&gt;\(&amp;lt;”和“\)&lt;/span&gt;@”则是自动化变量，“&lt;span class="math"&gt;\(&amp;lt;”表示所有的依赖目标集（也就是“foo.c bar.c”），“\)&lt;/span&gt;@”表示目标集（也就是“foo.o bar.o”）。于是，上面的规则展开后等价于下面的规则：&lt;/p&gt;
+&lt;p&gt;上面的例子中，指明了我们的目标从$object中获取，“%.o”表明要所有以“.o”结尾的目标，也就是“foo.o bar.o”，也就是变量$object集合的模式，而依赖模式“%.c”则取模式“%.o”的“%”，也就是“foo bar”，并为其加下“.c”的后缀，于是，我们的依赖目标就是“foo.c bar.c”。而命令中的“$&amp;lt;”和“$@”则是自动化变量，“$&amp;lt;”表示所有的依赖目标集（也就是“foo.c bar.c”），“$@”表示目标集（也就是“foo.o bar.o”）。于是，上面的规则展开后等价于下面的规则：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;foo.o &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;.&lt;span class="n"&gt;c&lt;/span&gt;
 
 &lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nv"&gt;CC&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="err"&gt;-c&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nv"&gt;CFLAGS&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="err"&gt;foo.c&lt;/span&gt; &lt;span class="err"&gt;-o&lt;/span&gt; &lt;span class="err"&gt;foo.o&lt;/span&gt;
@@ -1813,7 +1813,7 @@ $&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CC&lt;/span&gt;&lt;sp
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这个规则的意思是，所有的[.d]文件依赖于[.c]文件，“rm -f &lt;span class="math"&gt;\(@”的意思是删除所有的目标，也就是[.d]文件，第二行的意思是，为每个依赖文件“\)&lt;/span&gt;&amp;lt;”，也就是[.c]文件生成依赖文件，“&lt;span class="math"&gt;\(@”表示模式 “%.d”文件，如果有一个C文件是name.c，那么“%”就是“name”，“\)&lt;/span&gt;&lt;span class="math"&gt;\($\)&lt;/span&gt;”意为一个随机编号，第二行生成的文件有可能是 “name.d.12345”，第三行使用sed命令做了一个替换，关于sed命令的用法请参看相关的使用文档。第四行就是删除临时文件。&lt;/p&gt;
+&lt;p&gt;这个规则的意思是，所有的[.d]文件依赖于[.c]文件，“rm -f $@”的意思是删除所有的目标，也就是[.d]文件，第二行的意思是，为每个依赖文件“$&amp;lt;”，也就是[.c]文件生成依赖文件，“$@”表示模式 “%.d”文件，如果有一个C文件是name.c，那么“%”就是“name”，“$$$$”意为一个随机编号，第二行生成的文件有可能是 “name.d.12345”，第三行使用sed命令做了一个替换，关于sed命令的用法请参看相关的使用文档。第四行就是删除临时文件。&lt;/p&gt;
 &lt;p&gt;总而言之，这个模式要做的事就是在编译器生成的依赖关系中加入[.d]文件的依赖，即把依赖关系：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;main.o : main.c defs.h
 &lt;/pre&gt;&lt;/div&gt;
@@ -1831,7 +1831,7 @@ include $(sources:.c=.d)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;上述语句中的“&lt;span class="math"&gt;\((sources:.c=.d)”中的“.c=.d”的意思是做一个替换，把变量\)&lt;/span&gt;(sources)所有[.c]的字串都替换成 [.d]，关于这个“替换”的内容，在后面我会有更为详细的讲述。当然，你得注意次序，因为include是按次来载入文件，最先载入的[.d]文件中的目标会成为默认目标。&lt;/p&gt;
+&lt;p&gt;上述语句中的“$(sources:.c=.d)”中的“.c=.d”的意思是做一个替换，把变量$(sources)所有[.c]的字串都替换成 [.d]，关于这个“替换”的内容，在后面我会有更为详细的讲述。当然，你得注意次序，因为include是按次来载入文件，最先载入的[.d]文件中的目标会成为默认目标。&lt;/p&gt;
 &lt;h4&gt;十一、书写命令&lt;/h4&gt;
 &lt;p&gt;每条规则中的命令和操作系统Shell的命令行是一致的。make会一按顺序一条一条的执行命令，每条命令的开头必须以[Tab]键开头，除非，命令是紧跟在依赖规则后面的分号后的。在命令行之间中的空格或是空行会被忽略，但是如果该空格或空行是以Tab键开头的，那么make会认为其是一个空命令。&lt;/p&gt;
 &lt;p&gt;我们在UNIX下可能会使用不同的Shell，但是make的命令默认是被“/bin/sh”——UNIX的标准Shell解释执行的。除非你特别指定一个其它的Shell。Makefile中，“#”是注释符，很像C/C++中的“//”，其后的本行字符都被注释。&lt;/p&gt;
@@ -1980,13 +1980,13 @@ $(run-yacc)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;我们可以看见，要使用这个命令包，我们就好像使用变量一样。在这个命令包的使用中，命令包“run-yacc”中的“&lt;span class="math"&gt;\(^”就是“foo.y”，“\)&lt;/span&gt;@”就是“foo.c”（有关这种以 “$”开头的特殊变量，我们会在后面介绍），make在执行命令包时，命令包中的每个命令会被依次独立执行。&lt;/p&gt;
+&lt;p&gt;我们可以看见，要使用这个命令包，我们就好像使用变量一样。在这个命令包的使用中，命令包“run-yacc”中的“$^”就是“foo.y”，“$@”就是“foo.c”（有关这种以 “$”开头的特殊变量，我们会在后面介绍），make在执行命令包时，命令包中的每个命令会被依次独立执行。&lt;/p&gt;
 &lt;h4&gt;十二、使用变量&lt;/h4&gt;
 &lt;p&gt;在 Makefile中的定义的变量，就像是C/C++语言中的宏一样，他代表了一个文本字串，在Makefile中执行的时候其会自动原模原样地展开在所使用的地方。其与C/C++所不同的是，你可以在Makefile中改变其值。在Makefile中，变量可以使用在“目标”，“依赖目标”，“命令”或是 Makefile的其它部分中。&lt;/p&gt;
 &lt;p&gt;变量的命名字可以包含字符、数字，下划线（可以是数字开头），但不应该含有“:”、“#”、“=”或是空字符（空格、回车等）。变量是大小写敏感的，“foo”、“Foo”和“FOO”是三个不同的变量名。传统的Makefile的变量名是全大写的命名方式，但我推荐使用大小写搭配的变量名，如：MakeFlags。这样可以避免和系统的变量冲突，而发生意外的事情。&lt;/p&gt;
-&lt;p&gt;有一些变量是很奇怪字串，如“&lt;span class="math"&gt;\(&amp;lt;”、“\)&lt;/span&gt;@”等，这些是自动化变量，我会在后面介绍。&lt;/p&gt;
+&lt;p&gt;有一些变量是很奇怪字串，如“$&amp;lt;”、“$@”等，这些是自动化变量，我会在后面介绍。&lt;/p&gt;
 &lt;h5&gt;1、变量的基础&lt;/h5&gt;
-&lt;p&gt;变量在声明时需要给予初值，而在使用时，需要给在变量名前加上“&lt;span class="math"&gt;\(”符号，但最好用小括号“（）”或是大括号“{}”把变量给包括起来。如果你要使用真实的“\)&lt;/span&gt;”字符，那么你需要用“$$”来表示。&lt;/p&gt;
+&lt;p&gt;变量在声明时需要给予初值，而在使用时，需要给在变量名前加上“$”符号，但最好用小括号“（）”或是大括号“{}”把变量给包括起来。如果你要使用真实的“$”字符，那么你需要用“$$”来表示。&lt;/p&gt;
 &lt;p&gt;变量可以使用在许多地方，如规则中的“目标”、“依赖”、“命令”以及新的变量中。先看一个例子：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;objects = program.o foo.o utils.o
 
@@ -2031,7 +2031,7 @@ echo $(foo)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;我们执行“make all”将会打出变量&lt;span class="math"&gt;\((foo)的值是“Huh?”（ $(foo)的值是\)&lt;/span&gt;(bar)，&lt;span class="math"&gt;\((bar)的值是\)&lt;/span&gt;(ugh)，$(ugh)的值是“Huh?”）可见，变量是可以使用后面的变量来定义的。&lt;/p&gt;
+&lt;p&gt;我们执行“make all”将会打出变量$(foo)的值是“Huh?”（ $(foo)的值是$(bar)，$(bar)的值是$(ugh)，$(ugh)的值是“Huh?”）可见，变量是可以使用后面的变量来定义的。&lt;/p&gt;
 &lt;p&gt;这个功能有好的地方，也有不好的地方，好的地方是，我们可以把变量的真实值推到后面 
 来定义，如：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;CFLAGS = $(include_dirs) –O
@@ -2122,7 +2122,7 @@ endif
 
 &lt;h5&gt;3、变量高级用法&lt;/h5&gt;
 &lt;p&gt;这里介绍两种变量的高级使用方法，第一种是变量值的替换。&lt;/p&gt;
-&lt;p&gt;我们可以替换变量中的共有的部分，其格式是“&lt;span class="math" var:a="b"&gt;\((var:a=b)”或是“\)&lt;/span&gt;”，其意思是，把变量“var”中所有以“a”字串“结尾”的“a”替换成“b”字串。这里的“结尾”意思是“空格”或是“结束符”。&lt;/p&gt;
+&lt;p&gt;我们可以替换变量中的共有的部分，其格式是“$(var:a=b)”或是“${var:a=b}”，其意思是，把变量“var”中所有以“a”字串“结尾”的“a”替换成“b”字串。这里的“结尾”意思是“空格”或是“结束符”。&lt;/p&gt;
 &lt;p&gt;还是看一个示例吧：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;foo := a.o b.o c.o
 
@@ -2130,7 +2130,7 @@ bar := $(foo:.o=.c)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这个示例中，我们先定义了一个“&lt;span class="math"&gt;\((foo)”变量，而第二行的意思是把“\)&lt;/span&gt;(foo)”中所有以“.o”字串“结尾”全部替换成“.c”，所以我们的“$(bar)”的值就是“a.c b.c c.c”。&lt;/p&gt;
+&lt;p&gt;这个示例中，我们先定义了一个“$(foo)”变量，而第二行的意思是把“$(foo)”中所有以“.o”字串“结尾”全部替换成“.c”，所以我们的“$(bar)”的值就是“a.c b.c c.c”。&lt;/p&gt;
 &lt;p&gt;另外一种变量替换的技术是以“静态模式”（参见前面章节）定义的，如：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;foo := a.o b.o c.o
 
@@ -2148,7 +2148,7 @@ a := $($(x))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;在这个例子中，&lt;span class="math"&gt;\((x)的值是“y”，所以\)&lt;/span&gt;(&lt;span class="math"&gt;\((x))就是\)&lt;/span&gt;(y)，于是&lt;span class="math"&gt;\((a)的值就是“z”。（注意，是“x=y”，而不是“x=\)&lt;/span&gt;(y)”）&lt;/p&gt;
+&lt;p&gt;在这个例子中，$(x)的值是“y”，所以$($(x))就是$(y)，于是$(a)的值就是“z”。（注意，是“x=y”，而不是“x=$(y)”）&lt;/p&gt;
 &lt;p&gt;我们还可以使用更多的层次：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;x = y
 
@@ -2172,7 +2172,7 @@ a := $($(x))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这里的&lt;span class="math"&gt;\((\)&lt;/span&gt;(x))被替换成了&lt;span class="math"&gt;\((\)&lt;/span&gt;(y))，因为&lt;span class="math"&gt;\((y)值是“z”，所以，最终结果是：a:=\)&lt;/span&gt;(z)，也就是“Hello”。&lt;/p&gt;
+&lt;p&gt;这里的$($(x))被替换成了$($(y))，因为$(y)值是“z”，所以，最终结果是：a:=$(z)，也就是“Hello”。&lt;/p&gt;
 &lt;p&gt;再复杂一点，我们再加上函数：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;x = variable1
 
@@ -2186,7 +2186,7 @@ a := $($($(z)))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这个例子中，“&lt;span class="math"&gt;\((\)&lt;/span&gt;(&lt;span class="math"&gt;\((z)))”扩展为“\)&lt;/span&gt;(&lt;span class="math"&gt;\((y))”，而其再次被扩展为“\)&lt;/span&gt;(&lt;span class="math"&gt;\((subst 1,2,\)&lt;/span&gt;(x)))”。&lt;span class="math"&gt;\((x)的值是“variable1”，subst函数把“variable1”中的所有“1”字串替换成“2”字串，于是，“variable1”变成“variable2”，再取其值，所以，最终，\)&lt;/span&gt;(a)的值就是$(variable2)的值—— “Hello”。（喔，好不容易）&lt;/p&gt;
+&lt;p&gt;这个例子中，“$($($(z)))”扩展为“$($(y))”，而其再次被扩展为“$($(subst 1,2,$(x)))”。$(x)的值是“variable1”，subst函数把“variable1”中的所有“1”字串替换成“2”字串，于是，“variable1”变成“variable2”，再取其值，所以，最终，$(a)的值就是$(variable2)的值—— “Hello”。（喔，好不容易）&lt;/p&gt;
 &lt;p&gt;在这种方式中，或要可以使用多个变量来组成一个变量的名字，然后再取其值：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;first_second = Hello
 
@@ -2198,7 +2198,7 @@ all = $($a_$b)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这里的“&lt;span class="math"&gt;\(a_\)&lt;/span&gt;b”组成了“first_second”，于是，$(all)的值就是“Hello”。&lt;/p&gt;
+&lt;p&gt;这里的“$a_$b”组成了“first_second”，于是，$(all)的值就是“Hello”。&lt;/p&gt;
 &lt;p&gt;再来看看结合第一种技术的例子：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;a_objects := a.o b.o c.o
 
@@ -2208,7 +2208,7 @@ sources := $($(a1)_objects:.o=.c)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这个例子中，如果&lt;span class="math"&gt;\((a1)的值是“a”的话，那么，\)&lt;/span&gt;(sources)的值就是“a.c b.c c.c”；如果&lt;span class="math"&gt;\((a1)的值是“1”，那么\)&lt;/span&gt;(sources)的值是“1.c 2.c 3.c”。&lt;/p&gt;
+&lt;p&gt;这个例子中，如果$(a1)的值是“a”的话，那么，$(sources)的值就是“a.c b.c c.c”；如果$(a1)的值是“1”，那么$(sources)的值是“1.c 2.c 3.c”。&lt;/p&gt;
 &lt;p&gt;再来看一个这种技术和“函数”与“条件语句”一同使用的例子：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ifdef do_sort
 
@@ -2226,7 +2226,7 @@ foo := $($(func) $(bar))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这个示例中，如果定义了“do_sort”，那么：foo := &lt;span class="math"&gt;\((sort a d b g q c)，于是\)&lt;/span&gt;(foo)的值就是“a b c d g q”，而如果没有定义“do_sort”，那么：foo := $(sort a d b g q c)，调用的就是strip函数。&lt;/p&gt;
+&lt;p&gt;这个示例中，如果定义了“do_sort”，那么：foo := $(sort a d b g q c)，于是$(foo)的值就是“a b c d g q”，而如果没有定义“do_sort”，那么：foo := $(sort a d b g q c)，调用的就是strip函数。&lt;/p&gt;
 &lt;p&gt;当然，“把变量的值再当成变量”这种技术，同样可以用在操作符的左边：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;dir = foo
 
@@ -2354,7 +2354,7 @@ endef
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;在这个示例中，不管全局的&lt;span class="math"&gt;\((CFLAGS)的值是什么，在prog目标，以及其所引发的所有规则中（prog.o foo.o bar.o的规则），\)&lt;/span&gt;(CFLAGS)的值都是“-g”。&lt;/p&gt;
+&lt;p&gt;在这个示例中，不管全局的$(CFLAGS)的值是什么，在prog目标，以及其所引发的所有规则中（prog.o foo.o bar.o的规则），$(CFLAGS)的值都是“-g”。&lt;/p&gt;
 &lt;h5&gt;9、模式变量&lt;/h5&gt;
 &lt;p&gt;在GNU的make中，还支持模式变量（Pattern-specific Variable），通过上面的目标变量中，我们知道，变量可以定义在某个目标上。模式变量的好处就是，我们可以给定一种“模式”，可以把变量定义在符合这种模式的所有目标上。&lt;/p&gt;
 &lt;p&gt;我们知道，make的“模式”一般是至少含有一个“%”的，所以，我们可以以如下方式给所有以[.o]结尾的目标定义目标变量：&lt;/p&gt;
@@ -2552,7 +2552,7 @@ endif
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;这里，&lt;function&gt;就是函数名，make支持的函数不多。&lt;arguments&gt;是函数的参数，参数间以逗号“,”分隔，而函数名和参数之间以“空格”分隔。函数调用以“&lt;span class="math"&gt;\(”开头，以圆括号或花括号把函数名和参数括起。感觉很像一个变量，是不是？函数中的参数可以使用变量，为了风格的统一，函数和变量的括号最好一样，如使用“\)&lt;/span&gt;(subst a,b,&lt;span class="math"&gt;\((x))”这样的形式，而不是“\)&lt;/span&gt;(subst a,b,${x})”的形式。因为统一会更清楚，也会减少一些不必要的麻烦。&lt;/p&gt;
+&lt;p&gt;这里，&lt;function&gt;就是函数名，make支持的函数不多。&lt;arguments&gt;是函数的参数，参数间以逗号“,”分隔，而函数名和参数之间以“空格”分隔。函数调用以“$”开头，以圆括号或花括号把函数名和参数括起。感觉很像一个变量，是不是？函数中的参数可以使用变量，为了风格的统一，函数和变量的括号最好一样，如使用“$(subst a,b,$(x))”这样的形式，而不是“$(subst a,b,${x})”的形式。因为统一会更清楚，也会减少一些不必要的麻烦。&lt;/p&gt;
 &lt;p&gt;还是来看一个示例：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;comma:= ,
 
@@ -2566,7 +2566,7 @@ bar:= $(subst $(space),$(comma),$(foo))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;在这个示例中，&lt;span class="math"&gt;\((comma)的值是一个逗号。\)&lt;/span&gt;(space)使用了&lt;span class="math"&gt;\((empty)定义了一个空格，\)&lt;/span&gt;(foo)的值是“a b c”，&lt;span class="math"&gt;\((bar)的定义用，调用了函数“subst”，这是一个替换函数，这个函数有三个参数，第一个参数是被替换字串，第二个参数是替换字串，第三个参数是替换操作作用的字串。这个函数也就是把\)&lt;/span&gt;(foo)中的空格替换成逗号，所以$(bar)的值是“a,b,c”。&lt;/p&gt;
+&lt;p&gt;在这个示例中，$(comma)的值是一个逗号。$(space)使用了$(empty)定义了一个空格，$(foo)的值是“a b c”，$(bar)的定义用，调用了函数“subst”，这是一个替换函数，这个函数有三个参数，第一个参数是被替换字串，第二个参数是替换字串，第三个参数是替换操作作用的字串。这个函数也就是把$(foo)中的空格替换成逗号，所以$(bar)的值是“a,b,c”。&lt;/p&gt;
 &lt;h5&gt;2、字符串处理函数&lt;/h5&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$(subst &amp;lt;from&amp;gt;,&amp;lt;to&amp;gt;,&amp;lt;text&amp;gt; )
 &lt;/pre&gt;&lt;/div&gt;
@@ -2589,7 +2589,7 @@ bar:= $(subst $(space),$(comma),$(foo))
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;例如有：objects = foo.o bar.o baz.o，那么，“&lt;span class="math"&gt;\((objects:.o=.c)”和“\)&lt;/span&gt;(patsubst %.o,%.c,$(objects))”是一样的。&lt;/p&gt;
+&lt;p&gt;例如有：objects = foo.o bar.o baz.o，那么，“$(objects:.o=.c)”和“$(patsubst %.o,%.c,$(objects))”是一样的。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$(strip &amp;lt;string&amp;gt; )
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -2605,7 +2605,7 @@ bar:= $(subst $(space),$(comma),$(foo))
 &lt;p&gt;名称：查找字符串函数——findstring。&lt;/p&gt;
 &lt;p&gt;功能：在字串&lt;in&gt;中查找&lt;find&gt;字串。&lt;/p&gt;
 &lt;p&gt;返回：如果找到，那么返回&lt;find&gt;，否则返回空字符串。&lt;/p&gt;
-&lt;p&gt;示例：&lt;span class="math"&gt;\((findstring a,a b c)返回“a”字符串，\)&lt;/span&gt;(findstring a,b c)返回“”字符串（空字符串）&lt;/p&gt;
+&lt;p&gt;示例：$(findstring a,a b c)返回“a”字符串，$(findstring a,b c)返回“”字符串（空字符串）&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$(filter &amp;lt;pattern...&amp;gt;,&amp;lt;text&amp;gt; )
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -2684,7 +2684,7 @@ $(sort &amp;lt;list&amp;gt; )
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;如果我们的“&lt;span class="math"&gt;\((VPATH)”值是“src:../headers”，那么“\)&lt;/span&gt;(patsubst %,-I%,&lt;span class="math"&gt;\((subst :, ,\)&lt;/span&gt;(VPATH)))”将返回“-Isrc -I../headers”，这正是cc或gcc搜索头文件路径的参数。&lt;/p&gt;
+&lt;p&gt;如果我们的“$(VPATH)”值是“src:../headers”，那么“$(patsubst %,-I%,$(subst :, ,$(VPATH)))”将返回“-Isrc -I../headers”，这正是cc或gcc搜索头文件路径的参数。&lt;/p&gt;
 &lt;h5&gt;3、文件名操作函数&lt;/h5&gt;
 &lt;p&gt;下面我们要介绍的函数主要是处理文件名的。每个函数的参数字符串都会被当做一个或是一系列的文件名来对待。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$(dir &amp;lt;names...&amp;gt; )
@@ -2757,7 +2757,7 @@ files := $(foreach n,$(names),$(n).o)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;上面的例子中，&lt;span class="math"&gt;\((name)中的单词会被挨个取出，并存到变量“n”中，“\)&lt;/span&gt;(n).o”每次根据“&lt;span class="math"&gt;\((n)”计算出一个值，这些值以空格分隔，最后作为foreach函数的返回，所以，\)&lt;/span&gt;(files)的值是“a.o b.o c.o d.o”。&lt;/p&gt;
+&lt;p&gt;上面的例子中，$(name)中的单词会被挨个取出，并存到变量“n”中，“$(n).o”每次根据“$(n)”计算出一个值，这些值以空格分隔，最后作为foreach函数的返回，所以，$(files)的值是“a.o b.o c.o d.o”。&lt;/p&gt;
 &lt;p&gt;注意，foreach中的&lt;var&gt;参数是一个临时的局部变量，foreach函数执行完后，参数&lt;var&gt;的变量将不在作用，其作用域只在foreach函数当中。&lt;/p&gt;
 &lt;h5&gt;5、if 函数&lt;/h5&gt;
 &lt;p&gt;if函数很像GNU的make所支持的条件语句——ifeq（参见前面所述的章节），if函数的语法是：&lt;/p&gt;
@@ -2779,7 +2779,7 @@ files := $(foreach n,$(names),$(n).o)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;当 make执行这个函数时，&lt;expression&gt;参数中的变量，如&lt;span class="math"&gt;\((1)，\)&lt;/span&gt;(2)，$(3)等，会被参数&lt;parm1&gt;，&lt;parm2&gt;，&lt;parm3&gt;依次取代。而&lt;expression&gt;的返回值就是 call函数的返回值。例如：&lt;/p&gt;
+&lt;p&gt;当 make执行这个函数时，&lt;expression&gt;参数中的变量，如$(1)，$(2)，$(3)等，会被参数&lt;parm1&gt;，&lt;parm2&gt;，&lt;parm3&gt;依次取代。而&lt;expression&gt;的返回值就是 call函数的返回值。例如：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;reverse = $(1) $(2)
 
 foo = $(call reverse,a,b)
@@ -3105,9 +3105,9 @@ endif
 &lt;p&gt;“.F” “$(FC) –F $(CPPFLAGS) $(FFLAGS)”&lt;/p&gt;
 &lt;p&gt;“.r” “$(FC) –F $(FFLAGS) $(RFLAGS)”&lt;/p&gt;
 &lt;p&gt;6、编译Modula-2程序的隐含规则。&lt;/p&gt;
-&lt;p&gt;“&lt;n&gt;.sym” 的目标的依赖目标会自动推导为“&lt;n&gt;.def”，并且其生成命令是：“&lt;span class="math"&gt;\((M2C) $(M2FLAGS) $(DEFFLAGS)”。“&amp;lt;n.o&amp;gt;” 的目标的依赖目标会自动推导为“&amp;lt;n&amp;gt;.mod”，并且其生成命令是：“\)&lt;/span&gt;(M2C) $(M2FLAGS) $(MODFLAGS)”。&lt;/p&gt;
+&lt;p&gt;“&lt;n&gt;.sym” 的目标的依赖目标会自动推导为“&lt;n&gt;.def”，并且其生成命令是：“$(M2C) $(M2FLAGS) $(DEFFLAGS)”。“&lt;n.o&gt;” 的目标的依赖目标会自动推导为“&lt;n&gt;.mod”，并且其生成命令是：“$(M2C) $(M2FLAGS) $(MODFLAGS)”。&lt;/p&gt;
 &lt;p&gt;7、汇编和汇编预处理的隐含规则。&lt;/p&gt;
-&lt;p&gt;“&lt;n&gt;.o” 的目标的依赖目标会自动推导为“&lt;n&gt;.s”，默认使用编译品“as”，并且其生成命令是：“&lt;span class="math"&gt;\((AS) $(ASFLAGS)”。“&amp;lt;n&amp;gt;.s” 的目标的依赖目标会自动推导为“&amp;lt;n&amp;gt;.S”，默认使用C预编译器“cpp”，并且其生成命令是：“\)&lt;/span&gt;(AS) $(ASFLAGS)”。&lt;/p&gt;
+&lt;p&gt;“&lt;n&gt;.o” 的目标的依赖目标会自动推导为“&lt;n&gt;.s”，默认使用编译品“as”，并且其生成命令是：“$(AS) $(ASFLAGS)”。“&lt;n&gt;.s” 的目标的依赖目标会自动推导为“&lt;n&gt;.S”，默认使用C预编译器“cpp”，并且其生成命令是：“$(AS) $(ASFLAGS)”。&lt;/p&gt;
 &lt;p&gt;8、链接Object文件的隐含规则。&lt;/p&gt;
 &lt;p&gt;“&lt;n&gt;” 目标依赖于“&lt;n&gt;.o”，通过运行C的编译器来运行链接程序生成（一般是“ld”），其生成命令是：“$(CC) $(LDFLAGS) &lt;n&gt;.o $(LOADLIBES) $(LDLIBS)”。这个规则对于只有一个源文件的工程有效，同时也对多个Object文件（由不同的源文件生成）的也有效。例如如下规则：&lt;/p&gt;
 &lt;p&gt;x : y.o z.o&lt;/p&gt;
@@ -3129,7 +3129,7 @@ endif
 &lt;p&gt;12、从C程序、Yacc文件或Lex文件创建Lint库的隐含规则。&lt;/p&gt;
 &lt;p&gt;“&lt;n&gt;.ln” （lint生成的文件）的依赖文件被自动推导为“n.c”，其生成命令是：“$(LINT) $(LINTFALGS) $(CPPFLAGS) -i”。对于“&lt;n&gt;.y”和“&lt;n&gt;.l”也是同样的规则。&lt;/p&gt;
 &lt;h5&gt;3、隐含规则使用的变量&lt;/h5&gt;
-&lt;p&gt;在隐含规则中的命令中，基本上都是使用了一些预先设置的变量。你可以在你的makefile中改变这些变量的值，或是在make的命令行中传入这些值，或是在你的环境变量中设置这些值，无论怎么样，只要设置了这些特定的变量，那么其就会对隐含规则起作用。当然，你也可以利用make的“-R”或“--no– builtin-variables”参数来取消你所定义的变量对隐含规则的作用。例如，第一条隐含规则——编译C程序的隐含规则的命令是“&lt;span class="math"&gt;\((CC) –c $(CFLAGS) $(CPPFLAGS)”。Make默认的编译命令是“cc”，如果你把变量“\)&lt;/span&gt;(CC)”重定义成“gcc”，把变量“$(CFLAGS)”重定义成 “-g”，那么，隐含规则中的命令全部会以“gcc –c -g $(CPPFLAGS)”的样子来执行了。&lt;/p&gt;
+&lt;p&gt;在隐含规则中的命令中，基本上都是使用了一些预先设置的变量。你可以在你的makefile中改变这些变量的值，或是在make的命令行中传入这些值，或是在你的环境变量中设置这些值，无论怎么样，只要设置了这些特定的变量，那么其就会对隐含规则起作用。当然，你也可以利用make的“-R”或“--no– builtin-variables”参数来取消你所定义的变量对隐含规则的作用。例如，第一条隐含规则——编译C程序的隐含规则的命令是“$(CC) –c $(CFLAGS) $(CPPFLAGS)”。Make默认的编译命令是“cc”，如果你把变量“$(CC)”重定义成“gcc”，把变量“$(CFLAGS)”重定义成 “-g”，那么，隐含规则中的命令全部会以“gcc –c -g $(CPPFLAGS)”的样子来执行了。&lt;/p&gt;
 &lt;p&gt;我们可以把隐含规则中使用的变量分成两种：一种是命令相关的，如“CC”；一种是参数相的关，如“CFLAGS”。下面是所有隐含规则中会用到的变量：&lt;/p&gt;
 &lt;h6&gt;3.1、关于命令的变量。&lt;/h6&gt;
 &lt;p&gt;AR&lt;/p&gt;
@@ -3222,7 +3222,7 @@ endif
 &lt;p&gt;下面这个例子表示了，把所有的[.c]文件都编译成[.o]文件。&lt;/p&gt;
 &lt;p&gt;%.o : %.c&lt;/p&gt;
 &lt;p&gt;$(CC) -c $(CFLAGS) $(CPPFLAGS) $&amp;lt; -o $@&lt;/p&gt;
-&lt;p&gt;其中，"&lt;span class="math"&gt;\(@"表示所有的目标的挨个值，"\)&lt;/span&gt;&amp;lt;"表示了所有依赖目标的挨个值。这些奇怪的变量我们叫"自动化变量"，后面会详细讲述。&lt;/p&gt;
+&lt;p&gt;其中，"$@"表示所有的目标的挨个值，"$&amp;lt;"表示了所有依赖目标的挨个值。这些奇怪的变量我们叫"自动化变量"，后面会详细讲述。&lt;/p&gt;
 &lt;p&gt;下面的这个例子中有两个目标是模式的：&lt;/p&gt;
 &lt;p&gt;%.tab.c %.tab.h: %.y&lt;/p&gt;
 &lt;p&gt;bison -d $&amp;lt;&lt;/p&gt;
@@ -3231,28 +3231,28 @@ endif
 &lt;p&gt;在上述的模式规则中，目标和依赖文件都是一系例的文件，那么我们如何书写一个命令来完成从不同的依赖文件生成相应的目标？因为在每一次的对模式规则的解析时，都会是不同的目标和依赖文件。&lt;/p&gt;
 &lt;p&gt;自动化变量就是完成这个功能的。在前面，我们已经对自动化变量有所提涉，相信你看到这里已对它有一个感性认识了。所谓自动化变量，就是这种变量会把模式中所定义的一系列的文件自动地挨个取出，直至所有的符合模式的文件都取完了。这种自动化变量只应出现在规则的命令中。&lt;/p&gt;
 &lt;p&gt;下面是所有的自动化变量及其说明：&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\(@表示规则中的目标文件集。在模式规则中，如果有多个目标，那么，"\)&lt;/span&gt;@"就是匹配于目标中模式定义的集合。&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\(%仅当目标是函数库文件中，表示规则中的目标成员名。例如，如果一个目标是"foo.a(bar.o)"，那么，"\)&lt;/span&gt;%"就是"bar.o"，"$@"就是"foo.a"。如果目标不是函数库文件（Unix下是[.a]，Windows下是[.lib]），那么，其值为空。&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\(&amp;lt;依赖目标中的第一个目标名字。如果依赖目标是以模式（即"%"）定义的，那么"\)&lt;/span&gt;&amp;lt;"将是符 
+&lt;p&gt;$@表示规则中的目标文件集。在模式规则中，如果有多个目标，那么，"$@"就是匹配于目标中模式定义的集合。&lt;/p&gt;
+&lt;p&gt;$%仅当目标是函数库文件中，表示规则中的目标成员名。例如，如果一个目标是"foo.a(bar.o)"，那么，"$%"就是"bar.o"，"$@"就是"foo.a"。如果目标不是函数库文件（Unix下是[.a]，Windows下是[.lib]），那么，其值为空。&lt;/p&gt;
+&lt;p&gt;$&amp;lt;依赖目标中的第一个目标名字。如果依赖目标是以模式（即"%"）定义的，那么"$&amp;lt;"将是符 
 合模式的一系列的文件集。注意，其是一个一个取出来的。&lt;/p&gt;
 &lt;p&gt;$?所有比目标新的依赖目标的集合。以空格分隔。&lt;/p&gt;
 &lt;p&gt;$^所有的依赖目标的集合。以空格分隔。如果在依赖目标中有多个重复的，那个这个变量会去除重复的依赖目标，只保留一份。&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\(+这个变量很像"\)&lt;/span&gt;^"，也是所有依赖目标的集合。只是它不去除重复的依赖目标。&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\(*这个变量表示目标模式中"%"及其之前的部分。如果目标是"dir/a.foo.b"，并且目标的模式是"a.%.b"，那么，"\)&lt;/span&gt;&lt;em&gt;"的值就是"dir /a.foo"。这个变量对于构造有关联的文件名是比较有较。如果目标中没有模式的定义，那么"&lt;span class="math"&gt;\(*"也就不能被推导出，但是，如果目标文件的后缀是 make所识别的，那么"\)&lt;/span&gt;&lt;/em&gt;"就是除了后缀的那一部分。例如：如果目标是"foo.c"，因为".c"是make所能识别的后缀名，所以，"&lt;span class="math"&gt;\(*"的值就是"foo"。这个特性是GNU make的，很有可能不兼容于其它版本的make，所以，你应该尽量避免使用"\)&lt;/span&gt;&lt;em&gt;"，除非是在隐含规则或是静态模式中。如果目标中的后缀是make所不能识别的，那么"$&lt;/em&gt;"就是空值。&lt;/p&gt;
+&lt;p&gt;$+这个变量很像"$^"，也是所有依赖目标的集合。只是它不去除重复的依赖目标。&lt;/p&gt;
+&lt;p&gt;$&lt;em&gt;这个变量表示目标模式中"%"及其之前的部分。如果目标是"dir/a.foo.b"，并且目标的模式是"a.%.b"，那么，"$&lt;/em&gt;"的值就是"dir /a.foo"。这个变量对于构造有关联的文件名是比较有较。如果目标中没有模式的定义，那么"$&lt;em&gt;"也就不能被推导出，但是，如果目标文件的后缀是 make所识别的，那么"$&lt;/em&gt;"就是除了后缀的那一部分。例如：如果目标是"foo.c"，因为".c"是make所能识别的后缀名，所以，"$&lt;em&gt;"的值就是"foo"。这个特性是GNU make的，很有可能不兼容于其它版本的make，所以，你应该尽量避免使用"$&lt;/em&gt;"，除非是在隐含规则或是静态模式中。如果目标中的后缀是make所不能识别的，那么"$*"就是空值。&lt;/p&gt;
 &lt;p&gt;当你希望只对更新过的依赖文件进行操作时，"$?"在显式规则中很有用，例如，假设有一个函数库文件叫"lib"，其由其它几个object文件更新。那么把object文件打包的比较有效率的Makefile规则是：&lt;/p&gt;
 &lt;p&gt;lib : foo.o bar.o lose.o win.o&lt;/p&gt;
 &lt;p&gt;ar r lib $?&lt;/p&gt;
-&lt;p&gt;在上述所列出来的自动量变量中。四个变量（&lt;span class="math"&gt;\(@、\)&lt;/span&gt;&amp;lt;、&lt;span class="math"&gt;\(%、\)&lt;/span&gt;*）在扩展时只会有一个文件，而另三个的值是一个文件列表。这七个自动化变量还可以取得文件的目录名或是在当前目录下的符合模式的文件名，只需要搭配上"D"或"F"字样。这是GNU make中老版本的特性，在新版本中，我们使用函数"dir"或"notdir"就可以做到了。"D"的含义就是Directory，就是目录，"F"的含义就是File，就是文件。&lt;/p&gt;
+&lt;p&gt;在上述所列出来的自动量变量中。四个变量（$@、$&amp;lt;、$%、$*）在扩展时只会有一个文件，而另三个的值是一个文件列表。这七个自动化变量还可以取得文件的目录名或是在当前目录下的符合模式的文件名，只需要搭配上"D"或"F"字样。这是GNU make中老版本的特性，在新版本中，我们使用函数"dir"或"notdir"就可以做到了。"D"的含义就是Directory，就是目录，"F"的含义就是File，就是文件。&lt;/p&gt;
 &lt;p&gt;下面是对于上面的七个变量分别加上"D"或是"F"的含义：&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\((@D)表示"\)&lt;/span&gt;@"的目录部分（不以斜杠作为结尾），如果"&lt;span class="math"&gt;\(@"值是"dir/foo.o"，那么"\)&lt;/span&gt;(@D)"就是"dir"，而如果"$@"中没有包含斜杠的话，其值就是"."（当前目录）。&lt;/p&gt;
-&lt;p&gt;&lt;span class="math"&gt;\((@F)表示"\)&lt;/span&gt;@"的文件部分，如果"&lt;span class="math"&gt;\(@"值是"dir/foo.o"，那么"\)&lt;/span&gt;(@F)"就是"foo.o"，"&lt;span class="math"&gt;\((@F)"相当于函数"\)&lt;/span&gt;(notdir $@)"。&lt;/p&gt;
-&lt;p&gt;"&lt;span class="math"&gt;\((*D)""\)&lt;/span&gt;(&lt;em&gt;F)"和上面所述的同理，也是取文件的目录部分和文件部分。对于上面的那个例子，"&lt;span class="math"&gt;\((*D)"返回"dir"，而"\)&lt;/span&gt;(&lt;/em&gt;F)"返回"foo"&lt;/p&gt;
-&lt;p&gt;"&lt;span class="math"&gt;\((%D)""\)&lt;/span&gt;(%F)"分别表示了函数包文件成员的目录部分和文件部分。这对于形同"archive(member)"形式的目标中的"member"中包含了不同的目录很有用。&lt;/p&gt;
-&lt;p&gt;"&lt;span class="math"&gt;\((&amp;lt;D)""\)&lt;/span&gt;(&amp;lt;F)"分别表示依赖文件的目录部分和文件部分。&lt;/p&gt;
-&lt;p&gt;"&lt;span class="math"&gt;\((^D)""\)&lt;/span&gt;(^F)"分别表示所有依赖文件的目录部分和文件部分。（无相同的）&lt;/p&gt;
-&lt;p&gt;"&lt;span class="math"&gt;\((+D)""\)&lt;/span&gt;(+F)"分别表示所有依赖文件的目录部分和文件部分。（可以有相同的）&lt;/p&gt;
-&lt;p&gt;"&lt;span class="math"&gt;\((?D)""\)&lt;/span&gt;(?F)"分别表示被更新的依赖文件的目录部分和文件部分。&lt;/p&gt;
-&lt;p&gt;最后想提醒一下的是，对于"&lt;span class="math"&gt;\(&amp;lt;"，为了避免产生不必要的麻烦，我们最好给\)&lt;/span&gt;后面的那个特定字符都加上圆括号，比如，"&lt;span class="math"&gt;\((&amp;lt; )"就要比"\)&lt;/span&gt;&amp;lt;"要好一些。&lt;/p&gt;
+&lt;p&gt;$(@D)表示"$@"的目录部分（不以斜杠作为结尾），如果"$@"值是"dir/foo.o"，那么"$(@D)"就是"dir"，而如果"$@"中没有包含斜杠的话，其值就是"."（当前目录）。&lt;/p&gt;
+&lt;p&gt;$(@F)表示"$@"的文件部分，如果"$@"值是"dir/foo.o"，那么"$(@F)"就是"foo.o"，"$(@F)"相当于函数"$(notdir $@)"。&lt;/p&gt;
+&lt;p&gt;"$(&lt;em&gt;D)""$(&lt;/em&gt;F)"和上面所述的同理，也是取文件的目录部分和文件部分。对于上面的那个例子，"$(&lt;em&gt;D)"返回"dir"，而"$(&lt;/em&gt;F)"返回"foo"&lt;/p&gt;
+&lt;p&gt;"$(%D)""$(%F)"分别表示了函数包文件成员的目录部分和文件部分。这对于形同"archive(member)"形式的目标中的"member"中包含了不同的目录很有用。&lt;/p&gt;
+&lt;p&gt;"$(&amp;lt;D)""$(&amp;lt;F)"分别表示依赖文件的目录部分和文件部分。&lt;/p&gt;
+&lt;p&gt;"$(^D)""$(^F)"分别表示所有依赖文件的目录部分和文件部分。（无相同的）&lt;/p&gt;
+&lt;p&gt;"$(+D)""$(+F)"分别表示所有依赖文件的目录部分和文件部分。（可以有相同的）&lt;/p&gt;
+&lt;p&gt;"$(?D)""$(?F)"分别表示被更新的依赖文件的目录部分和文件部分。&lt;/p&gt;
+&lt;p&gt;最后想提醒一下的是，对于"$&amp;lt;"，为了避免产生不必要的麻烦，我们最好给$后面的那个特定字符都加上圆括号，比如，"$(&amp;lt; )"就要比"$&amp;lt;"要好一些。&lt;/p&gt;
 &lt;p&gt;还得要注意的是，这些变量只使用在规则的命令中，而且一般都是"显式规则"和"静态模式规则"（参见前面"书写规则"一章）。其在隐含规则中并没有意义。&lt;/p&gt;
 &lt;p&gt;4、模式的匹配&lt;/p&gt;
 &lt;p&gt;一般来说，一个目标的模式有一个有前缀或是后缀的"%"，或是没有前后缀，直接就是一个"%"。因为"%"代表一个或多个字符，所以在定义好了的模式中，我们把"%"所匹配的内容叫做"茎"，例如"%.c"所匹配的文件"test.c"中"test"就是"茎"。因为在目标和依赖目标中同时有"%"时，依赖目标的"茎"会传给目标，当做目标中的"茎"。&lt;/p&gt;
@@ -3430,61 +3430,4 @@ rm -f bar.o
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在此，向这两位开源项目的斗士致以最真切的敬意。&lt;/p&gt;
-&lt;p&gt;Top&lt;a href=""&gt;^&lt;/a&gt;&lt;/p&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</summary><category term="Makefile"></category></entry></feed>
+&lt;p&gt;Top&lt;a href=""&gt;^&lt;/a&gt;&lt;/p&gt;</summary><category term="Makefile"></category></entry></feed>

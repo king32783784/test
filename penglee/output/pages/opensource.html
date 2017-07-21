@@ -11,13 +11,10 @@
 <!-- Open Graph tags -->
 <meta property="og:site_name" content="路漫求索"/>
     <meta property="og:type" content="article"/>
-    <meta property="og:title" content="DOCKER基础技术：LINUX CGROUP(转载）"/>
-    <meta property="og:url" content="../2017/03/03/docker/"/>
-    <meta property="og:description" content="前面，我们介绍了Linux Namespace，但是Namespace解决的问题主要是环境隔离的问题，这只是虚拟化中最最基础的一步，我们还需要解决对计算机资源使用上的隔离。也就是说，虽然你通过Namespace把我Jail到一个特定的环境中去了，但是我在其中的进程使用用CPU、内存、磁盘等这些计算资源其实还是可以随心所欲的。所以，我们希望对进程进行资源利用上的限制或控制。这就是Linux CGroup出来了的原因。 Linux CGroup全称Linux Control Group， 是Linux内核的一个功能，用来限制，控制与分离一个进程组群的资源（如CPU、内存、磁盘输入输出等）。这个项目最早是由Google的工程师在2006年发起（主要是Paul Menage和Rohit Seth），最早的名称为进程容器（process containers）。在2007年时，因为在Linux内核中，容器（container）这个名词太过广泛，为避免混乱，被重命名为cgroup，并且被合并到2.6.24版的内核中去。然后，其它开始了他的发展。 Linux CGroupCgroup 可​​​让​​​您​​​为 ..."/>
-    <meta property="article:published_time" content="2017-03-03" />
-    <meta property="article:section" content="Docker专题" />
-        <meta property="article:tag" content="docker" />
-        <meta property="article:author" content="陈皓" />
+    <meta property="og:title" content="开源项目"/>
+    <meta property="og:url" content="../pages/opensource.html"/>
+    <meta property="og:description" content="以下项目均为工作期间编写的linux测试相关的工具或测试框架,基本上已投入到日常linux测试工作中；部分方法已申请专利。 基站业务测试工具 MultiueTest 基站多UE的业务测试工具 linux系统自动回归测试 Lart_i The framework for bridging Linux product development or maintenance of automated regression testing Linux系统性能测试套件 Lpbs-i 轻量型autotest，用于linux性能评测 Linux平台软硬件信息侦测 infotest 用于linux平台的软硬件信息侦测并形成html报表，支持硬件平台主要组件和系统核心软件组件的版本和信息侦测。 性能测试结果可视化处理插件 Report_generate 用于对Lpbs-i测试结果的可视化处理，支持html、xls等多种格式，支持多系统对比报告生成 浏览器benchmark Brower_benchmark 采用selenium，用于linux平台浏览器的评测，可以评估浏览器css、acid标准、html标准、DOM、javascipt等多个方面的性能 linux系统测试工具 itest linux系统测试app，包括测试、报告制作、负载显示等功能 ..."/>
+        <meta property="article:author" content="penglee" />
         <meta property="og:image"
               content="../favicon.png"/>
 
@@ -66,12 +63,12 @@
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
                     <li>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=../2017/03/03/docker/" title="Share via Facebook" target="popup">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../pages/opensource.html" title="Share via Facebook" target="popup">
                             <i class="fa fa-facebook-square padding-small"></i>
                         </a>
                     </li>
                     <li>
-                        <a href="https://plus.google.com/share?url=../2017/03/03/docker/" title="Share via Google+" target="popup">
+                        <a href="https://plus.google.com/share?url=../pages/opensource.html" title="Share via Google+" target="popup">
                             <i class="fa fa-google-plus padding-small"></i>
                         </a>
                     </li>
@@ -166,13 +163,13 @@
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
                     <li>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=../2017/03/03/docker/" target="popup">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../pages/opensource.html" target="popup">
                             <i class="fa fa-facebook-square padding-small"></i>
                             Facebook
                         </a>
                     </li>
                     <li>
-                        <a href="https://plus.google.com/share?url=../2017/03/03/docker/" target="popup">
+                        <a href="https://plus.google.com/share?url=../pages/opensource.html" target="popup">
                             <i class="fa fa-google-plus padding-small"></i>
                             Google+
                         </a>
@@ -254,7 +251,7 @@
                     <li>
                         <a href="../pages/aboutme.html">
                             <i class="fa fa-file-text padding-small"></i>
-                            关于我
+                            About me
                         </a>
                     </li>
                     <li>
@@ -274,38 +271,17 @@
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
                     <li >
+                        <a href="../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../category/bian-cheng-yu-yan-python.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             编程语言-Python
                             <span class="badge pull-right categorybadge">26</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-selenium.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Selenium
-                            <span class="badge pull-right categorybadge">17</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-autotest.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Autotest
-                            <span class="badge pull-right categorybadge">12</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-ltp.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-LTP
-                            <span class="badge pull-right categorybadge">7</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/linux.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            Linux
-                            <span class="badge pull-right categorybadge">6</span>
                         </a>
                     </li>
                     <li >
@@ -316,80 +292,10 @@
                         </a>
                     </li>
                     <li >
-                        <a href="../category/leetcode.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            leetcode
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/qi-ta.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            其他
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/xing-neng-ce-shi.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            性能测试
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-robot.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Robot
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/bian-cheng-yu-yan-c.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            编程语言-C
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
                         <a href="../category/dockerzhuan-ti.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Docker专题
                             <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/python-pyqt.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            Python-pyqt
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-avocado.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Avocado
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/suan-fa.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            算法
-                            <span class="badge pull-right categorybadge">2</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/unixhuan-jing-bian-cheng.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            unix环境编程
-                            <span class="badge pull-right categorybadge">2</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-gong-ju.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试工具
-                            <span class="badge pull-right categorybadge">2</span>
                         </a>
                     </li>
                     <li >
@@ -400,10 +306,45 @@
                         </a>
                     </li>
                     <li >
+                        <a href="../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../category/mongodb.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Mongodb
                             <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
                         </a>
                     </li>
                     <li >
@@ -414,10 +355,66 @@
                         </a>
                     </li>
                     <li >
+                        <a href="../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../category/web.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Web
                             <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
                         </a>
                     </li>
                 </ul></li>
@@ -440,13 +437,13 @@
         <section id="content" class="body">
             <h1 class="page-header">开源项目</h1>
             <div class="entry-content">
-                <body><p>以下项目均为工作期间编写的linux测试相关的工具或测试框架,基本上已投入到日常linux测试工作中；部分方法已申请专利。</p>
-<h3 id="ji-zhan-ye-wu-ce-shi-gong-ju">基站业务测试工具</h3>
+                <p>以下项目均为工作期间编写的linux测试相关的工具或测试框架,基本上已投入到日常linux测试工作中；部分方法已申请专利。</p>
+<h3>基站业务测试工具</h3>
 <ul>
 <li><a href="https://github.com/king32783784/MultiueTest.git">MultiueTest</a></li>
 </ul>
 <p>基站多UE的业务测试工具</p>
-<h3 id="linuxxi-tong-zi-dong-hui-gui-ce-shi">linux系统自动回归测试</h3>
+<h3>linux系统自动回归测试</h3>
 <ul>
 <li>
 <p><a href="https://github.com/king32783784/Lart_i">Lart_i</a></p>
@@ -455,7 +452,7 @@
 <p>The framework for bridging Linux product development or maintenance of automated regression testing</p>
 </li>
 </ul>
-<h3 id="linuxxi-tong-xing-neng-ce-shi-tao-jian">Linux系统性能测试套件</h3>
+<h3>Linux系统性能测试套件</h3>
 <ul>
 <li>
 <p><a href="https://github.com/king32783784/Lpbs-i">Lpbs-i</a> </p>
@@ -464,7 +461,7 @@
 <p>轻量型autotest，用于linux性能评测</p>
 </li>
 </ul>
-<h3 id="linuxping-tai-ruan-ying-jian-xin-xi-zhen-ce">Linux平台软硬件信息侦测</h3>
+<h3>Linux平台软硬件信息侦测</h3>
 <ul>
 <li>
 <p><a href="https://github.com/king32783784/infotest">infotest</a></p>
@@ -473,7 +470,7 @@
 <p>用于linux平台的软硬件信息侦测并形成html报表，支持硬件平台主要组件和系统核心软件组件的版本和信息侦测。</p>
 </li>
 </ul>
-<h3 id="xing-neng-ce-shi-jie-guo-ke-shi-hua-chu-li-cha-jian">性能测试结果可视化处理插件</h3>
+<h3>性能测试结果可视化处理插件</h3>
 <ul>
 <li>
 <p><a href="https://github.com/king32783784/Report_generate">Report_generate</a></p>
@@ -482,7 +479,7 @@
 <p>用于对Lpbs-i测试结果的可视化处理，支持html、xls等多种格式，支持多系统对比报告生成</p>
 </li>
 </ul>
-<h3 id="liu-lan-qi-benchmark">浏览器benchmark</h3>
+<h3>浏览器benchmark</h3>
 <ul>
 <li>
 <p><a href="https://github.com/king32783784/Brower_benchmark">Brower_benchmark</a></p>
@@ -491,12 +488,12 @@
 <p>采用selenium，用于linux平台浏览器的评测，可以评估浏览器css、acid标准、html标准、DOM、javascipt等多个方面的性能</p>
 </li>
 </ul>
-<h3 id="linuxxi-tong-ce-shi-gong-ju">linux系统测试工具</h3>
+<h3>linux系统测试工具</h3>
 <ul>
 <li><a href="https://github.com/king32783784/itest">itest</a></li>
 <li>linux系统测试app，包括测试、报告制作、负载显示等功能。其中测试内容包括：linux系统信息侦测、linux功能测试、linux性能测试、linux稳定性测试。
 报告制作功能支持单次测试报告制作、多次测试对比报告制作。负载显示功能支持cpu、内存、swap、网络等资源的实时监控。</li>
-</ul></body>
+</ul>
             </div>
         </section>
     </div>

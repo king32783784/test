@@ -11,13 +11,10 @@
 <!-- Open Graph tags -->
 <meta property="og:site_name" content="路漫求索"/>
     <meta property="og:type" content="article"/>
-    <meta property="og:title" content="DOCKER基础技术：LINUX CGROUP(转载）"/>
-    <meta property="og:url" content="../2017/03/03/docker/"/>
-    <meta property="og:description" content="前面，我们介绍了Linux Namespace，但是Namespace解决的问题主要是环境隔离的问题，这只是虚拟化中最最基础的一步，我们还需要解决对计算机资源使用上的隔离。也就是说，虽然你通过Namespace把我Jail到一个特定的环境中去了，但是我在其中的进程使用用CPU、内存、磁盘等这些计算资源其实还是可以随心所欲的。所以，我们希望对进程进行资源利用上的限制或控制。这就是Linux CGroup出来了的原因。 Linux CGroup全称Linux Control Group， 是Linux内核的一个功能，用来限制，控制与分离一个进程组群的资源（如CPU、内存、磁盘输入输出等）。这个项目最早是由Google的工程师在2006年发起（主要是Paul Menage和Rohit Seth），最早的名称为进程容器（process containers）。在2007年时，因为在Linux内核中，容器（container）这个名词太过广泛，为避免混乱，被重命名为cgroup，并且被合并到2.6.24版的内核中去。然后，其它开始了他的发展。 Linux CGroupCgroup 可​​​让​​​您​​​为 ..."/>
-    <meta property="article:published_time" content="2017-03-03" />
-    <meta property="article:section" content="Docker专题" />
-        <meta property="article:tag" content="docker" />
-        <meta property="article:author" content="陈皓" />
+    <meta property="og:title" content="工具集"/>
+    <meta property="og:url" content="../pages/tools.html"/>
+    <meta property="og:description" content="Sublime Text 参考资料： Setting up Sublime Text for Python development Sublime Text 2 Documentation SublimeREPL, Github - SublimeREPL colorsublime Package Control VIM 配置文件：https://github.com/youngsterxyf/mydotfiles 快捷键 跳到行尾： shift + a , 跳到行首： shift + b 删除N行： N + d，复制N行： N + yy 跳到最后一行： G，跳到第一行： gg 剪切： dd，粘贴： p vim + ctags ..."/>
+        <meta property="article:author" content="youngsterxyf" />
         <meta property="og:image"
               content="../favicon.png"/>
 
@@ -66,12 +63,12 @@
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-share-small" class="collapse ">
                     <li>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=../2017/03/03/docker/" title="Share via Facebook" target="popup">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../pages/tools.html" title="Share via Facebook" target="popup">
                             <i class="fa fa-facebook-square padding-small"></i>
                         </a>
                     </li>
                     <li>
-                        <a href="https://plus.google.com/share?url=../2017/03/03/docker/" title="Share via Google+" target="popup">
+                        <a href="https://plus.google.com/share?url=../pages/tools.html" title="Share via Google+" target="popup">
                             <i class="fa fa-google-plus padding-small"></i>
                         </a>
                     </li>
@@ -166,13 +163,13 @@
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-share" class="sidebar_submenu collapse ">
                     <li>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=../2017/03/03/docker/" target="popup">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=../pages/tools.html" target="popup">
                             <i class="fa fa-facebook-square padding-small"></i>
                             Facebook
                         </a>
                     </li>
                     <li>
-                        <a href="https://plus.google.com/share?url=../2017/03/03/docker/" target="popup">
+                        <a href="https://plus.google.com/share?url=../pages/tools.html" target="popup">
                             <i class="fa fa-google-plus padding-small"></i>
                             Google+
                         </a>
@@ -254,7 +251,7 @@
                     <li>
                         <a href="../pages/aboutme.html">
                             <i class="fa fa-file-text padding-small"></i>
-                            关于我
+                            About me
                         </a>
                     </li>
                     <li>
@@ -274,38 +271,17 @@
                 </li>
                 <li class="panel anti-panel"><ul id="collapse-categories" class="sidebar_submenu collapse ">
                     <li >
+                        <a href="../category/bian-cheng-yu-yan-c.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            编程语言-C
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../category/bian-cheng-yu-yan-python.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             编程语言-Python
                             <span class="badge pull-right categorybadge">26</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-selenium.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Selenium
-                            <span class="badge pull-right categorybadge">17</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-autotest.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Autotest
-                            <span class="badge pull-right categorybadge">12</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-ltp.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-LTP
-                            <span class="badge pull-right categorybadge">7</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/linux.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            Linux
-                            <span class="badge pull-right categorybadge">6</span>
                         </a>
                     </li>
                     <li >
@@ -316,80 +292,10 @@
                         </a>
                     </li>
                     <li >
-                        <a href="../category/leetcode.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            leetcode
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/qi-ta.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            其他
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/xing-neng-ce-shi.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            性能测试
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-robot.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Robot
-                            <span class="badge pull-right categorybadge">4</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/bian-cheng-yu-yan-c.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            编程语言-C
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
                         <a href="../category/dockerzhuan-ti.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Docker专题
                             <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/python-pyqt.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            Python-pyqt
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-avocado.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试-Avocado
-                            <span class="badge pull-right categorybadge">3</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/suan-fa.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            算法
-                            <span class="badge pull-right categorybadge">2</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/unixhuan-jing-bian-cheng.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            unix环境编程
-                            <span class="badge pull-right categorybadge">2</span>
-                        </a>
-                    </li>
-                    <li >
-                        <a href="../category/zi-dong-hua-ce-shi-gong-ju.html">
-                            <i class="fa fa-folder-open padding-small"></i>
-                            自动化测试工具
-                            <span class="badge pull-right categorybadge">2</span>
                         </a>
                     </li>
                     <li >
@@ -400,10 +306,45 @@
                         </a>
                     </li>
                     <li >
+                        <a href="../category/leetcode.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            leetcode
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/linux.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Linux
+                            <span class="badge pull-right categorybadge">6</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../category/mongodb.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Mongodb
                             <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/python-pyqt.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            Python-pyqt
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/qi-ta.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            其他
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/suan-fa.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            算法
+                            <span class="badge pull-right categorybadge">2</span>
                         </a>
                     </li>
                     <li >
@@ -414,10 +355,66 @@
                         </a>
                     </li>
                     <li >
+                        <a href="../category/unixhuan-jing-bian-cheng.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            unix环境编程
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
                         <a href="../category/web.html">
                             <i class="fa fa-folder-open padding-small"></i>
                             Web
                             <span class="badge pull-right categorybadge">1</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/xing-neng-ce-shi.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            性能测试
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-autotest.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Autotest
+                            <span class="badge pull-right categorybadge">12</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-avocado.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Avocado
+                            <span class="badge pull-right categorybadge">3</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-gong-ju.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试工具
+                            <span class="badge pull-right categorybadge">2</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-ltp.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-LTP
+                            <span class="badge pull-right categorybadge">7</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-robot.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Robot
+                            <span class="badge pull-right categorybadge">4</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="../category/zi-dong-hua-ce-shi-selenium.html">
+                            <i class="fa fa-folder-open padding-small"></i>
+                            自动化测试-Selenium
+                            <span class="badge pull-right categorybadge">17</span>
                         </a>
                     </li>
                 </ul></li>
@@ -440,8 +437,8 @@
         <section id="content" class="body">
             <h1 class="page-header">工具集</h1>
             <div class="entry-content">
-                <body><h2 id="sublime-text">Sublime Text</h2>
-<h3 id="can-kao-zi-liao">参考资料：</h3>
+                <h2>Sublime Text</h2>
+<h3>参考资料：</h3>
 <ul>
 <li><a href="http://dbader.org/blog/setting-up-sublime-text-for-python-development">Setting up Sublime Text for Python development</a></li>
 <li><a href="http://www.sublimetext.com/docs/2/">Sublime Text 2 Documentation</a></li>
@@ -449,9 +446,9 @@
 <li><a href="http://colorsublime.com/">colorsublime</a></li>
 <li><a href="https://sublime.wbond.net/">Package Control</a></li>
 </ul>
-<h2 id="vim_1">VIM</h2>
+<h2>VIM</h2>
 <p>配置文件：<a href="https://github.com/youngsterxyf/mydotfiles">https://github.com/youngsterxyf/mydotfiles</a></p>
-<h3 id="kuai-jie-jian">快捷键</h3>
+<h3>快捷键</h3>
 <ul>
 <li>跳到行尾： <code>shift + a</code> , 跳到行首： <code>shift + b</code></li>
 <li>删除N行： <code>N + d</code>，复制N行： <code>N + yy</code></li>
@@ -470,7 +467,7 @@
 </ol>
 </li>
 </ul>
-<h3 id="cha-jian">插件</h3>
+<h3>插件</h3>
 <ul>
 <li><a href="https://github.com/gmarik/vundle">Vundle</a>(插件管理)</li>
 <li><a href="https://github.com/vim-scripts/vim-javascript">vim-javascript</a>(JavaScript语法高亮与自动缩进)</li>
@@ -488,7 +485,7 @@
 <li><a href="https://github.com/skammer/vim-css-color">vim-css-color</a>(css显示颜色值代表的颜色)</li>
 <li><a href="https://github.com/jnwhiteh/vim-golang">vim-golang</a>(go代码高亮、自动缩进等)</li>
 </ul>
-<h3 id="zi-liao">资料</h3>
+<h3>资料</h3>
 <p><a href="https://github.com/joedicastro/dotfiles/tree/master/vim">超级牛逼的VIM配置</a></p>
 <p><a href="http://vim.spf13.com/">spf13-vim - The Ultimate Vim Distribution</a></p>
 <p><a href="http://learnvimscriptthehardway.stevelosh.com/">Learn Vimscript the Hard Way</a></p>
@@ -496,15 +493,15 @@
 <p><a href="http://www.pythonclub.org/linux/vim/tabs">VIM标签页（tab）</a></p>
 <p><a href="http://coolshell.cn/articles/1679.html">Vim的分屏功能</a></p>
 <p><a href="http://www.catswhocode.com/blog/100-vim-commands-every-programmer-should-know">100 Vim commands every programmer should know</a></p>
-<h2 id="git_1">Git</h2>
-<h3 id="shu-ji">书籍：</h3>
+<h2>Git</h2>
+<h3>书籍：</h3>
 <ul>
 <li><a href="http://git-scm.com/book/zh/">Pro Git</a></li>
 <li>Git Community Book</li>
 <li><a href="https://peepcode.com/products/git-internals-pdf">Git Internals</a></li>
 <li><a href="http://git-scm.com/docs">Git Reference</a></li>
 </ul>
-<h2 id="latex_1">Latex</h2>
+<h2>Latex</h2>
 <ul>
 <li><a href="http://www.latex-project.org/">LaTeX项目主页</a></li>
 <li><a href="http://www.ctex.org/HomePage">CTEX项目主页</a></li>
@@ -513,7 +510,7 @@
 <li><a href="http://tex.stackexchange.com/">Tex-StackExchange</a></li>
 <li><a href="http://en.wikibooks.org/wiki/LaTeX">LaTeX - WikiBooks</a></li>
 </ul>
-<h3 id="beamer">Beamer</h3>
+<h3>Beamer</h3>
 <ul>
 <li><a href="http://deic.uab.es/~iblanes/beamer_gallery/">Beamer theme gallery</a></li>
 <li><a href="http://www.hartwork.org/beamer-theme-matrix/">beamer-theme-matrix</a></li>
@@ -523,13 +520,13 @@
 <li><a href="http://www.xiangsun.org/tex/notes-on-moderncv">moderncv的笔记</a></li>
 <li><a href="http://www.tug.dk/FontCatalogue/">The LaTeX Font Catalogue</a></li>
 </ul>
-<h3 id="hui-tu-yu-yan-yu-hui-tu-gong-ju">绘图语言与绘图工具</h3>
+<h3>绘图语言与绘图工具</h3>
 <ul>
 <li>GnuPlot</li>
 <li>Asymptote</li>
 <li>MetaPost</li>
 </ul>
-<h2 id="kai-fa-gong-ju_1">开发工具</h2>
+<h2>开发工具</h2>
 <ul>
 <li>VIM / Sublime Text / StackEdit(Markdown文本编辑)</li>
 <li>InteliJ IDEA（Golang）</li>
@@ -545,7 +542,7 @@
 <li>IPython（可在virtualenv虚拟环境中通过pip install ipython安装使用）</li>
 <li>ack/codequery（代码搜索工具）</li>
 </ul>
-<h2 id="ming-ling-xing-gong-ju-yu-jie-jue-fang-an">命令行工具与解决方案</h2>
+<h2>命令行工具与解决方案</h2>
 <ul>
 <li>
 <p><a href="http://www.linuxalt.com/">The Linux Alternative Project</a></p>
@@ -742,7 +739,7 @@ zipfile -c release.zip *.py</code></p>
 <p><a href="http://www.novell.com/coolsolutions/tip/2289.html">Gnome/KDE键盘快捷键</a></p>
 </li>
 </ul>
-<h2 id="ri-chang-shi-yong-gong-ju">日常使用工具</h2>
+<h2>日常使用工具</h2>
 <p>桌面环境：KDE</p>
 <p>Shell：zsh + <a href="https://github.com/robbyrussell/oh-my-zsh">oh-my-zsh</a> <s>Bash + <a href="https://github.com/milkbikis/powerline-shell">powerline-shell</a></s></p>
 <p>图形化Web浏览器：Google Chrome/Firefox</p>
@@ -783,7 +780,7 @@ zipfile -c release.zip *.py</code></p>
 <p>可以看到 vim 命令针对当前行，在前面加个范围就可以针对多行。</p>
 <p>:co 12</p>
 <p>把当前行 copy 到行 12 的地方。
-<a href="http://mathjoy.lofter.com/post/42208d_94339e7">简历设计</a></p></body>
+<a href="http://mathjoy.lofter.com/post/42208d_94339e7">简历设计</a></p>
             </div>
         </section>
     </div>

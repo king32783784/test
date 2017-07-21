@@ -1,5 +1,5 @@
-Title: 关于我
-Date: 2013-11-02
+Title: About me
+Date: 2017-08-22
 Author: peng.lee
 Slug: aboutme
 
@@ -22,7 +22,6 @@ You can contact me either via the social links in the sidebar or use one of thes
 | Protocol | Contact Information |
 | -------- | ------------------- |
 | GitHub   | [king32783784](https://github.com/king32783784) |
-| Email    | [peng.li@i-soft.com.cn](mailto:peng.li@i-soft.com.cn) |
 | Tencent QQ | 243246714  |
 
 ### Resume
@@ -46,8 +45,8 @@ You can contact me either via the social links in the sidebar or use one of thes
 | Tag | Description |
 | --- | ------ |
 | Programming Language | Python、shell、C、JAVA etc. |
-| Test Framework | Autotest、selenium、itest 、Robot Framework etc. |
+| Test Framework | Autotest、selenium、Robot Framework 、itest、etc. |
 | Test Tool | Benckmark、Ltp、Pts、Jemeter、Monkey etc | 
 | Development framework | Pyqt、Django etc. |
-| Other Tags | Linux、Docker、Hardware、Virtualization、Mysql、Loongson、Http、Xml etc. |
+| Other Tags | Linux、Docker、Hardware、Virtualization、Mysql、Loongson、Html、Xml、js、autotest etc. |
 
